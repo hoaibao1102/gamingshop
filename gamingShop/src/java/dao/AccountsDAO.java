@@ -4,7 +4,7 @@
  */
 package dao;
 
-import dto.Accessories;
+import dto.Accounts;
 import utils.DBUtils;
 
 import java.sql.*;
@@ -15,27 +15,27 @@ import java.util.List;
  *
  * @author MSI PC
  */
-public class AccessoriesDAO implements IDAO<Accessories, Integer> {
+public class AccountsDAO implements IDAO<Accounts, Integer> {
 
-    private static final String GET_ALL = "SELECT * FROM dbo.Accessories";
-    private static final String GET_BY_ID = "SELECT * FROM dbo.Accessories WHERE id = ?";
-    private static final String GET_BY_NAME = "SELECT * FROM dbo.Accessories WHERE name LIKE ?";
+    private static final String GET_ALL = "SELECT * FROM dbo.Accounts";
+    private static final String GET_BY_ID = "SELECT * FROM dbo.Accounts WHERE id = ?";
+    private static final String GET_BY_NAME = "SELECT * FROM dbo.Accounts WHERE username LIKE ?";
     private static final String CREATE
-            = "INSERT INTO dbo.Accessories (name, quantity, price, description, image_url) VALUES (?, ?, ?, ?, ?)";
+            = "INSERT INTO dbo.Accounts (username, password_hash, email, full_name, phone) VALUES (?, ?, ?, ?, ?)";
 
     @Override
-    public boolean create(Accessories e) {
+    public boolean create(Accounts e) {
         Connection c = null;
         PreparedStatement st = null;
         try {
             c = DBUtils.getConnection();
             st = c.prepareStatement(CREATE);
-            st.setString(1, e.getName());
-            st.setDouble(2, e.getQuantity());
-            st.setDouble(3, e.getPrice());
-            st.setString(4, e.getDescription());
-            st.setString(5, e.getImage_url());
-            return st.executeUpdate() > 0; // Cách B: không lấy id sinh tự động
+            st.setString(1, e.getUsername());
+            st.setString(2, e.getPassword_hash());
+            st.setString(3, e.getEmail());
+            st.setString(4, e.getFull_name());
+            st.setString(5, e.getPhone());
+            return st.executeUpdate() > 0;
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
@@ -45,7 +45,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     }
 
     @Override
-    public Accessories getById(Integer id) {
+    public Accounts getById(Integer id) {
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -66,8 +66,8 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     }
 
     @Override
-    public List<Accessories> getByName(String name) {
-        List<Accessories> list = new ArrayList<>();
+    public List<Accounts> getByName(String name) {
+        List<Accounts> list = new ArrayList<>();
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -88,8 +88,8 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     }
 
     @Override
-    public List<Accessories> getAll() {
-        List<Accessories> list = new ArrayList<>();
+    public List<Accounts> getAll() {
+        List<Accounts> list = new ArrayList<>();
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -108,26 +108,17 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         return list;
     }
 
-    private Accessories map(ResultSet rs) throws SQLException {
-        Accessories a = new Accessories();
-        a.setId(rs.getInt("id"));
-        a.setName(rs.getString("name"));
-        a.setQuantity(rs.getDouble("quantity"));
-        a.setPrice(rs.getDouble("price"));
-        a.setDescription(rs.getString("description"));
-        a.setImage_url(rs.getString("image_url"));
-
-        // created_ad & update_ad là DATETIME/DATE trong SQL Server
-        Timestamp createdTs = rs.getTimestamp("created_ad");
-        if (createdTs != null) {
-            a.setCreated_ad(new java.util.Date(createdTs.getTime()));
-        }
-
-        Timestamp updatedTs = rs.getTimestamp("update_ad");
-        if (updatedTs != null) {
-            a.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
-        }
-
+    private Accounts map(ResultSet rs) throws SQLException {
+        Accounts a = new Accounts(
+                rs.getInt("id"),
+                rs.getString("username"),
+                rs.getString("password_hash"),
+                rs.getString("email"),
+                rs.getString("full_name"),
+                rs.getString("phone"),
+                rs.getTimestamp("created_ad") != null ? new java.util.Date(rs.getTimestamp("created_ad").getTime()) : null,
+                rs.getTimestamp("update_ad") != null ? new java.util.Date(rs.getTimestamp("update_ad").getTime()) : null
+        );
         return a;
     }
 

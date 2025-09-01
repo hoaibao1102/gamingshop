@@ -4,7 +4,7 @@
  */
 package dao;
 
-import dto.Accessories;
+import dto.Models;
 import utils.DBUtils;
 
 import java.sql.*;
@@ -15,27 +15,25 @@ import java.util.List;
  *
  * @author MSI PC
  */
-public class AccessoriesDAO implements IDAO<Accessories, Integer> {
+public class ModelsDAO implements IDAO<Models, Integer> {
 
-    private static final String GET_ALL = "SELECT * FROM dbo.Accessories";
-    private static final String GET_BY_ID = "SELECT * FROM dbo.Accessories WHERE id = ?";
-    private static final String GET_BY_NAME = "SELECT * FROM dbo.Accessories WHERE name LIKE ?";
+    private static final String GET_ALL = "SELECT * FROM dbo.Models";
+    private static final String GET_BY_ID = "SELECT * FROM dbo.Models WHERE id = ?";
+    private static final String GET_BY_NAME = "SELECT * FROM dbo.Models WHERE model_type LIKE ?";
     private static final String CREATE
-            = "INSERT INTO dbo.Accessories (name, quantity, price, description, image_url) VALUES (?, ?, ?, ?, ?)";
+            = "INSERT INTO dbo.Models (model_type, description_html, image_url) VALUES (?, ?, ?)";
 
     @Override
-    public boolean create(Accessories e) {
+    public boolean create(Models e) {
         Connection c = null;
         PreparedStatement st = null;
         try {
             c = DBUtils.getConnection();
             st = c.prepareStatement(CREATE);
-            st.setString(1, e.getName());
-            st.setDouble(2, e.getQuantity());
-            st.setDouble(3, e.getPrice());
-            st.setString(4, e.getDescription());
-            st.setString(5, e.getImage_url());
-            return st.executeUpdate() > 0; // Cách B: không lấy id sinh tự động
+            st.setString(1, e.getModel_type());
+            st.setString(2, e.getDescription_html());
+            st.setString(3, e.getImage_url());
+            return st.executeUpdate() > 0;
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
@@ -45,7 +43,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     }
 
     @Override
-    public Accessories getById(Integer id) {
+    public Models getById(Integer id) {
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -66,8 +64,8 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     }
 
     @Override
-    public List<Accessories> getByName(String name) {
-        List<Accessories> list = new ArrayList<>();
+    public List<Models> getByName(String name) {
+        List<Models> list = new ArrayList<>();
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -88,8 +86,8 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     }
 
     @Override
-    public List<Accessories> getAll() {
-        List<Accessories> list = new ArrayList<>();
+    public List<Models> getAll() {
+        List<Models> list = new ArrayList<>();
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -108,27 +106,24 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         return list;
     }
 
-    private Accessories map(ResultSet rs) throws SQLException {
-        Accessories a = new Accessories();
-        a.setId(rs.getInt("id"));
-        a.setName(rs.getString("name"));
-        a.setQuantity(rs.getDouble("quantity"));
-        a.setPrice(rs.getDouble("price"));
-        a.setDescription(rs.getString("description"));
-        a.setImage_url(rs.getString("image_url"));
+    private Models map(ResultSet rs) throws SQLException {
+        Models m = new Models();
+        m.setId(rs.getInt("id"));
+        m.setModel_type(rs.getString("model_type"));
+        m.setDescription_html(rs.getString("description_html"));
+        m.setImage_url(rs.getString("image_url"));
 
-        // created_ad & update_ad là DATETIME/DATE trong SQL Server
         Timestamp createdTs = rs.getTimestamp("created_ad");
         if (createdTs != null) {
-            a.setCreated_ad(new java.util.Date(createdTs.getTime()));
+            m.setCreated_ad(new java.util.Date(createdTs.getTime()));
         }
 
         Timestamp updatedTs = rs.getTimestamp("update_ad");
         if (updatedTs != null) {
-            a.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
+            m.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
         }
 
-        return a;
+        return m;
     }
 
     private void close(Connection c, PreparedStatement st, ResultSet rs) {
