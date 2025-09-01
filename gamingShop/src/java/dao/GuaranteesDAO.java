@@ -4,7 +4,7 @@
  */
 package dao;
 
-import dto.Accessories;
+import dto.Guarantees;
 import utils.DBUtils;
 
 import java.sql.*;
@@ -15,26 +15,23 @@ import java.util.List;
  *
  * @author MSI PC
  */
-public class AccessoriesDAO implements IDAO<Accessories, Integer> {
+public class GuaranteesDAO implements IDAO<Guarantees, Integer> {
 
-    private static final String GET_ALL = "SELECT * FROM dbo.Accessories";
-    private static final String GET_BY_ID = "SELECT * FROM dbo.Accessories WHERE id = ?";
-    private static final String GET_BY_NAME = "SELECT * FROM dbo.Accessories WHERE name LIKE ?";
+    private static final String GET_ALL = "SELECT * FROM dbo.Guarantees";
+    private static final String GET_BY_ID = "SELECT * FROM dbo.Guarantees WHERE id = ?";
+    private static final String GET_BY_NAME = "SELECT * FROM dbo.Guarantees WHERE guarantee_type LIKE ?";
     private static final String CREATE
-            = "INSERT INTO dbo.Accessories (name, quantity, price, description, image_url) VALUES (?, ?, ?, ?, ?)";
+            = "INSERT INTO dbo.Guarantees (guarantee_type, description_html) VALUES (?, ?)";
 
     @Override
-    public boolean create(Accessories e) {
+    public boolean create(Guarantees e) {
         Connection c = null;
         PreparedStatement st = null;
         try {
             c = DBUtils.getConnection();
             st = c.prepareStatement(CREATE);
-            st.setString(1, e.getName());
-            st.setDouble(2, e.getQuantity());
-            st.setDouble(3, e.getPrice());
-            st.setString(4, e.getDescription());
-            st.setString(5, e.getImage_url());
+            st.setString(1, e.getGuarantee_type());
+            st.setString(2, e.getDescription_html());
             return st.executeUpdate() > 0; // Cách B: không lấy id sinh tự động
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -45,7 +42,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     }
 
     @Override
-    public Accessories getById(Integer id) {
+    public Guarantees getById(Integer id) {
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -66,8 +63,8 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     }
 
     @Override
-    public List<Accessories> getByName(String name) {
-        List<Accessories> list = new ArrayList<>();
+    public List<Guarantees> getByName(String name) {
+        List<Guarantees> list = new ArrayList<>();
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -88,8 +85,8 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     }
 
     @Override
-    public List<Accessories> getAll() {
-        List<Accessories> list = new ArrayList<>();
+    public List<Guarantees> getAll() {
+        List<Guarantees> list = new ArrayList<>();
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -108,27 +105,23 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         return list;
     }
 
-    private Accessories map(ResultSet rs) throws SQLException {
-        Accessories a = new Accessories();
-        a.setId(rs.getInt("id"));
-        a.setName(rs.getString("name"));
-        a.setQuantity(rs.getDouble("quantity"));
-        a.setPrice(rs.getDouble("price"));
-        a.setDescription(rs.getString("description"));
-        a.setImage_url(rs.getString("image_url"));
+    private Guarantees map(ResultSet rs) throws SQLException {
+        Guarantees g = new Guarantees();
+        g.setId(rs.getInt("id"));
+        g.setGuarantee_type(rs.getString("guarantee_type"));
+        g.setDescription_html(rs.getString("description_html"));
 
-        // created_ad & update_ad là DATETIME/DATE trong SQL Server
         Timestamp createdTs = rs.getTimestamp("created_ad");
         if (createdTs != null) {
-            a.setCreated_ad(new java.util.Date(createdTs.getTime()));
+            g.setCreated_ad(new java.util.Date(createdTs.getTime()));
         }
 
         Timestamp updatedTs = rs.getTimestamp("update_ad");
         if (updatedTs != null) {
-            a.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
+            g.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
         }
 
-        return a;
+        return g;
     }
 
     private void close(Connection c, PreparedStatement st, ResultSet rs) {

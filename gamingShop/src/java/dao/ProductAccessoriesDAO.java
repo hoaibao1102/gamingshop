@@ -4,7 +4,7 @@
  */
 package dao;
 
-import dto.Accessories;
+import dto.Product_accessories;
 import utils.DBUtils;
 
 import java.sql.*;
@@ -15,27 +15,25 @@ import java.util.List;
  *
  * @author MSI PC
  */
-public class AccessoriesDAO implements IDAO<Accessories, Integer> {
+public class ProductAccessoriesDAO implements IDAO<Product_accessories, Integer> {
 
-    private static final String GET_ALL = "SELECT * FROM dbo.Accessories";
-    private static final String GET_BY_ID = "SELECT * FROM dbo.Accessories WHERE id = ?";
-    private static final String GET_BY_NAME = "SELECT * FROM dbo.Accessories WHERE name LIKE ?";
+    private static final String GET_ALL = "SELECT * FROM dbo.Product_accessories";
+    private static final String GET_BY_PRODUCT_ID = "SELECT * FROM dbo.Product_accessories WHERE product_id = ?";
+    private static final String GET_BY_ACCESSORY_ID = "SELECT * FROM dbo.Product_accessories WHERE accessory_id = ?";
     private static final String CREATE
-            = "INSERT INTO dbo.Accessories (name, quantity, price, description, image_url) VALUES (?, ?, ?, ?, ?)";
+            = "INSERT INTO dbo.Product_accessories (product_id, accessory_id, quantity) VALUES (?, ?, ?)";
 
     @Override
-    public boolean create(Accessories e) {
+    public boolean create(Product_accessories e) {
         Connection c = null;
         PreparedStatement st = null;
         try {
             c = DBUtils.getConnection();
             st = c.prepareStatement(CREATE);
-            st.setString(1, e.getName());
-            st.setDouble(2, e.getQuantity());
-            st.setDouble(3, e.getPrice());
-            st.setString(4, e.getDescription());
-            st.setString(5, e.getImage_url());
-            return st.executeUpdate() > 0; // Cách B: không lấy id sinh tự động
+            st.setInt(1, e.getProduct_id());
+            st.setInt(2, e.getAccessory_id());
+            st.setInt(3, e.getQuantity());
+            return st.executeUpdate() > 0;
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
@@ -44,15 +42,17 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         }
     }
 
+    // getById không thực sự hợp lý với bảng này, vì id là composite (product_id + accessory_id).
+    // Ở đây mình sẽ cho id đại diện là product_id để tránh lỗi interface.
     @Override
-    public Accessories getById(Integer id) {
+    public Product_accessories getById(Integer productId) {
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
             c = DBUtils.getConnection();
-            st = c.prepareStatement(GET_BY_ID);
-            st.setInt(1, id);
+            st = c.prepareStatement(GET_BY_PRODUCT_ID);
+            st.setInt(1, productId);
             rs = st.executeQuery();
             if (rs.next()) {
                 return map(rs);
@@ -65,31 +65,15 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         return null;
     }
 
+    // Không có "name" trong bảng này => để trống
     @Override
-    public List<Accessories> getByName(String name) {
-        List<Accessories> list = new ArrayList<>();
-        Connection c = null;
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        try {
-            c = DBUtils.getConnection();
-            st = c.prepareStatement(GET_BY_NAME);
-            st.setString(1, "%" + name + "%");
-            rs = st.executeQuery();
-            while (rs.next()) {
-                list.add(map(rs));
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            close(c, st, rs);
-        }
-        return list;
+    public List<Product_accessories> getByName(String name) {
+        return new ArrayList<>();
     }
 
     @Override
-    public List<Accessories> getAll() {
-        List<Accessories> list = new ArrayList<>();
+    public List<Product_accessories> getAll() {
+        List<Product_accessories> list = new ArrayList<>();
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -108,27 +92,34 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         return list;
     }
 
-    private Accessories map(ResultSet rs) throws SQLException {
-        Accessories a = new Accessories();
-        a.setId(rs.getInt("id"));
-        a.setName(rs.getString("name"));
-        a.setQuantity(rs.getDouble("quantity"));
-        a.setPrice(rs.getDouble("price"));
-        a.setDescription(rs.getString("description"));
-        a.setImage_url(rs.getString("image_url"));
-
-        // created_ad & update_ad là DATETIME/DATE trong SQL Server
-        Timestamp createdTs = rs.getTimestamp("created_ad");
-        if (createdTs != null) {
-            a.setCreated_ad(new java.util.Date(createdTs.getTime()));
+    // Hàm phụ trợ: lấy theo accessory_id
+    public List<Product_accessories> getByAccessoryId(Integer accessoryId) {
+        List<Product_accessories> list = new ArrayList<>();
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(GET_BY_ACCESSORY_ID);
+            st.setInt(1, accessoryId);
+            rs = st.executeQuery();
+            while (rs.next()) {
+                list.add(map(rs));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(c, st, rs);
         }
+        return list;
+    }
 
-        Timestamp updatedTs = rs.getTimestamp("update_ad");
-        if (updatedTs != null) {
-            a.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
-        }
-
-        return a;
+    private Product_accessories map(ResultSet rs) throws SQLException {
+        Product_accessories pa = new Product_accessories();
+        pa.setProduct_id(rs.getInt("product_id"));
+        pa.setAccessory_id(rs.getInt("accessory_id"));
+        pa.setQuantity(rs.getInt("quantity"));
+        return pa;
     }
 
     private void close(Connection c, PreparedStatement st, ResultSet rs) {

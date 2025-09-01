@@ -9,6 +9,8 @@ import java.util.List;
 /**
  *
  * @author ADMIN
+ * @param <T>
+ * @param <K>
  */
 public interface IDAO<T, K> {
     boolean create(T entity);

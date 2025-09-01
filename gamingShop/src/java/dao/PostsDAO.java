@@ -4,7 +4,7 @@
  */
 package dao;
 
-import dto.Accessories;
+import dto.Posts;
 import utils.DBUtils;
 
 import java.sql.*;
@@ -15,27 +15,32 @@ import java.util.List;
  *
  * @author MSI PC
  */
-public class AccessoriesDAO implements IDAO<Accessories, Integer> {
+public class PostsDAO implements IDAO<Posts, Integer> {
 
-    private static final String GET_ALL = "SELECT * FROM dbo.Accessories";
-    private static final String GET_BY_ID = "SELECT * FROM dbo.Accessories WHERE id = ?";
-    private static final String GET_BY_NAME = "SELECT * FROM dbo.Accessories WHERE name LIKE ?";
+    private static final String GET_ALL = "SELECT * FROM dbo.Posts";
+    private static final String GET_BY_ID = "SELECT * FROM dbo.Posts WHERE id = ?";
+    private static final String GET_BY_NAME = "SELECT * FROM dbo.Posts WHERE title LIKE ?";
     private static final String CREATE
-            = "INSERT INTO dbo.Accessories (name, quantity, price, description, image_url) VALUES (?, ?, ?, ?, ?)";
+            = "INSERT INTO dbo.Posts (author, title, content_html, image_url, publish_date, status) VALUES (?, ?, ?, ?, ?, ?)";
 
     @Override
-    public boolean create(Accessories e) {
+    public boolean create(Posts e) {
         Connection c = null;
         PreparedStatement st = null;
         try {
             c = DBUtils.getConnection();
             st = c.prepareStatement(CREATE);
-            st.setString(1, e.getName());
-            st.setDouble(2, e.getQuantity());
-            st.setDouble(3, e.getPrice());
-            st.setString(4, e.getDescription());
-            st.setString(5, e.getImage_url());
-            return st.executeUpdate() > 0; // Cách B: không lấy id sinh tự động
+            st.setString(1, e.getAuthor());
+            st.setString(2, e.getTitle());
+            st.setString(3, e.getContent_html());
+            st.setString(4, e.getImage_url());
+            if (e.getPublish_date() != null) {
+                st.setTimestamp(5, new Timestamp(e.getPublish_date().getTime()));
+            } else {
+                st.setNull(5, Types.TIMESTAMP);
+            }
+            st.setInt(6, e.getStatus());
+            return st.executeUpdate() > 0;
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
@@ -45,7 +50,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     }
 
     @Override
-    public Accessories getById(Integer id) {
+    public Posts getById(Integer id) {
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -66,8 +71,8 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     }
 
     @Override
-    public List<Accessories> getByName(String name) {
-        List<Accessories> list = new ArrayList<>();
+    public List<Posts> getByName(String name) {
+        List<Posts> list = new ArrayList<>();
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -88,8 +93,8 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     }
 
     @Override
-    public List<Accessories> getAll() {
-        List<Accessories> list = new ArrayList<>();
+    public List<Posts> getAll() {
+        List<Posts> list = new ArrayList<>();
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -108,27 +113,32 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         return list;
     }
 
-    private Accessories map(ResultSet rs) throws SQLException {
-        Accessories a = new Accessories();
-        a.setId(rs.getInt("id"));
-        a.setName(rs.getString("name"));
-        a.setQuantity(rs.getDouble("quantity"));
-        a.setPrice(rs.getDouble("price"));
-        a.setDescription(rs.getString("description"));
-        a.setImage_url(rs.getString("image_url"));
+    private Posts map(ResultSet rs) throws SQLException {
+        Posts p = new Posts();
+        p.setId(rs.getInt("id"));
+        p.setAuthor(rs.getString("author"));
+        p.setTitle(rs.getString("title"));
+        p.setContent_html(rs.getString("content_html"));
+        p.setImage_url(rs.getString("image_url"));
 
-        // created_ad & update_ad là DATETIME/DATE trong SQL Server
+        Timestamp publishTs = rs.getTimestamp("publish_date");
+        if (publishTs != null) {
+            p.setPublish_date(new java.util.Date(publishTs.getTime()));
+        }
+
+        p.setStatus(rs.getInt("status"));
+
         Timestamp createdTs = rs.getTimestamp("created_ad");
         if (createdTs != null) {
-            a.setCreated_ad(new java.util.Date(createdTs.getTime()));
+            p.setCreated_ad(new java.util.Date(createdTs.getTime()));
         }
 
         Timestamp updatedTs = rs.getTimestamp("update_ad");
         if (updatedTs != null) {
-            a.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
+            p.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
         }
 
-        return a;
+        return p;
     }
 
     private void close(Connection c, PreparedStatement st, ResultSet rs) {
