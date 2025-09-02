@@ -24,7 +24,7 @@ public class AuthUtils {
     public static Accounts getCurrentUser(HttpServletRequest request) {
         HttpSession session = request.getSession();
         if (session != null) {
-            return (Accounts) session.getAttribute("account");
+            return (Accounts) session.getAttribute("user");
         }
         return null;
     }
