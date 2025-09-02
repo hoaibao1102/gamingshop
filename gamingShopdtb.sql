@@ -363,6 +363,8 @@ BEGIN
 END;
 GO
 
+ALTER TABLE dbo.Accounts
+ALTER COLUMN password_hash NVARCHAR(255) NOT NULL;
 /* ============================================================
    DỮ LIỆU MẪU THẬT
    ============================================================ */
@@ -370,7 +372,7 @@ GO
 -- 1) accounts
 INSERT INTO dbo.Accounts (username, password_hash, email, full_name, phone)
 VALUES
-(N'admin', HASHBYTES('SHA2_256', CONVERT(VARBINARY(4000), N'123456')),
+(N'admin', N'123123',
  N'admin@example.com', N'Nguyen Van A', N'0909123456');
 
 -- 2) models

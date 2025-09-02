@@ -199,6 +199,6 @@ public class AccountsDAO implements IDAO<Accounts, Integer> {
 
         String inputHash = PasswordUtils.encryptSHA256(password);
 
-        return inputHash.equalsIgnoreCase(accounts.getPassword_hash());
+        return inputHash.equals(accounts.getPassword_hash());
     }
 }

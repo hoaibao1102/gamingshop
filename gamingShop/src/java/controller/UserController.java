@@ -85,8 +85,10 @@ public class UserController extends HttpServlet {
         if (accountsDAO.login(userName, password)) {
             Accounts accounts = accountsDAO.getByUsername(userName);
             session.setAttribute("user", accounts);
+            System.out.println("dung");
             return REDIRECT_AFTER_LOGIN;
         } else {
+            System.out.println("sai");
             request.setAttribute("message", "UserName or Password incorrect!");
             return LOGIN_PAGE;
         }
