@@ -10,7 +10,6 @@ import utils.DBUtils;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import utils.PasswordUtils;
 
 /**
  *
@@ -157,23 +156,16 @@ public class AccountsDAO implements IDAO<Accounts, Integer> {
     }
 
     public boolean updatePassword(String userName, String newPassword) {
-        Connection c = null;
-        PreparedStatement st = null;
         try {
-            c = DBUtils.getConnection();
-            st = c.prepareStatement(UPDATE_PASSWORD_BY_USERNAME);
-
-            // Hash trước khi lưu
-            String hashed = PasswordUtils.encryptSHA256(newPassword);
-            st.setString(1, hashed);
-            st.setString(2, userName);
-
-            return st.executeUpdate() > 0;
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            Connection conn = DBUtils.getConnection();
+            PreparedStatement ps = conn.prepareStatement(UPDATE_PASSWORD_BY_USERNAME);
+            ps.setString(1, newPassword);
+            ps.setString(2, userName);
+            int result = ps.executeUpdate();
+            return result > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
-        } finally {
-            close(c, st, null);
         }
     }
 }
