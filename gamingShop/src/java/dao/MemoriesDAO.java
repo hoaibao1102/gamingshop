@@ -10,6 +10,7 @@ import utils.DBUtils;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  *
  * @author MSI PC
@@ -116,14 +117,16 @@ public class MemoriesDAO implements IDAO<Memories, Integer> {
         m.setPrice(rs.getDouble("price"));
         m.setImage_url(rs.getString("image_url"));
 
-        Timestamp createdTs = rs.getTimestamp("created_ad");
+        // created_at
+        Timestamp createdTs = rs.getTimestamp("created_at");
         if (createdTs != null) {
-            m.setCreated_ad(new java.util.Date(createdTs.getTime()));
+            m.setCreated_at(new java.util.Date(createdTs.getTime()));
         }
 
-        Timestamp updatedTs = rs.getTimestamp("update_ad");
+        // updated_at
+        Timestamp updatedTs = rs.getTimestamp("updated_at");
         if (updatedTs != null) {
-            m.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
+            m.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
 
         return m;

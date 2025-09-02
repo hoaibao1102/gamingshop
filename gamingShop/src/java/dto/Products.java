@@ -11,6 +11,7 @@ import java.util.Date;
  * @author MSI PC
  */
 public class Products {
+
     private int id;
     private String name;
     private String sku;
@@ -22,14 +23,13 @@ public class Products {
     private int quantity;
     private String description_html;
     private String status;
-    private Date created_ad;
-    private Date update_ad;
+    private Date created_at;
+    private Date updated_at;
 
     public Products() {
     }
 
-    
-    public Products(int id, String name, String sku, double price, String product_type, int model_id, int memory_id, int guarantee_id, int quantity, String description_html, String status, Date created_ad, Date update_ad) {
+    public Products(int id, String name, String sku, double price, String product_type, int model_id, int memory_id, int guarantee_id, int quantity, String description_html, String status, Date created_at, Date updated_at) {
         this.id = id;
         this.name = name;
         this.sku = sku;
@@ -41,8 +41,8 @@ public class Products {
         this.quantity = quantity;
         this.description_html = description_html;
         this.status = status;
-        this.created_ad = created_ad;
-        this.update_ad = update_ad;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
     }
 
     public int getId() {
@@ -133,22 +133,20 @@ public class Products {
         this.status = status;
     }
 
-    public Date getCreated_ad() {
-        return created_ad;
+    public Date getCreated_at() {
+        return created_at;
     }
 
-    public void setCreated_ad(Date created_ad) {
-        this.created_ad = created_ad;
+    public void setCreated_at(Date created_at) {
+        this.created_at = created_at;
     }
 
-    public Date getUpdate_ad() {
-        return update_ad;
+    public Date getUpdated_at() {
+        return updated_at;
     }
 
-    public void setUpdate_ad(Date update_ad) {
-        this.update_ad = update_ad;
+    public void setUpdated_at(Date updated_at) {
+        this.updated_at = updated_at;
     }
 
-    
-   
 }

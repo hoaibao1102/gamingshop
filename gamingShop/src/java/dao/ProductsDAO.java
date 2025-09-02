@@ -128,14 +128,16 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         p.setDescription_html(rs.getString("description_html"));
         p.setStatus(rs.getString("status"));
 
-        Timestamp createdTs = rs.getTimestamp("created_ad");
+        // created_at
+        Timestamp createdTs = rs.getTimestamp("created_at");
         if (createdTs != null) {
-            p.setCreated_ad(new java.util.Date(createdTs.getTime()));
+            p.setCreated_at(new java.util.Date(createdTs.getTime()));
         }
 
-        Timestamp updatedTs = rs.getTimestamp("update_ad");
+        // updated_at
+        Timestamp updatedTs = rs.getTimestamp("updated_at");
         if (updatedTs != null) {
-            p.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
+            p.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
 
         return p;

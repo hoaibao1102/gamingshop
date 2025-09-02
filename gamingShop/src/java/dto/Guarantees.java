@@ -11,24 +11,23 @@ import java.util.Date;
  * @author MSI PC
  */
 public class Guarantees {
+
     private int id;
     private String guarantee_type;
     private String description_html;
-    private Date created_ad;
-    private Date update_ad;
+    private Date created_at;
+    private Date updated_at;
 
     public Guarantees() {
     }
 
-    public Guarantees(int id, String guarantee_type, String description_html, Date created_ad, Date update_ad) {
+    public Guarantees(int id, String guarantee_type, String description_html, Date created_at, Date updated_at) {
         this.id = id;
         this.guarantee_type = guarantee_type;
         this.description_html = description_html;
-        this.created_ad = created_ad;
-        this.update_ad = update_ad;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
     }
-    
-    
 
     public int getId() {
         return id;
@@ -54,21 +53,20 @@ public class Guarantees {
         this.description_html = description_html;
     }
 
-    public Date getCreated_ad() {
-        return created_ad;
+    public Date getCreated_at() {
+        return created_at;
     }
 
-    public void setCreated_ad(Date created_ad) {
-        this.created_ad = created_ad;
+    public void setCreated_at(Date created_at) {
+        this.created_at = created_at;
     }
 
-    public Date getUpdate_ad() {
-        return update_ad;
+    public Date getUpdated_at() {
+        return updated_at;
     }
 
-    public void setUpdate_ad(Date update_ad) {
-        this.update_ad = update_ad;
+    public void setUpdated_at(Date updated_at) {
+        this.updated_at = updated_at;
     }
-    
-    
+
 }

@@ -113,14 +113,16 @@ public class ServicesDAO implements IDAO<Services, Integer> {
         s.setDescription_html(rs.getString("description_html"));
         s.setPrice(rs.getDouble("price"));
 
-        Timestamp createdTs = rs.getTimestamp("created_ad");
+        // created_at
+        Timestamp createdTs = rs.getTimestamp("created_at");
         if (createdTs != null) {
-            s.setCreated_ad(new java.util.Date(createdTs.getTime()));
+            s.setCreated_at(new java.util.Date(createdTs.getTime()));
         }
 
-        Timestamp updatedTs = rs.getTimestamp("update_ad");
+        // updated_at
+        Timestamp updatedTs = rs.getTimestamp("updated_at");
         if (updatedTs != null) {
-            s.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
+            s.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
 
         return s;

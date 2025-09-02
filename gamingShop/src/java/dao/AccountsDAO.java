@@ -10,6 +10,7 @@ import utils.DBUtils;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import utils.PasswordUtils;
 
 /**
  *
@@ -22,6 +23,8 @@ public class AccountsDAO implements IDAO<Accounts, Integer> {
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Accounts WHERE username LIKE ?";
     private static final String CREATE
             = "INSERT INTO dbo.Accounts (username, password_hash, email, full_name, phone) VALUES (?, ?, ?, ?, ?)";
+    private static final String UPDATE_PASSWORD_BY_USERNAME
+            = "UPDATE dbo.Accounts SET password_hash = ? WHERE username = ?";
 
     @Override
     public boolean create(Accounts e) {
@@ -109,16 +112,26 @@ public class AccountsDAO implements IDAO<Accounts, Integer> {
     }
 
     private Accounts map(ResultSet rs) throws SQLException {
-        Accounts a = new Accounts(
-                rs.getInt("id"),
-                rs.getString("username"),
-                rs.getString("password_hash"),
-                rs.getString("email"),
-                rs.getString("full_name"),
-                rs.getString("phone"),
-                rs.getTimestamp("created_ad") != null ? new java.util.Date(rs.getTimestamp("created_ad").getTime()) : null,
-                rs.getTimestamp("update_ad") != null ? new java.util.Date(rs.getTimestamp("update_ad").getTime()) : null
-        );
+        Accounts a = new Accounts();
+        a.setId(rs.getInt("id"));
+        a.setUsername(rs.getString("username"));
+        a.setPassword_hash(rs.getString("password_hash"));
+        a.setEmail(rs.getString("email"));
+        a.setFull_name(rs.getString("full_name"));
+        a.setPhone(rs.getString("phone"));
+
+        // created_at
+        Timestamp createdTs = rs.getTimestamp("created_at");
+        if (createdTs != null) {
+            a.setCreated_at(new java.util.Date(createdTs.getTime()));
+        }
+
+        // updated_at
+        Timestamp updatedTs = rs.getTimestamp("updated_at");
+        if (updatedTs != null) {
+            a.setUpdated_at(new java.util.Date(updatedTs.getTime()));
+        }
+
         return a;
     }
 
@@ -140,6 +153,27 @@ public class AccountsDAO implements IDAO<Accounts, Integer> {
                 c.close();
             }
         } catch (Exception ignore) {
+        }
+    }
+
+    public boolean updatePassword(String userName, String newPassword) {
+        Connection c = null;
+        PreparedStatement st = null;
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(UPDATE_PASSWORD_BY_USERNAME);
+
+            // Hash trước khi lưu
+            String hashed = PasswordUtils.encryptSHA256(newPassword);
+            st.setString(1, hashed);
+            st.setString(2, userName);
+
+            return st.executeUpdate() > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            close(c, st, null);
         }
     }
 }

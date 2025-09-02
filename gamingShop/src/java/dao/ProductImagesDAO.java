@@ -122,14 +122,16 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
         pi.setSort_order(rs.getInt("sort_order"));
         pi.setStatus(rs.getInt("status"));
 
-        Timestamp createdTs = rs.getTimestamp("created_ad");
+        // created_at
+        Timestamp createdTs = rs.getTimestamp("created_at");
         if (createdTs != null) {
-            pi.setCreated_ad(new java.util.Date(createdTs.getTime()));
+            pi.setCreated_at(new java.util.Date(createdTs.getTime()));
         }
 
-        Timestamp updatedTs = rs.getTimestamp("update_ad");
+        // updated_at
+        Timestamp updatedTs = rs.getTimestamp("updated_at");
         if (updatedTs != null) {
-            pi.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
+            pi.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
 
         return pi;
