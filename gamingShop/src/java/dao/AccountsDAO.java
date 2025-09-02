@@ -10,6 +10,7 @@ import utils.DBUtils;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import utils.PasswordUtils;
 
 /**
  *
@@ -167,5 +168,37 @@ public class AccountsDAO implements IDAO<Accounts, Integer> {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public Accounts getByUsername(String userName) {
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            c = DBUtils.getConnection();
+            String sql = "SELECT * FROM dbo.Accounts WHERE username = ?";
+            st = c.prepareStatement(sql);
+            st.setString(1, userName);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                return map(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(c, st, rs);
+        }
+        return null;
+    }
+
+    public boolean login(String userName, String password) {
+        Accounts accounts = getByUsername(userName);
+        if (accounts == null) {
+            return false;
+        }
+
+        String inputHash = PasswordUtils.encryptSHA256(password);
+
+        return inputHash.equalsIgnoreCase(accounts.getPassword_hash());
     }
 }
