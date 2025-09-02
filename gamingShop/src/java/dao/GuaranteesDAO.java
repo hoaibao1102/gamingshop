@@ -111,14 +111,16 @@ public class GuaranteesDAO implements IDAO<Guarantees, Integer> {
         g.setGuarantee_type(rs.getString("guarantee_type"));
         g.setDescription_html(rs.getString("description_html"));
 
-        Timestamp createdTs = rs.getTimestamp("created_ad");
+        // created_at
+        Timestamp createdTs = rs.getTimestamp("created_at");
         if (createdTs != null) {
-            g.setCreated_ad(new java.util.Date(createdTs.getTime()));
+            g.setCreated_at(new java.util.Date(createdTs.getTime()));
         }
 
-        Timestamp updatedTs = rs.getTimestamp("update_ad");
+        // updated_at
+        Timestamp updatedTs = rs.getTimestamp("updated_at");
         if (updatedTs != null) {
-            g.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
+            g.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
 
         return g;

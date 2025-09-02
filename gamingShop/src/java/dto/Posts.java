@@ -11,6 +11,7 @@ import java.util.Date;
  * @author MSI PC
  */
 public class Posts {
+
     private int id;
     private String author;
     private String title;
@@ -18,13 +19,13 @@ public class Posts {
     private String image_url;
     private Date publish_date;
     private int status;
-    private Date created_ad;
-    private Date update_ad;
+    private Date created_at;
+    private Date updated_at;
 
     public Posts() {
     }
 
-    public Posts(int id, String author, String title, String content_html, String image_url, Date publish_date, int status, Date created_ad, Date update_ad) {
+    public Posts(int id, String author, String title, String content_html, String image_url, Date publish_date, int status, Date created_at, Date updated_at) {
         this.id = id;
         this.author = author;
         this.title = title;
@@ -32,8 +33,8 @@ public class Posts {
         this.image_url = image_url;
         this.publish_date = publish_date;
         this.status = status;
-        this.created_ad = created_ad;
-        this.update_ad = update_ad;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
     }
 
     public int getId() {
@@ -92,21 +93,20 @@ public class Posts {
         this.status = status;
     }
 
-    public Date getCreated_ad() {
-        return created_ad;
+    public Date getCreated_at() {
+        return created_at;
     }
 
-    public void setCreated_ad(Date created_ad) {
-        this.created_ad = created_ad;
+    public void setCreated_at(Date created_at) {
+        this.created_at = created_at;
     }
 
-    public Date getUpdate_ad() {
-        return update_ad;
+    public Date getUpdated_at() {
+        return updated_at;
     }
 
-    public void setUpdate_ad(Date update_ad) {
-        this.update_ad = update_ad;
+    public void setUpdated_at(Date updated_at) {
+        this.updated_at = updated_at;
     }
-    
-    
+
 }

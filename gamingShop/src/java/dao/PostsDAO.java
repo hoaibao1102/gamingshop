@@ -121,6 +121,7 @@ public class PostsDAO implements IDAO<Posts, Integer> {
         p.setContent_html(rs.getString("content_html"));
         p.setImage_url(rs.getString("image_url"));
 
+        // publish_date
         Timestamp publishTs = rs.getTimestamp("publish_date");
         if (publishTs != null) {
             p.setPublish_date(new java.util.Date(publishTs.getTime()));
@@ -128,14 +129,16 @@ public class PostsDAO implements IDAO<Posts, Integer> {
 
         p.setStatus(rs.getInt("status"));
 
-        Timestamp createdTs = rs.getTimestamp("created_ad");
+        // created_at
+        Timestamp createdTs = rs.getTimestamp("created_at");
         if (createdTs != null) {
-            p.setCreated_ad(new java.util.Date(createdTs.getTime()));
+            p.setCreated_at(new java.util.Date(createdTs.getTime()));
         }
 
-        Timestamp updatedTs = rs.getTimestamp("update_ad");
+        // updated_at
+        Timestamp updatedTs = rs.getTimestamp("updated_at");
         if (updatedTs != null) {
-            p.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
+            p.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
 
         return p;

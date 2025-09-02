@@ -117,15 +117,16 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         a.setDescription(rs.getString("description"));
         a.setImage_url(rs.getString("image_url"));
 
-        // created_ad & update_ad là DATETIME/DATE trong SQL Server
-        Timestamp createdTs = rs.getTimestamp("created_ad");
+        // created_at
+        Timestamp createdTs = rs.getTimestamp("created_at");
         if (createdTs != null) {
-            a.setCreated_ad(new java.util.Date(createdTs.getTime()));
+            a.setCreated_at(new java.util.Date(createdTs.getTime()));
         }
 
-        Timestamp updatedTs = rs.getTimestamp("update_ad");
+        // updated_at
+        Timestamp updatedTs = rs.getTimestamp("updated_at");
         if (updatedTs != null) {
-            a.setUpdate_ad(new java.util.Date(updatedTs.getTime()));
+            a.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
 
         return a;
