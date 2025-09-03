@@ -19,7 +19,7 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
 
     private static final String GET_ALL = "SELECT * FROM dbo.Product_images";
     private static final String GET_BY_ID = "SELECT * FROM dbo.Product_images WHERE id = ?";
-    private static final String GET_BY_PRODUCT = "SELECT * FROM dbo.Product_images WHERE product_id = ?";
+    private static final String GET_BY_PRODUCT = "SELECT TOP 1 * FROM Product_images WHERE product_id = ? AND status = '1' ORDER BY created_at ASC";
     private static final String CREATE
             = "INSERT INTO dbo.Product_images (product_id, image_url, caption, sort_order, status) VALUES (?, ?, ?, ?, ?)";
 
@@ -71,7 +71,7 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
         return new ArrayList<>();
     }
 
-    public List<Product_images> getByProductId(int productId) {
+    public List<Product_images> getByAllProductId(int productId) {
         List<Product_images> list = new ArrayList<>();
         Connection c = null;
         PreparedStatement st = null;
@@ -156,5 +156,31 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
             }
         } catch (Exception ignore) {
         }
+    }
+
+    public Product_images getByProductId(int productId) {
+        Product_images img = null;
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT TOP 1 * FROM Product_images WHERE product_id = ? AND status = '1' ORDER BY created_at ASC";
+
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(sql);
+            st.setInt(1, productId);
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                img = map(rs);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(c, st, rs);
+        }
+
+        return img;
     }
 }
