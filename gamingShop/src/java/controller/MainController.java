@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet(name = "MainController", urlPatterns = {"", "/MainController", "/mc"})
 public class MainController extends HttpServlet {
 
-    private static final String WELCOME = "login.jsp";
+    private static final String WELCOME = "index.jsp";
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

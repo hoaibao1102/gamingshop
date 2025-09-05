@@ -14,7 +14,7 @@ import dto.Accounts;
 public class UserController extends HttpServlet {
 
     private static final String LOGIN_PAGE = "login.jsp";
-    private static final String REDIRECT_AFTER_LOGIN = "welcome.jsp";
+    private static final String REDIRECT_AFTER_LOGIN = "index.jsp";
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -85,10 +85,8 @@ public class UserController extends HttpServlet {
         if (accountsDAO.login(userName, password)) {
             Accounts accounts = accountsDAO.getByUsername(userName);
             session.setAttribute("user", accounts);
-            System.out.println("dung");
             return REDIRECT_AFTER_LOGIN;
         } else {
-            System.out.println("sai");
             request.setAttribute("message", "UserName or Password incorrect!");
             return LOGIN_PAGE;
         }
@@ -99,6 +97,6 @@ public class UserController extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
-        return LOGIN_PAGE;
+        return REDIRECT_AFTER_LOGIN;
     }
 }
