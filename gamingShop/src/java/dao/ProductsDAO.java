@@ -19,6 +19,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
 
     private static final String GET_ALL = "SELECT * FROM dbo.Products";
     private static final String GET_BY_ID = "SELECT * FROM dbo.Products WHERE id = ?";
+    private static final String GET_BY_STATUS = "SELECT * FROM dbo.Products WHERE status = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Products WHERE name LIKE ?";
     private static final String CREATE
             = "INSERT INTO dbo.Products (name, sku, price, product_type, model_id, memory_id, guarantee_id, quantity, description_html, status) "
@@ -70,6 +71,28 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         }
         return null;
     }
+    
+     
+    public List<Products> getByStatus(String status) {
+        List<Products> list = new ArrayList<>();
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(GET_BY_STATUS);
+            st.setString(1, status);
+            rs = st.executeQuery();
+            while (rs.next()) {
+                list.add(map(rs));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(c, st, rs);
+        }
+        return list;
+    }
 
     @Override
     public List<Products> getByName(String name) {
@@ -105,6 +128,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
             rs = st.executeQuery();
             while (rs.next()) {
                 list.add(map(rs));
+                System.out.println(map(rs));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -139,7 +163,6 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         if (updatedTs != null) {
             p.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
-
         return p;
     }
 

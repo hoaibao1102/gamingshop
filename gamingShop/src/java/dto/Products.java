@@ -158,4 +158,10 @@ public class Products {
         this.updated_at = updated_at;
     }
 
+    @Override
+    public String toString() {
+        return "Products{" + "id=" + id + ", name=" + name + ", sku=" + sku + ", price=" + price + ", product_type=" + product_type + ", model_id=" + model_id + ", memory_id=" + memory_id + ", guarantee_id=" + guarantee_id + ", quantity=" + quantity + ", description_html=" + description_html + ", status=" + status + ", created_at=" + created_at + ", updated_at=" + updated_at + ", image=" + image + '}';
+    }
+
+    
 }

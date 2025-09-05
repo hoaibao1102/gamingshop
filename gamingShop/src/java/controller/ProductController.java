@@ -25,15 +25,21 @@ public class ProductController extends HttpServlet {
 
     private final ProductsDAO productsdao = new ProductsDAO();
     private final ProductImagesDAO productImagesDAO = new ProductImagesDAO();
+    
+        String INDEX_PAGE = "index.jsp";
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url = "welcome.jsp";
+        
+ 
+        
+        
+        String url = INDEX_PAGE;
         try {
             String action = request.getParameter("action");
 
-            if (action == null || action.isEmpty()) {
+            if ("prepareHome".equals(action) || action == null) {
                 url = handleViewAllProducts(request, response);
             } else if (action.equals("searchProduct")) {
                 url = handleProductSearching(request, response);
@@ -84,10 +90,10 @@ public class ProductController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
+    private String handleViewAllProducts( HttpServletRequest request, HttpServletResponse response) {
         List<Products> list = productsdao.getAll();
         request.setAttribute("list", list);
-        return "welcome.jsp";
+        return INDEX_PAGE;
     }
 
     private String handleProductSearching(HttpServletRequest request, HttpServletResponse response) {
@@ -127,5 +133,6 @@ public class ProductController extends HttpServlet {
 
         return "welcome.jsp";
     }
+
 
 }

@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "MainController", urlPatterns = {"", "/MainController", "/mc"})
+@WebServlet(name = "MainController", urlPatterns = {"/", "/MainController", "/mc", ""})
 public class MainController extends HttpServlet {
 
     private static final String WELCOME = "index.jsp";
@@ -16,13 +16,18 @@ public class MainController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = WELCOME;
+
         try {
             String action = request.getParameter("action");
+            if (action == null) {
+                action = "prepareHome";
+            }
             if (isUserAction(action)) {
                 url = "/UserController";
             } else if (isProductAction(action)) {
                 url = "/ProductController";
             }
+
         } catch (Exception e) {
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
@@ -75,7 +80,7 @@ public class MainController extends HttpServlet {
     }
 
     private boolean isProductAction(String action) {
-        return "searchProduct".equals(action);
+        return "searchProduct".equals(action) || "prepareHome".equals(action);
     }
 
 }
