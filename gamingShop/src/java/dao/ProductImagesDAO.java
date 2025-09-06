@@ -158,7 +158,6 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
         }
     }
 
-    
     public Product_images getCoverImgByProductId(int productId) {
         Product_images img = null;
         Connection c = null;
@@ -184,9 +183,9 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
 
         return img;
     }
-    
+
     public List<Product_images> getByProductId(int productId) {
-        List<Product_images> img = null;
+        List<Product_images> img = new ArrayList<>();
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -200,7 +199,7 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
             rs = st.executeQuery();
 
             while (rs.next()) {
-                img.add(map(rs)); 
+                img.add(map(rs));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -210,4 +209,5 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
 
         return img;
     }
+
 }
