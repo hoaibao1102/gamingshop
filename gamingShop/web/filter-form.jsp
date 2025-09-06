@@ -265,40 +265,44 @@
 </style>
 
 <script>
-    function toggleFilter() {
-        const content = document.getElementById('filterContent');
-        const toggleBtn = document.querySelector('.filter-toggle .toggle-text');
-
-        if (content.classList.contains('collapsed')) {
-            content.classList.remove('collapsed');
-            toggleBtn.textContent = 'Thu gọn';
-        } else {
-            content.classList.add('collapsed');
-            toggleBtn.textContent = 'Mở rộng';
-        }
-    }
-
-    function resetFilter() {
-        // Reset form
-        document.getElementById('name').value = '';
-        document.getElementById('productType').value = 'all';
-        document.getElementById('minPrice').value = '';
-        document.getElementById('maxPrice').value = '';
-        document.getElementById('sortBy').value = 'name_asc';
-
-        // Submit form to reset
-        const form = document.querySelector('.filter-form');
-        form.submit();
-    }
-
-// Initialize filter state
-    document.addEventListener('DOMContentLoaded', function () {
-        // Mặc định thu gọn form trên mobile
-        if (window.innerWidth <= 768) {
+    // Filter Functions
+        function toggleFilter() {
             const content = document.getElementById('filterContent');
             const toggleBtn = document.querySelector('.filter-toggle .toggle-text');
-            content.classList.add('collapsed');
-            toggleBtn.textContent = 'Mở rộng';
+            
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                toggleBtn.textContent = 'Thu gọn';
+            } else {
+                content.classList.add('collapsed');
+                toggleBtn.textContent = 'Mở rộng';
+            }
         }
-    });
+
+        function resetFilter() {
+            document.getElementById('name').value = '';
+            document.getElementById('productType').value = 'all';
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            document.getElementById('sortBy').value = 'name_asc';
+            
+            // Apply empty filter (show all products)
+            console.log('Filter reset - redirecting to show all products');
+        }
+
+        function applyFilter(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const filterData = {
+                name: formData.get('name'),
+                productType: formData.get('productType'),
+                minPrice: formData.get('minPrice'),
+                maxPrice: formData.get('maxPrice'),
+                sortBy: formData.get('sortBy')
+            };
+            
+            console.log('Applying filter:', filterData);
+            // Here you would redirect with filter parameters
+        }
 </script>

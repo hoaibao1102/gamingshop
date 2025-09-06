@@ -39,13 +39,10 @@ public class ProductController extends HttpServlet {
             String action = request.getParameter("action");
 
             if ("prepareHome".equals(action) || action == null) {
-                handleViewAllProducts_sidebar(request, response);
                 url = handleViewAllProducts(request, response);
             } else if (action.equals("searchProduct")) {
-                handleViewAllProducts_sidebar(request, response);
                 url = handleProductSearching(request, response);
             } else if (action.equals("filterProducts")) {
-                handleViewAllProducts_sidebar(request, response);
                 url = handleProductFiltering(request, response);
             }
         } catch (Exception e) {
@@ -94,11 +91,6 @@ public class ProductController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-    
-    private void handleViewAllProducts_sidebar( HttpServletRequest request, HttpServletResponse response) {
-        List<Products> list = productsdao.getAll();
-        request.setAttribute("list", list);
-    }
 
     private String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -123,8 +115,8 @@ public class ProductController extends HttpServlet {
             
             // Gán hình ảnh cho từng sản phẩm
             for (Products p : pageResult.getContent()) {
-                Product_images images =  productImagesDAO.getCoverImgByProductId(p.getId());
-                p.setCoverImg(images.getImage_url());
+                List<Product_images> images = productImagesDAO.getByProductId(p.getId());
+                p.setImage(images);
             }
 
             request.setAttribute("pageResult", pageResult);
@@ -165,10 +157,10 @@ public class ProductController extends HttpServlet {
                 checkError = "No products found with name: " + keyword;
             } else {
                 // Gán hình ảnh cho từng sản phẩm
-            for (Products p : pageResult.getContent()) {
-                Product_images images =  productImagesDAO.getCoverImgByProductId(p.getId());
-                p.setCoverImg(images.getImage_url());
-            }
+                for (Products p : pageResult.getContent()) {
+                    List<Product_images> images = productImagesDAO.getByProductId(p.getId());
+                    p.setImage(images);
+                }
             }
 
             request.setAttribute("pageResult", pageResult);
@@ -181,7 +173,7 @@ public class ProductController extends HttpServlet {
             request.setAttribute("checkError", "Error searching products: " + e.getMessage());
         }
 
-        return "index.jsp";
+        return "welcome.jsp";
     }
 
     /**
@@ -191,13 +183,12 @@ public class ProductController extends HttpServlet {
         try {
             ProductFilter filter = createFilterFromRequest(request);
             
-            
             Page<Products> pageResult = productsdao.getProductsWithFilter(filter);
             
             // Gán hình ảnh cho từng sản phẩm
             for (Products p : pageResult.getContent()) {
-                Product_images images =  productImagesDAO.getCoverImgByProductId(p.getId());
-                p.setCoverImg(images.getImage_url());
+                List<Product_images> images = productImagesDAO.getByProductId(p.getId());
+                p.setImage(images);
             }
 
             request.setAttribute("pageResult", pageResult);
