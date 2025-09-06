@@ -687,6 +687,46 @@
 
                             <!-- Pagination -->
                             <jsp:include page="pagination.jsp"/>
+                            <!-- Pagination Section -->
+        <div class="pagination-section">
+            <div class="pagination-info">
+                <span class="results-count">
+                    Hiển thị 1 - 12 của 156 sản phẩm
+                </span>
+            </div>
+
+            <div class="pagination-nav">
+                <!-- Previous Button -->
+                <a href="javascript:void(0)" onclick="goToPage(2)" class="page-btn prev-btn">
+                    <span>‹</span> Trước
+                </a>
+
+                <!-- Page Numbers -->
+                <div class="page-numbers">
+                    <a href="javascript:void(0)" onclick="goToPage(1)" class="page-btn">1</a>
+                    <a href="javascript:void(0)" onclick="goToPage(2)" class="page-btn">2</a>
+                    <span class="page-btn current">3</span>
+                    <a href="javascript:void(0)" onclick="goToPage(4)" class="page-btn">4</a>
+                    <a href="javascript:void(0)" onclick="goToPage(5)" class="page-btn">5</a>
+                    <span class="page-dots">...</span>
+                    <a href="javascript:void(0)" onclick="goToPage(13)" class="page-btn">13</a>
+                </div>
+
+                <!-- Next Button -->
+                <a href="javascript:void(0)" onclick="goToPage(4)" class="page-btn next-btn">
+                    Sau <span>›</span>
+                </a>
+            </div>
+
+            <!-- Jump to Page -->
+            <div class="goto-page">
+                <span>Đến trang:</span>
+                <input type="number" id="gotoPageInput" min="1" max="13" 
+                       placeholder="3" onkeypress="handleGotoPageEnter(event)">
+                <button onclick="gotoPage()" class="goto-btn">Đi</button>
+            </div>
+        </div>
+    </div>
                         </c:when>
                         <c:otherwise>
                             <!-- Empty State -->
@@ -722,10 +762,7 @@
                         effect: 'slide'
                     });
 
-                    // Reset filter function for empty state
-                    function resetFilter() {
-                        window.location.href = 'ProductController?action=prepareHome';
-                    }
+                    
         </script>
     </body>
 </html>

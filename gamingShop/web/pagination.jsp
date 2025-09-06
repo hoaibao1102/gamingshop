@@ -276,46 +276,83 @@
 </style>
 
 <script>
-    function goToPage(pageNumber) {
-        // Tạo URL với tham số page
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('page', pageNumber);
-
-        // Giữ nguyên action hiện tại
-        if (!urlParams.has('action')) {
-            urlParams.set('action', 'filterProducts');
-        }
-
-        // Redirect to new URL
-        window.location.href = '?' + urlParams.toString();
-    }
-
-    function gotoPage() {
-        const pageInput = document.getElementById('gotoPageInput');
-        const pageNumber = parseInt(pageInput.value);
-        const maxPage = ${pageResult.totalPages};
-
-        if (pageNumber && pageNumber >= 1 && pageNumber <= maxPage) {
-            goToPage(pageNumber);
-        } else {
-            alert('Vui lòng nhập số trang từ 1 đến ' + maxPage);
-            pageInput.value = '';
-        }
-    }
-
-    function handleGotoPageEnter(event) {
-        if (event.key === 'Enter') {
-            gotoPage();
-        }
-    }
-
-// Auto focus goto page input when clicked
-    document.addEventListener('DOMContentLoaded', function () {
-        const gotoInput = document.getElementById('gotoPageInput');
-        if (gotoInput) {
-            gotoInput.addEventListener('focus', function () {
-                this.select();
+    // Pagination Functions
+        function goToPage(pageNumber) {
+            console.log('Going to page:', pageNumber);
+            
+            // Update current page display
+            const currentBtn = document.querySelector('.page-btn.current');
+            if (currentBtn) {
+                currentBtn.classList.remove('current');
+                currentBtn.innerHTML = currentBtn.textContent;
+                currentBtn.href = 'javascript:void(0)';
+                currentBtn.onclick = () => goToPage(parseInt(currentBtn.textContent));
+            }
+            
+            // Find and update new current page
+            const pageButtons = document.querySelectorAll('.page-btn');
+            pageButtons.forEach(btn => {
+                if (btn.textContent.trim() === pageNumber.toString()) {
+                    btn.classList.add('current');
+                    btn.removeAttribute('href');
+                    btn.onclick = null;
+                }
             });
+            
+            // Update goto input
+            document.getElementById('gotoPageInput').placeholder = pageNumber.toString();
+            
+            // Here you would make the actual page request
         }
-    });
+
+        function gotoPage() {
+            const pageInput = document.getElementById('gotoPageInput');
+            const pageNumber = parseInt(pageInput.value);
+            const maxPage = 13; // This would come from your backend
+
+            if (pageNumber && pageNumber >= 1 && pageNumber <= maxPage) {
+                goToPage(pageNumber);
+                pageInput.value = '';
+            } else {
+                alert('Vui lòng nhập số trang từ 1 đến ' + maxPage);
+                pageInput.value = '';
+            }
+        }
+
+        function handleGotoPageEnter(event) {
+            if (event.key === 'Enter') {
+                gotoPage();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto focus and select goto page input
+            const gotoInput = document.getElementById('gotoPageInput');
+            if (gotoInput) {
+                gotoInput.addEventListener('focus', function() {
+                    this.select();
+                });
+            }
+
+            // Format number inputs to remove decimals
+            const priceInputs = document.querySelectorAll('#minPrice, #maxPrice');
+            priceInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    // Remove any decimal part
+                    let value = this.value;
+                    if (value.includes('.')) {
+                        this.value = Math.floor(parseFloat(value)).toString();
+                    }
+                });
+            });
+
+            // Default collapsed on mobile
+            if (window.innerWidth <= 768) {
+                const content = document.getElementById('filterContent');
+                const toggleBtn = document.querySelector('.filter-toggle .toggle-text');
+                content.classList.add('collapsed');
+                toggleBtn.textContent = 'Mở rộng';
+            }
+        });
 </script>
