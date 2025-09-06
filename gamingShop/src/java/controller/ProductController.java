@@ -50,10 +50,13 @@ public class ProductController extends HttpServlet {
             String action = request.getParameter("action");
 
             if ("prepareHome".equals(action) || action == null) {
+                handleViewAllProducts_sidebar(request, response);
                 url = handleViewAllProducts(request, response);
             } else if (action.equals("searchProduct")) {
+                handleViewAllProducts_sidebar(request, response);
                 url = handleProductSearching(request, response);
             } else if (action.equals("filterProducts")) {
+                handleViewAllProducts_sidebar(request, response);
                 url = handleProductFiltering(request, response);
             } else if (action.equals("showAddProductForm")) {
                 url = handleShowAddProductForm(request, response);
@@ -108,6 +111,11 @@ public class ProductController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+    
+    private void handleViewAllProducts_sidebar( HttpServletRequest request, HttpServletResponse response) {
+        List<Products> list = productsdao.getAll();
+        request.setAttribute("list", list);
+    }
 
     private String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
         try {
