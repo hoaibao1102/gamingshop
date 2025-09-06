@@ -41,10 +41,10 @@
                             <label>Khoảng giá (VND):</label>
                             <div class="price-inputs">
                                 <input type="number" id="minPrice" name="minPrice" 
-                                       placeholder="Giá từ..." min="0" step="1000">
+                                        placeholder="${empty min ? 'Giá từ...' : min}" min="0" step="1000">
                                 <span class="price-separator">→</span>
                                 <input type="number" id="maxPrice" name="maxPrice" 
-                                       placeholder="Giá đến..." min="0" step="1000">
+                                       placeholder="${empty min ? 'Giá đến...' : min}" min="0" step="1000">
                             </div>
                         </div>
 
