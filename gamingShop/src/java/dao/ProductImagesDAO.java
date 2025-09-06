@@ -158,7 +158,8 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
         }
     }
 
-    public Product_images getByProductId(int productId) {
+    
+    public Product_images getCoverImgByProductId(int productId) {
         Product_images img = null;
         Connection c = null;
         PreparedStatement st = null;
@@ -174,6 +175,32 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
 
             if (rs.next()) {
                 img = map(rs);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(c, st, rs);
+        }
+
+        return img;
+    }
+    
+    public List<Product_images> getByProductId(int productId) {
+        List<Product_images> img = null;
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT * FROM Product_images WHERE product_id = ? AND status = '1' ORDER BY created_at ASC";
+
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(sql);
+            st.setInt(1, productId);
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                img.add(map(rs)); 
             }
         } catch (Exception ex) {
             ex.printStackTrace();

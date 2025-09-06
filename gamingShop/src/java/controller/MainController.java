@@ -80,7 +80,7 @@ public class MainController extends HttpServlet {
     }
 
     private boolean isProductAction(String action) {
-        return "searchProduct".equals(action) || "prepareHome".equals(action);
+        return "searchProduct".equals(action) || "prepareHome".equals(action) || "filterProducts".equals(action);
     }
 
 }

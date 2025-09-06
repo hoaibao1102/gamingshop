@@ -5,6 +5,7 @@
 package dto;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -25,13 +26,15 @@ public class Products {
     private String status;
     private Date created_at;
     private Date updated_at;
-    private Product_images image;
+    private List<Product_images> image;
+    
+    private transient String coverImg;
 
-    public Product_images getImage() {
+    public List<Product_images> getImage() {
         return image;
     }
 
-    public void setImage(Product_images image) {
+    public void setImage(List<Product_images> image) {
         this.image = image;
     }
 
@@ -60,6 +63,14 @@ public class Products {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getCoverImg() {
+        return coverImg;
+    }
+
+    public void setCoverImg(String coverImg) {
+        this.coverImg = coverImg;
     }
 
     public String getName() {
