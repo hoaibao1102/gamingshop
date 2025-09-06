@@ -9,7 +9,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>JSP Page</title>
+        <title>Gaming Shop - Trang chủ</title>
 
         <!-- Swiper CSS -->
         <link
@@ -272,14 +272,132 @@
                 transform: scale(1.2);
             }
 
-            /* ====== Product List - Modern Cards ====== */
+            /* ====== Fixed Product Grid Structure ====== */
             .featured-list {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                grid-template-columns: repeat(4, 1fr);
                 gap: 24px;
                 list-style: none;
                 padding: 0;
                 margin: 24px 0;
+            }
+
+            .featured-list .item {
+                background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: var(--card-shadow);
+                transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+                border: 1px solid rgba(255,255,255,0.8);
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+
+            .product-form {
+                margin: 0;
+                height: 100%;
+                width: 100%;
+            }
+
+            .product-button {
+                background: none;
+                border: none;
+                padding: 0;
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                text-align: left;
+                transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            }
+
+            .product-content {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                width: 100%;
+            }
+
+            .product-button:hover {
+                transform: translateY(-8px) scale(1.02);
+            }
+
+            .item:hover {
+                box-shadow: var(--hover-shadow);
+            }
+
+            .item::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: var(--primary-gradient);
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                z-index: 1;
+                pointer-events: none;
+            }
+
+            .item:hover::before {
+                opacity: 0.05;
+            }
+
+            .thumb {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+                filter: brightness(1.05);
+            }
+
+            .product-button:hover .thumb {
+                transform: scale(1.1);
+            }
+
+            .meta {
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                flex-grow: 1;
+                position: relative;
+                z-index: 2;
+                color: var(--text-dark);
+            }
+
+            .product-name {
+                background: var(--primary-gradient);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                font-weight: 600;
+                font-size: 16px;
+                line-height: 1.4;
+                margin-bottom: 8px;
+            }
+
+            .product-price {
+                text-align: center;
+                font-size: 16px;
+                font-weight: 600;
+                color: #e11d48;
+                margin-top: auto;
+            }
+
+            /* Button focus states for accessibility */
+            .product-button:focus {
+                outline: 2px solid var(--primary-gradient);
+                outline-offset: 2px;
+            }
+
+            .product-button:focus:not(:focus-visible) {
+                outline: none;
             }
             .featured-list form {
                 margin: 0;
@@ -343,6 +461,9 @@
                 -webkit-text-fill-color: transparent;
                 margin: -10px 0px;
                 background-clip: text;
+                font-weight: 600;
+                font-size: 16px;
+                line-height: 1.4;
             }
 
             .meta .cell:last-child {
@@ -353,19 +474,42 @@
             }
 
             /* Empty state styling */
-            .container p {
+            .empty-state {
                 text-align: center;
-                font-size: 18px;
+                padding: 60px 20px;
                 color: var(--text-dark);
+            }
+
+            .empty-state h3 {
                 background: var(--primary-gradient);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
-                font-weight: 600;
-                padding: 40px;
+                font-size: 24px;
+                margin-bottom: 16px;
+            }
+
+            .empty-state p {
+                font-size: 16px;
+                opacity: 0.7;
+                margin-bottom: 24px;
             }
 
             /* ====== Responsive Design ====== */
+            @media (max-width: 1200px) {
+                .featured-list {
+                    grid-template-columns: repeat(3, 1fr);
+                    gap: 20px;
+                }
+            }
+
+            @media (max-width: 968px) {
+                .featured-list {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 18px;
+                }
+            }
+
             @media (max-width: 768px) {
                 .wrapper {
                     padding: 10px;
@@ -396,11 +540,18 @@
                     --swiper-navigation-size: 16px;
                 }
                 .featured-list {
-                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    grid-template-columns: repeat(2, 1fr);
                     gap: 16px;
                 }
                 .container {
                     padding: 16px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .featured-list {
+                    grid-template-columns: 1fr;
+                    gap: 16px;
                 }
             }
 
@@ -491,58 +642,90 @@
                     </div>
                 </div>
 
+                <!-- ====== Filter Form (sau banner) ====== -->
+                <jsp:include page="filter-form.jsp"/>
+
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
-                    <c:choose>
-                        <c:when test="${not empty list}">
-                            <ul class="featured-list">
-                                <c:forEach var="i" items="${list}">
-                                    <c:if test="${i.status ne 'inactive'}">
-                                        <form action="MainController" method="get">
-                                        <input type="hidden" name="id" value="${i.id}">
-                                        <li class="item">
-                                            <img class="thumb" src="#" >
-                                            <a class="meta" href="#">
-                                                <span class="cell">${i.name}</span>
-                                                <span class="cell"><fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" />
-                                                        VND</span>
-                                            </a>
-                                        </li>
+                    <c:set var="products" value="${not empty pageResult ? pageResult.content : list}" />
 
-                                    </form>
+                    <c:choose>
+                        <c:when test="${not empty products}">
+                            <!-- Product Grid -->
+                            <ul class="featured-list">
+                                <c:forEach var="product" items="${products}">
+                                    <c:if test="${product.status ne 'inactive'}">
+                                        <li class="item">
+                                            <form action="MainController" method="get" class="product-form">
+                                                <input type="hidden" name="id" value="${product.id}">
+                                                <input type="hidden" name="action" value="getProduct">
+
+                                                <button type="submit" class="product-button">
+                                                    <div class="product-content">
+                                                        <c:choose>
+                                                            <c:when test="${not empty product.coverImg}">
+                                                                <img class="thumb" src="${product.coverImg}" alt="${product.name}">
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <img class="thumb" src="/assets/images/no-image.jpg" alt="No image available">
+                                                            </c:otherwise>
+                                                        </c:choose>
+
+                                                        <div class="meta">
+                                                            <span class="product-name">${product.name}</span>
+                                                            <span class="product-price">
+                                                                <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            </form>
+                                        </li>
                                     </c:if>
-                                    
                                 </c:forEach>
                             </ul>
+
+                            <!-- Pagination -->
+                            <jsp:include page="pagination.jsp"/>
                         </c:when>
                         <c:otherwise>
-                            <p>Hiện danh sách đang trống!</p>
+                            <!-- Empty State -->
+                            <div class="empty-state">
+                                <h3>Không tìm thấy sản phẩm</h3>
+                                <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí tìm kiếm của bạn.</p>
+                                <button onclick="resetFilter()" class="btn-filter">
+                                    Xem tất cả sản phẩm
+                                </button>
+                            </div>
                         </c:otherwise>
                     </c:choose>
-
                 </div>
             </div>
         </div>
 
         <jsp:include page="footer.jsp"/>
 
-
         <!-- Swiper JS -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
         <script>
-            const heroSwiper = new Swiper('.hero-slider', {
-                loop: true,
-                autoplay: {delay: 3500, disableOnInteraction: false},
-                speed: 700,
-                spaceBetween: 16,
-                pagination: {el: '.hero-slider .swiper-pagination', clickable: true},
-                navigation: {
-                    nextEl: '.hero-slider .swiper-button-next',
-                    prevEl: '.hero-slider .swiper-button-prev'
-                },
-                grabCursor: true,
-                effect: 'slide' // có thể đổi 'fade' nếu bạn thích
-            });
+                    const heroSwiper = new Swiper('.hero-slider', {
+                        loop: true,
+                        autoplay: {delay: 3500, disableOnInteraction: false},
+                        speed: 700,
+                        spaceBetween: 16,
+                        pagination: {el: '.hero-slider .swiper-pagination', clickable: true},
+                        navigation: {
+                            nextEl: '.hero-slider .swiper-button-next',
+                            prevEl: '.hero-slider .swiper-button-prev'
+                        },
+                        grabCursor: true,
+                        effect: 'slide'
+                    });
+
+                    // Reset filter function for empty state
+                    function resetFilter() {
+                        window.location.href = 'ProductController?action=prepareHome';
+                    }
         </script>
     </body>
 </html>
