@@ -20,7 +20,7 @@ GO
 CREATE TABLE dbo.Accounts (
   id            INT IDENTITY(1,1) PRIMARY KEY,
   username      NVARCHAR(50)  NOT NULL UNIQUE,
-  password_hash VARBINARY(32) NOT NULL,             -- SHA2_256 = 32 bytes
+  password_hash NVARCHAR(255)) NOT NULL,             -- SHA2_256 = 32 bytes
   email         NVARCHAR(100) NOT NULL UNIQUE,
   full_name     NVARCHAR(100) NULL,
   phone         NVARCHAR(20)  NULL,
@@ -363,8 +363,6 @@ BEGIN
 END;
 GO
 
-ALTER TABLE dbo.Accounts
-ALTER COLUMN password_hash NVARCHAR(255) NOT NULL;
 /* ============================================================
    DỮ LIỆU MẪU THẬT
    ============================================================ */

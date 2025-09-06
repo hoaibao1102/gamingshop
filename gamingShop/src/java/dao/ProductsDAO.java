@@ -200,8 +200,8 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         return new Page<>(products, filter.getPage(), filter.getPageSize(), totalCount);
     }
 
-    private void addFilterConditions(StringBuilder queryBuilder, StringBuilder countQueryBuilder, 
-                                   ProductFilter filter, List<Object> params) {
+    private void addFilterConditions(StringBuilder queryBuilder, StringBuilder countQueryBuilder,
+            ProductFilter filter, List<Object> params) {
         String conditions = "";
 
         // Lọc theo tên
@@ -318,4 +318,41 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         } catch (Exception ignore) {
         }
     }
+
+    public int createNewProduct(Products e) {
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        int generatedId = -1;
+        try {
+            c = DBUtils.getConnection();
+            // Thêm Statement.RETURN_GENERATED_KEYS để lấy id sinh ra
+            st = c.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
+            st.setString(1, e.getName());
+            st.setString(2, e.getSku());
+            st.setDouble(3, e.getPrice());
+            st.setString(4, e.getProduct_type());
+            st.setInt(5, e.getModel_id());
+            st.setInt(6, e.getMemory_id());
+            st.setInt(7, e.getGuarantee_id());
+            st.setInt(8, e.getQuantity());
+            st.setString(9, e.getDescription_html());
+            st.setString(10, e.getStatus());
+
+            int rows = st.executeUpdate();
+            if (rows > 0) {
+                rs = st.getGeneratedKeys();
+                if (rs.next()) {
+                    generatedId = rs.getInt(1);
+                    e.setId(generatedId); // gán lại vào object
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(c, st, rs);
+        }
+        return generatedId; // nếu lỗi trả về -1
+    }
+
 }
