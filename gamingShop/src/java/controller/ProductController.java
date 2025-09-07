@@ -58,12 +58,12 @@ public class ProductController extends HttpServlet {
             } else if (action.equals("filterProducts")) {
                 handleViewAllProducts_sidebar(request, response);
                 url = handleProductFiltering(request, response);
-            } else if (action.equals("showAddProductForm")) {
-                url = handleShowAddProductForm(request, response);
-            } else if (action.equals("addProduct")) {
-                url = handleProductAdding(request, response);
-            } else if (action.equals("editProduct")) {
-                url = handleProductEditing(request, response);
+//            } else if (action.equals("showAddProductForm")) {
+//                url = handleShowAddProductForm(request, response);
+//            } else if (action.equals("addProduct")) {
+//                url = handleProductAdding(request, response);
+//            } else if (action.equals("editProduct")) {
+//                url = handleProductEditing(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -387,7 +387,5 @@ public class ProductController extends HttpServlet {
         }
     }
 
-    private String handleProductEditing(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    
 }
