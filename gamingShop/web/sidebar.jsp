@@ -350,8 +350,12 @@
 
             <!-- Menu -->
             <nav class="sb-nav">
-                <a href="index.jsp">🏠 Trang chủ</a>
+                <a href="">🏠 Trang chủ</a>
                 <a href="#">📰 Bài đăng gần đây</a>
+                <c:if test="${not empty user}">
+                    <a href="">📰 Quan li san pham</a>
+                </c:if>
+
             </nav>
 
             <hr class="divider">

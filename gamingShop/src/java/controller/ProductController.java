@@ -112,12 +112,12 @@ public class ProductController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
     
-    private void handleViewAllProducts_sidebar( HttpServletRequest request, HttpServletResponse response) {
+    public  void handleViewAllProducts_sidebar( HttpServletRequest request, HttpServletResponse response) {
         List<Products> list = productsdao.getAll();
         request.setAttribute("list", list);
     }
 
-    private String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
+    public String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
         try {
             // Tạo filter mặc định
             ProductFilter filter = new ProductFilter();

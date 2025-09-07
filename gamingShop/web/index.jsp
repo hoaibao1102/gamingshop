@@ -684,11 +684,9 @@
                                     </c:if>
                                 </c:forEach>
                             </ul>
-
                             <!-- Pagination -->
                             <jsp:include page="pagination.jsp"/>
                             <!-- Pagination Section -->
-       
                         </c:when>
                         <c:otherwise>
                             <!-- Empty State -->

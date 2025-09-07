@@ -196,10 +196,10 @@
 
                 /* Thanh header full-width, canh giữa/nav ở giữa, actions dính mép phải */
                 .desktopbar{
-                    display:block;             /* không dùng grid nữa */
-                    position:relative;         /* để đặt nav/actions absolute */
+                    display:block;
+                    position:relative;
                     height:64px;
-                    width:100%;                /* full chiều ngang */
+                    width:100%;
                     padding:10px 20px;
                     border-bottom:1px solid var(--ring);
                     background:var(--bg);
@@ -210,7 +210,7 @@
                     position:absolute;
                     left:50%;
                     top:50%;
-                    transform:translate(-50%, -50%); /* tâm đúng giữa header */
+                    transform:translate(-50%, -50%);
                 }
                 .nav ul{
                     display:flex;
@@ -244,10 +244,53 @@
                     background:var(--primary);
                 }
 
+                /* === DROPDOWN CHO "MÁY CHƠI GAME" === */
+                .nav li{ position: relative; }
+                .nav .dropdown{
+                    position:absolute;
+                    top:100%;
+                    left:0;
+                    min-width:180px;
+                    background:#fff;
+                    border:1px solid var(--ring);
+                    border-radius:10px;
+                    box-shadow: var(--shadow);
+                    padding:8px;
+                    list-style:none;
+                    margin:8px 0 0 0;
+                    opacity:0;
+                    visibility:hidden;
+                    transform: translateY(6px);
+                    transition: .16s ease;
+                    z-index: 80;
+                }
+                .nav li:hover > .dropdown{
+                    opacity:1;
+                    visibility:visible;
+                    transform: translateY(0);
+                }
+                .nav .dropdown a{
+                    display:block;
+                    padding:10px 12px;
+                    border-radius:8px;
+                    font-weight:600;
+                    white-space:nowrap;
+                }
+                .nav .dropdown a:hover{
+                    background:#f8fafc;
+                    color:var(--primary);
+                }
+                /* Mũi tên nhỏ chỉ dropdown (tuỳ chọn) */
+                .nav li.has-dd > a::after{
+                    content:"▾";
+                    margin-left:6px;
+                    font-size:12px;
+                }
+
                 /* ACTIONS: dính sát mép phải màn hình */
                 .actions{
                     position:absolute;
-                    right:20px;                /* sát mép phải */
+                    right:20px;
                     top:50%;
                     transform:translateY(-50%);
                     display:flex;
@@ -352,17 +395,12 @@
                     </button>
                     <input type="search" placeholder="Tìm sản phẩm...">
                 </form>
-
-
             </div>
 
             <!-- ====== MENU DRAWER (MOBILE) ====== -->
             <nav class="drawer" aria-label="Menu di động">
                 <div style="font-weight:800; margin-bottom:10px;">Danh mục</div>
                 <ul class="menu">
-
-
-
                     <li><a href="#">Máy chơi game</a></li>
                     <li><a href="#">Phụ kiện</a></li>
                     <li><a href="#">Thẻ game</a></li>
@@ -411,13 +449,18 @@
 
             <!-- ====== DESKTOP BAR ====== -->
             <div class="desktopbar">
-                <!-- Brand -->
-
-
                 <!-- Nav -->
                 <nav class="nav" aria-label="Chính">
                     <ul>
-                        <li><a href="#">Máy chơi game</a></li>
+                        <!-- Mục có dropdown -->
+                        <li class="has-dd">
+                            <a href="#">Máy chơi game</a>
+                            <ul class="dropdown" aria-label="Danh mục Máy chơi game">
+                                <li><a href="products.jsp?condition=new">New</a></li>
+                                <li><a href="products.jsp?condition=likenew">Like New</a></li>
+                            </ul>
+                        </li>
+
                         <li><a href="#">Phụ kiện</a></li>
                         <li><a href="#">Thẻ game</a></li>
                         <li><a href="#">Dịch vụ</a></li>
@@ -443,9 +486,9 @@
                         <button class="btn" type="submit" title="Đăng xuất">
                             <!-- icon logout -->
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                            <path d="M10 17l5-5-5-5"/>
-                            <path d="M15 12H3"/>
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                                <path d="M10 17l5-5-5-5"/>
+                                <path d="M15 12H3"/>
                             </svg>
                             Đăng xuất
                         </button>
@@ -457,8 +500,8 @@
                     <a class="btn primary" href="login.jsp" title="Đăng nhập">
                         <!-- icon user -->
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
                         </svg>
                         Đăng nhập
                     </a>
