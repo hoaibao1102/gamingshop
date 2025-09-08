@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="dto.Products, java.util.List, dto.Product_images" %>
+<!DOCTYPE html>
 <html>
     <head>
         <title>Product Management</title>
@@ -83,7 +84,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">Specification (HTML)</label>
-                    <textarea name="spec_html" class="form-control" rows="5"><%= (product != null) ? product.getDescription_html() : "" %></textarea>
+                    <textarea id="editor" name="spec_html" class="form-control" rows="5"><%= (product != null) ? product.getDescription_html() : "" %></textarea>
                 </div>
 
                 <div class="mb-3">
@@ -131,5 +132,57 @@
                 <a href="welcome.jsp" class="btn btn-secondary">Back to List</a>
             </form>
         </div>
+        <!-- TinyMCE -->
+        <script src="https://cdn.tiny.cloud/1/9q1kybnxbgq2f5l3c8palpboawfgsnqsdd53b7gk5ny3dh19/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+        <script>
+            tinymce.init({
+                selector: '#editor',
+                height: 400,
+                plugins: 'image link lists table code media',
+                toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | ' +
+                        'bullist numlist | link image media | table | code',
+                menubar: 'file edit view insert format tools table help',
+
+                automatic_uploads: true,
+
+                // Cho phép nhiều loại file picker
+                file_picker_types: 'file image media',
+
+                // Callback xử lý upload
+                file_picker_callback: function (callback, value, meta) {
+                    let input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+
+                    if (meta.filetype === 'image') {
+                        input.setAttribute('accept', 'image/*');
+                    } else if (meta.filetype === 'media') {
+                        input.setAttribute('accept', 'video/mp4');
+                    }
+
+                    input.onchange = function () {
+                        let file = this.files[0];
+                        let formData = new FormData();
+                        formData.append("file", file);
+
+                        // Upload ảnh hoặc video
+                        let uploadUrl = '<%= request.getContextPath() %>/UploadImageController';
+                        if (meta.filetype === 'media') {
+                            uploadUrl = '<%= request.getContextPath() %>/UploadVideoController';
+                        }
+
+                        fetch(uploadUrl, {
+                            method: 'POST',
+                            body: formData
+                        })
+                                .then(response => response.json())
+                                .then(json => {
+                                    callback(json.location);
+                                });
+                    };
+
+                    input.click();
+                }
+            });
+        </script>
     </body>
 </html>
