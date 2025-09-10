@@ -363,6 +363,30 @@ BEGIN
 END;
 GO
 
+ALTER TABLE [GamingShop].[dbo].[Services]
+	ADD status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Services_Status CHECK (status IN (N'active', N'inactive'));
+
+	ALTER TABLE [GamingShop].[dbo].[Product_accessories]
+	ADD status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Product_accessories_Status CHECK (status IN (N'active', N'inactive'));
+
+	ALTER TABLE [GamingShop].[dbo].[Models]
+	ADD status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Models_Status CHECK (status IN (N'active', N'inactive'));
+
+	ALTER TABLE [GamingShop].[dbo].[Memories]
+	ADD status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Memories_Status CHECK (status IN (N'active', N'inactive'));
+
+	ALTER TABLE [GamingShop].[dbo].[Guarantees]
+	ADD status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Guarantees_Status CHECK (status IN (N'active', N'inactive'));
+
+	ALTER TABLE [GamingShop].[dbo].[Accessories]
+	ADD status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Accessories_Status CHECK (status IN (N'active', N'inactive'));
+
 /* ============================================================
    DỮ LIỆU MẪU THẬT
    ============================================================ */
