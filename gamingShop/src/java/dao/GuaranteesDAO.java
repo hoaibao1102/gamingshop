@@ -21,7 +21,7 @@ public class GuaranteesDAO implements IDAO<Guarantees, Integer> {
     private static final String GET_BY_ID = "SELECT * FROM dbo.Guarantees WHERE id = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Guarantees WHERE guarantee_type LIKE ?";
     private static final String CREATE
-            = "INSERT INTO dbo.Guarantees (guarantee_type, description_html) VALUES (?, ?)";
+            = "INSERT INTO dbo.Guarantees (guarantee_type, description_html, status) VALUES (?, ?, ?)";
 
     @Override
     public boolean create(Guarantees e) {
@@ -32,6 +32,7 @@ public class GuaranteesDAO implements IDAO<Guarantees, Integer> {
             st = c.prepareStatement(CREATE);
             st.setString(1, e.getGuarantee_type());
             st.setString(2, e.getDescription_html());
+            st.setString(3, e.getStatus());
             return st.executeUpdate() > 0; // Cách B: không lấy id sinh tự động
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -123,6 +124,7 @@ public class GuaranteesDAO implements IDAO<Guarantees, Integer> {
             g.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
 
+        g.setStatus(rs.getString("status"));
         return g;
     }
 

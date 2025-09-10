@@ -1,3 +1,33 @@
+# ==========================================
+# Java Web + NetBeans + Ant/Maven Git Ignore
+# ==========================================
+
+# === NetBeans generated files ===
 /gamingShop/nbproject/private/
+/gamingShop/nbproject/Makefile-*.mk
+/gamingShop/nbproject/Package-*.bash
+/gamingShop/nbproject/project.properties
+
+# === Build artifacts ===
 /gamingShop/build/
 /gamingShop/dist/
+/gamingShop/nbbuild/
+/gamingShop/nbdist/
+
+# === IDE-specific ===
+*.iml
+.idea/
+*.ipr
+*.iws
+
+# === Maven files ===
+/gamingShop/target/
+/gamingShop/pom.xml.tag
+/gamingShop/pom.xml.releaseBackup
+/gamingShop/pom.xml.versionsBackup
+/gamingShop/pom.xml.next
+/gamingShop/release.properties
+/gamingShop/dependency-reduced-pom.xml
+/gamingShop/buildNumber.properties
+/gamingShop/.mvn/timing.properties
+/gamingShop/.mvn/wrapper/maven-wrapper.jar
