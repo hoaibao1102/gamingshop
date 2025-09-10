@@ -21,7 +21,7 @@ public class ProductAccessoriesDAO implements IDAO<Product_accessories, Integer>
     private static final String GET_BY_PRODUCT_ID = "SELECT * FROM dbo.Product_accessories WHERE product_id = ?";
     private static final String GET_BY_ACCESSORY_ID = "SELECT * FROM dbo.Product_accessories WHERE accessory_id = ?";
     private static final String CREATE
-            = "INSERT INTO dbo.Product_accessories (product_id, accessory_id, quantity) VALUES (?, ?, ?)";
+            = "INSERT INTO dbo.Product_accessories (product_id, accessory_id, quantity, status) VALUES (?, ?, ?, ?)";
 
     @Override
     public boolean create(Product_accessories e) {
@@ -33,6 +33,7 @@ public class ProductAccessoriesDAO implements IDAO<Product_accessories, Integer>
             st.setInt(1, e.getProduct_id());
             st.setInt(2, e.getAccessory_id());
             st.setInt(3, e.getQuantity());
+             st.setInt(4, e.getQuantity());
             return st.executeUpdate() > 0;
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -119,6 +120,7 @@ public class ProductAccessoriesDAO implements IDAO<Product_accessories, Integer>
         pa.setProduct_id(rs.getInt("product_id"));
         pa.setAccessory_id(rs.getInt("accessory_id"));
         pa.setQuantity(rs.getInt("quantity"));
+        pa.setStatus(rs.getString("status"));
         return pa;
     }
 

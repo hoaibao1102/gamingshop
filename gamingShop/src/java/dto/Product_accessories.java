@@ -12,14 +12,16 @@ public class Product_accessories {
     private int product_id;
     private int accessory_id;
     private int quantity;
+    private String status;
 
     public Product_accessories() {
     }
 
-    public Product_accessories(int product_id, int accessory_id, int quantity) {
+    public Product_accessories(int product_id, int accessory_id, int quantity, String status) {
         this.product_id = product_id;
         this.accessory_id = accessory_id;
         this.quantity = quantity;
+        this.status = status;
     }
 
     public int getProduct_id() {
@@ -45,6 +47,16 @@ public class Product_accessories {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    
     
     
 }

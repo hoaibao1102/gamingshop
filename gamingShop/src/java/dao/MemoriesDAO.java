@@ -21,7 +21,7 @@ public class MemoriesDAO implements IDAO<Memories, Integer> {
     private static final String GET_BY_ID = "SELECT * FROM dbo.Memories WHERE id = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Memories WHERE memory_type LIKE ?";
     private static final String CREATE
-            = "INSERT INTO dbo.Memories (memory_type, description_html, quantity, price, image_url) VALUES (?, ?, ?, ?, ?)";
+            = "INSERT INTO dbo.Memories (memory_type, description_html, quantity, price, image_url, status) VALUES (?, ?, ?, ?, ?, ?)";
 
     @Override
     public boolean create(Memories e) {
@@ -35,6 +35,7 @@ public class MemoriesDAO implements IDAO<Memories, Integer> {
             st.setDouble(3, e.getQuantity());
             st.setDouble(4, e.getPrice());
             st.setString(5, e.getImage_url());
+            st.setString(6, e.getStatus());
             return st.executeUpdate() > 0;
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -128,6 +129,8 @@ public class MemoriesDAO implements IDAO<Memories, Integer> {
         if (updatedTs != null) {
             m.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
+        
+        m.setStatus(rs.getString("status"));
 
         return m;
     }

@@ -18,17 +18,19 @@ public class Models {
     private String image_url;
     private Date created_at;
     private Date updated_at;
+    private String status;
 
     public Models() {
     }
 
-    public Models(int id, String model_type, String description_html, String image_url, Date created_at, Date updated_at) {
+    public Models(int id, String model_type, String description_html, String image_url, Date created_at, Date updated_at, String status) {
         this.id = id;
         this.model_type = model_type;
         this.description_html = description_html;
         this.image_url = image_url;
         this.created_at = created_at;
         this.updated_at = updated_at;
+        this.status = status;
     }
 
     public int getId() {
@@ -78,5 +80,15 @@ public class Models {
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    
 
 }

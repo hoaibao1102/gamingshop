@@ -154,7 +154,7 @@
             }
 
             /* List */
-            .featured-list{
+            .featured-list-sb{
                 list-style:none;
                 margin:0 0 20px 0;
                 padding:0;
@@ -166,7 +166,7 @@
                 text-align:center;
                 font-style:italic;
             }
-            .item{
+            .item-sb{
                 background:#ffffff;
                 border-radius:16px;
                 overflow:hidden;
@@ -174,7 +174,7 @@
                 transition: all .3s ease;
                 border:1px solid #f1f5f9;
                 position:relative;
-                width: 77%;
+                width: 100%;
             }
             .item::before {
                 content:'';
@@ -201,7 +201,7 @@
                 margin:0;
                 padding:0;
             }
-            .thumb-btn {
+            .thumb-btn-sb {
                 border:none;
                 background:none;
                 padding:12px;
@@ -213,14 +213,14 @@
             }
 
             /* Container cho ảnh và giá */
-            .image-price-container {
+            .image-price-container-sb {
                 display:flex;
                 gap:8px;
                 align-items:stretch;
             }
 
             /* Ảnh chiếm 7 phần */
-            .thumb{
+            .thumb-sb{
                 flex: 7;
                 height:80px;
                 object-fit:cover;
@@ -228,12 +228,13 @@
                 box-shadow:0 2px 8px rgba(0,0,0,.1);
                 transition:transform .3s ease;
             }
-            .thumb-btn:hover .thumb {
+            .thumb-btn-sb:hover .thumb-sb {
                 transform:scale(1.02);
             }
 
             /* Giá chiếm 3 phần */
-            .price-box{
+            .price-box-sb{
+                color: #e12e2e;
                 flex: 3;
                 height:80px;
                 background:#f8f9fa;
@@ -349,8 +350,12 @@
 
             <!-- Menu -->
             <nav class="sb-nav">
-                <a href="index.jsp">🏠 Trang chủ</a>
+                <a href="">🏠 Trang chủ</a>
                 <a href="#">📰 Bài đăng gần đây</a>
+                <c:if test="${not empty user}">
+                    <a href="">📰 Quan li san pham</a>
+                </c:if>
+
             </nav>
 
             <hr class="divider">
@@ -360,21 +365,21 @@
             <c:choose>
                 <c:when test="${not empty list}">
                     <c:set var="shown" value="0"/>
-                    <ul class="featured-list">
+                    <ul class="featured-list-sb">
                         <c:forEach var="i" items="${list}">
                             <c:if test="${i.status eq 'prominent' and shown < 4}">
-                                <li class="item">
+                                <li class="item-sb">
                                     <form action="MainController" method="get" class="card">
                                         <input type="hidden" name="action" value="getProduct"/>
                                         <input type="hidden" name="id" value="${i.id}"/>
 
                                         <!-- Bấm vào cả card là submit -->
-                                        <button type="submit" class="thumb-btn">
+                                        <button type="submit" class="thumb-btn-sb">
                                             <!-- Container cho ảnh và giá -->
-                                            <div class="image-price-container">
-                                                <img class="thumb" src="${i.image.image_url}" alt="${i.name}"/>
-                                                <div class="price-box">
-                                                    <div class="price-text"><fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" />
+                                            <div class="image-price-container-sb">
+                                                <img class="thumb-sb" src="${i.image.image_url}" alt="${i.name}"/>
+                                                <div class="price-box-sb">
+                                                    <div class="price-text-sb"><fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" />
                                                         VND</div>
                                                 </div>
                                             </div>

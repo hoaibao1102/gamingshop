@@ -21,7 +21,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     private static final String GET_BY_ID = "SELECT * FROM dbo.Accessories WHERE id = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Accessories WHERE name LIKE ?";
     private static final String CREATE
-            = "INSERT INTO dbo.Accessories (name, quantity, price, description, image_url) VALUES (?, ?, ?, ?, ?)";
+            = "INSERT INTO dbo.Accessories (name, quantity, price, description, image_url, status) VALUES (?, ?, ?, ?, ?, ?)";
 
     @Override
     public boolean create(Accessories e) {
@@ -35,6 +35,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
             st.setDouble(3, e.getPrice());
             st.setString(4, e.getDescription());
             st.setString(5, e.getImage_url());
+            st.setString(6, e.getStatus());
             return st.executeUpdate() > 0; // Cách B: không lấy id sinh tự động
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -129,6 +130,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
             a.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
 
+        a.setStatus(rs.getString("status"));
         return a;
     }
 

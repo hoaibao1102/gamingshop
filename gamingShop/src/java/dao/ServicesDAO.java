@@ -21,7 +21,7 @@ public class ServicesDAO implements IDAO<Services, Integer> {
     private static final String GET_BY_ID = "SELECT * FROM dbo.Services WHERE id = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Services WHERE service_type LIKE ?";
     private static final String CREATE
-            = "INSERT INTO dbo.Services (service_type, description_html, price) VALUES (?, ?, ?)";
+            = "INSERT INTO dbo.Services (service_type, description_html, price, status) VALUES (?, ?, ?, ?)";
 
     @Override
     public boolean create(Services e) {
@@ -33,6 +33,7 @@ public class ServicesDAO implements IDAO<Services, Integer> {
             st.setString(1, e.getService_type());
             st.setString(2, e.getDescription_html());
             st.setDouble(3, e.getPrice());
+            st.setString(4, e.getStatus());
             return st.executeUpdate() > 0;
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -124,6 +125,8 @@ public class ServicesDAO implements IDAO<Services, Integer> {
         if (updatedTs != null) {
             s.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
+        
+        s.setStatus(rs.getString("status"));
 
         return s;
     }

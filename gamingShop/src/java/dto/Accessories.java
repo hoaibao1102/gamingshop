@@ -20,11 +20,12 @@ public class Accessories {
     private String image_url;
     private Date created_at;
     private Date updated_at;
+    private String status;
 
     public Accessories() {
     }
 
-    public Accessories(int id, String name, double quantity, double price, String description, String image_url, Date created_at, Date updated_at) {
+    public Accessories(int id, String name, double quantity, double price, String description, String image_url, Date created_at, Date updated_at, String status) {
         this.id = id;
         this.name = name;
         this.quantity = quantity;
@@ -33,6 +34,7 @@ public class Accessories {
         this.image_url = image_url;
         this.created_at = created_at;
         this.updated_at = updated_at;
+        this.status = status;
     }
 
     public int getId() {
@@ -98,5 +100,15 @@ public class Accessories {
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    
 
 }
