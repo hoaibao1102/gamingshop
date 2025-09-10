@@ -21,7 +21,7 @@ public class ModelsDAO implements IDAO<Models, Integer> {
     private static final String GET_BY_ID = "SELECT * FROM dbo.Models WHERE id = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Models WHERE model_type LIKE ?";
     private static final String CREATE
-            = "INSERT INTO dbo.Models (model_type, description_html, image_url) VALUES (?, ?, ?)";
+            = "INSERT INTO dbo.Models (model_type, description_html, image_url, status) VALUES (?, ?, ?, ?)";
 
     @Override
     public boolean create(Models e) {
@@ -33,6 +33,7 @@ public class ModelsDAO implements IDAO<Models, Integer> {
             st.setString(1, e.getModel_type());
             st.setString(2, e.getDescription_html());
             st.setString(3, e.getImage_url());
+            st.setString(4, e.getStatus());
             return st.executeUpdate() > 0;
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -125,6 +126,7 @@ public class ModelsDAO implements IDAO<Models, Integer> {
             m.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
 
+        m.setStatus(rs.getString("status"));
         return m;
     }
 
