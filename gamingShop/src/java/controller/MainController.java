@@ -92,7 +92,8 @@ public class MainController extends HttpServlet {
                 || "showAddProductForm".equals(action)
                 || "addProduct".equals(action)
                 || "editMainProduct".equals(action)
-                || "editImageProduct".equals(action);
+                || "editImageProduct".equals(action)
+                || "deleteProduct".equals(action);
     }
 
 }

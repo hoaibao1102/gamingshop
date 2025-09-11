@@ -70,6 +70,8 @@ public class ProductController extends HttpServlet {
                 url = handleUpdateMainProduct(request, response);
             } else if (action.equals("editImageProduct")) {
                 url = handleUpdateImageProduct(request, response);
+            } else if (action.equals("deleteProduct")) {
+                url = handleDeleteProduct(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -188,7 +190,7 @@ public class ProductController extends HttpServlet {
 
         request.setAttribute("keyword", keyword);
         request.setAttribute("list", list);
-        request.setAttribute("checkError", checkError);
+        request.setAttribute("checkErrorSearch", checkError);
         return "welcome.jsp";
     }
 
@@ -647,5 +649,33 @@ public class ProductController extends HttpServlet {
             request.setAttribute("checkErrorUpdateProductImage", "Unexpected error: " + e.getMessage());
             return "productsUpdate.jsp";
         }
+    }
+
+    private String handleDeleteProduct(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            // Lấy productId từ tham số form (hidden input "product_id")
+            int productId = Integer.parseInt(request.getParameter("product_id"));
+
+            if (productId > 0) {
+                request.setAttribute("checkErrorDeleteProduct", "Missing product_id.");
+                return "welcome.jsp";
+            }
+
+            boolean success = productsdao.deleteProductById(productId);
+
+            if (success) {
+                // Nếu có cache list sản phẩm để edit trong session thì xoá để lần sau nạp mới
+                request.getSession().removeAttribute("cachedProductListEdit");
+                request.setAttribute("messageDeleteProduct", "Product deleted successfully.");
+            } else {
+                request.setAttribute("checkErrorDeleteProduct", "Failed to delete product.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorDeleteProduct", "Unexpected error: " + e.getMessage());
+            return "welcome.jsp";
+        }
+        return "welcome.jsp";
     }
 }
