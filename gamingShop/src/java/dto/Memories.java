@@ -13,7 +13,7 @@ import java.util.Date;
 public class Memories {
 
     private int id;
-    private String memory_type;
+        private String memory_type;
     private String description_html;
     private double quantity;
     private double price;
