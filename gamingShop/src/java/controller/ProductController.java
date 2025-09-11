@@ -4,6 +4,8 @@
  */
 package controller;
 
+import dao.AccessoriesDAO;
+import dto.Accessories;
 import dao.ProductImagesDAO;
 import dao.ProductsDAO;
 import dto.Page;
@@ -38,6 +40,7 @@ public class ProductController extends HttpServlet {
 
     private final ProductsDAO productsdao = new ProductsDAO();
     private final ProductImagesDAO productImagesDAO = new ProductImagesDAO();
+    private final  AccessoriesDAO accessoriesDAO  = new AccessoriesDAO();
 
     String INDEX_PAGE = "index.jsp";
 
@@ -64,6 +67,17 @@ public class ProductController extends HttpServlet {
                 url = handleProductAdding(request, response);
 //            } else if (action.equals("editProduct")) {
 //                url = handleProductEditing(request, response);
+// Thêm các action handlers vào processRequest method
+            } else if (action.equals("showAddAccessoryForm")) {
+                url = handleShowAddAccessoryForm(request, response);
+            } else if (action.equals("addAccessory")) {
+                url = handleAccessoryAdding(request, response);
+            } else if (action.equals("showEditAccessoryForm")) {
+//     url = handleShowEditAccessoryForm(request, response);
+// } else if (action.equals("editAccessory")) {
+//     url = handleAccessoryEditing(request, response);
+// } else if (action.equals("removeAccessory")) {
+//     url = handleAccessoryRemoving(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,8 +125,8 @@ public class ProductController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-    
-    public  void handleViewAllProducts_sidebar( HttpServletRequest request, HttpServletResponse response) {
+
+    public void handleViewAllProducts_sidebar(HttpServletRequest request, HttpServletResponse response) {
         List<Products> list = productsdao.getAll();
         request.setAttribute("list", list);
     }
@@ -387,5 +401,71 @@ public class ProductController extends HttpServlet {
         }
     }
 
-    
+    /**
+     * Hiển thị form thêm accessory mới
+     */
+    private String handleShowAddAccessoryForm(HttpServletRequest request, HttpServletResponse response) {
+        request.setAttribute("accessory", null);
+        return "accessoryUpdate.jsp";
+    }
+
+    /**
+     * Xử lý thêm accessory mới
+     */
+    private String handleAccessoryAdding(HttpServletRequest request, HttpServletResponse response) {
+        try {
+
+            // Lấy dữ liệu từ form
+            String name = request.getParameter("name");
+            double quantity = Double.parseDouble(request.getParameter("quantity"));
+            double price = Double.parseDouble(request.getParameter("price"));
+            String description = request.getParameter("description");
+            String status = request.getParameter("status");
+
+            // Xử lý upload ảnh
+            String imageUrl = "";
+            Part imagePart = request.getPart("imageFile");
+            if (imagePart != null && imagePart.getSize() > 0) {
+                String uploadDir = getServletContext().getRealPath("/assets/img/accessories/");
+                new File(uploadDir).mkdirs();
+
+                String originalFileName = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
+                String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
+                String storedFileName = System.currentTimeMillis() + fileExtension;
+                String imagePath = uploadDir + File.separator + storedFileName;
+
+                imagePart.write(imagePath);
+                imageUrl = "assets/img/accessories/" + storedFileName;
+            }
+
+            // Tạo accessory mới
+            Accessories newAccessory = new Accessories();
+            newAccessory.setName(name);
+            newAccessory.setQuantity(quantity);
+            newAccessory.setPrice(price);
+            newAccessory.setDescription(description);
+            newAccessory.setImage_url(imageUrl);
+            newAccessory.setStatus(status);
+            newAccessory.setCreated_at(new java.util.Date());
+            newAccessory.setUpdated_at(new java.util.Date());
+
+            // Thêm vào database
+            boolean success = accessoriesDAO.create(newAccessory);
+            if (success) {
+                HttpSession session = request.getSession();
+                session.removeAttribute("cachedAccessoryList");
+                request.setAttribute("messageAddAccessory", "New accessory added successfully.");
+                return "accessoryList.jsp";
+            } else {
+                request.setAttribute("checkErrorAddAccessory", "Failed to add accessory.");
+                request.setAttribute("accessory", newAccessory);
+                return "accessoryUpdate.jsp";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error while adding accessory: " + e.getMessage());
+            return "error.jsp";
+        }
+    }
 }
