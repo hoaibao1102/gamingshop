@@ -29,8 +29,10 @@
         <%
             Accounts accounts = AuthUtils.getCurrentUser(request);
             String keyword = (String) request.getAttribute("keyword");
-            String checkError = (String) request.getAttribute("checkError");
+            String checkErrorSearch = (String) request.getAttribute("checkErrorSearch");
             List<Products> list = (List<Products>) request.getAttribute("list");
+            String messageUpdateProductImage = (String) request.getAttribute("messageUpdateProductImage");
+            String checkErrorUpdateProductImage = (String) request.getAttribute("checkErrorUpdateProductImage");
         %>
         <div class="container">
             <div class="header-section">
@@ -75,15 +77,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% for (Products p : list) { %>
-                        <%
-                            double price = p.getPrice();
-                            java.text.DecimalFormat df = new java.text.DecimalFormat("#,###");
-                            String formatted = df.format(price) + " VND";
+                        <% 
+                            for (Products p : list) {
+                                if ("inactive".equals(p.getStatus())) { 
+                                    continue; 
+                                }
 
-                            List<Product_images> imgs = p.getImage();
-                            Product_images img = (imgs != null && !imgs.isEmpty()) ? imgs.get(0) : null;
-                            String imgUrl = (img != null) ? img.getImage_url() : "assets/img/no-image.png";
+                                double price = p.getPrice();
+                                java.text.DecimalFormat df = new java.text.DecimalFormat("#,###");
+                                String formatted = df.format(price) + " VND";
+
+                                List<Product_images> imgs = p.getImage();
+                                Product_images img = (imgs != null && !imgs.isEmpty()) ? imgs.get(0) : null;
+                                String imgUrl = (img != null && img.getImage_url() != null && !img.getImage_url().isEmpty())
+                                                ? img.getImage_url()
+                                                : "assets/img/no-image.png";
                         %>
                         <tr>
                             <td>
@@ -105,13 +113,24 @@
                                     <input type="hidden" name="keyword" value="<%= (keyword != null) ? keyword : "" %>" />
                                     <input type="submit" value="Edit" class="edit-btn" />
                                 </form>
+
+                                <form action="MainController" method="post" style="display:inline;">
+                                    <input type="hidden" name="action" value="deleteProduct"/>
+                                    <input type="hidden" name="product_id" value="<%= p.getId() %>"/>
+                                    <input type="hidden" name="keyword" value="<%= (keyword != null) ? keyword : "" %>" />
+                                    <input type="submit" value="Delete" class="edit-btn" />
+                                </form>
                             </td>
                         </tr>
                         <% } %>
                     </tbody>
                 </table>
-                <% } else if (checkError != null && !checkError.isEmpty()) { %>
-                <div class="error-message"><%= checkError %></div>
+                <% } else if (checkErrorSearch != null && !checkError.isEmpty()) { %>
+                <div class="error-message"><%= checkErrorSearch %></div>
+                <% } else if (messageDeleteProduct != null) { %>
+                <div class="alert alert-success"><%= messageDeleteProduct %></div>
+                <% } else if (checkErrorDeleteProduct != null) { %>
+                <div class="alert alert-danger"><%= checkErrorDeleteProduct %></div>
                 <% } %>
             </div>
         </div>

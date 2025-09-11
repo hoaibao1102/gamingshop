@@ -396,4 +396,21 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         }
     }
 
+    public boolean deleteProductById(int productId) {
+        Connection c = null;
+        PreparedStatement st = null;
+        String sql = "UPDATE Products SET status = 'inactive', updated_at = GETDATE() WHERE id = ?";
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(sql);
+            st.setInt(1, productId);
+            return st.executeUpdate() > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            close(c, st, null);
+        }
+    }
+
 }
