@@ -25,6 +25,7 @@
                 --primary-blue-hover: #1d4ed8;
                 --light-blue: #dbeafe;
                 --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                --admin-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             }
             *{
                 box-sizing:border-box
@@ -76,21 +77,45 @@
                 margin: 0 0 20px 0;
                 gap: 12px;
             }
+
+            /* Form styling cho các menu quản lý */
+            .nav-form {
+                margin: 0;
+                width: 100%;
+            }
+            
+            /* Styling chung cho input submit và anchor */
+            .nav-item, 
             .sb-nav a {
                 display: flex;
                 align-items: center;
+                justify-content: flex-start;
                 padding: 14px 16px;
                 border-radius: 14px;
-                background: linear-gradient(145deg, #f8fafc, #e2e8f0);
                 color: var(--ink);
                 font-weight: 600;
                 text-decoration: none;
                 box-shadow: 0 4px 12px rgba(0,0,0,.08);
                 transition: all 0.3s ease;
-                border:1px solid #f1f5f9;
+                border: 1px solid #f1f5f9;
                 position: relative;
                 overflow: hidden;
+                width: 100%;
+                font-size: 14px;
+                font-family: inherit;
+                cursor: pointer;
+                text-align: left;
+                gap: 10px;
             }
+
+
+            .nav-item, .sb-nav a {
+                background: linear-gradient(145deg, #fff5f5, #e2e8f0);
+                border-color: #fac8c8;
+            }
+
+            /* Hiệu ứng shimmer */
+            .nav-item::before,
             .sb-nav a::before {
                 content: '';
                 position: absolute;
@@ -101,13 +126,32 @@
                 background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
                 transition: left 0.5s ease;
             }
+            
+            .nav-item:hover,
             .sb-nav a:hover {
-                background: linear-gradient(145deg, #ffffff, #f1f5f9);
                 transform: translateY(-2px);
                 box-shadow: 0 8px 25px rgba(0,0,0,.15);
             }
+
+            .sb-nav a:hover {
+                background: linear-gradient(145deg, #ffffff, #f1f5f9);
+            }
+
+            .nav-item:hover {
+                background: linear-gradient(145deg, #ffffff, #fef2f2);
+                border-color: #fca5a5;
+            }
+            
+            .nav-item:hover::before,
             .sb-nav a:hover::before {
                 left: 100%;
+            }
+
+            /* Icon styling */
+            .nav-icon {
+                font-size: 16px;
+                min-width: 20px;
+                text-align: center;
             }
 
             .divider{
@@ -176,7 +220,7 @@
                 position:relative;
                 width: 100%;
             }
-            .item::before {
+            .item-sb::before {
                 content:'';
                 position:absolute;
                 top:0;
@@ -188,11 +232,11 @@
                 transition:opacity .3s ease;
                 pointer-events:none;
             }
-            .item:hover{
+            .item-sb:hover{
                 transform:translateY(-4px) scale(1.02);
                 box-shadow:0 12px 35px rgba(0,0,0,.15);
             }
-            .item:hover::before {
+            .item-sb:hover::before {
                 opacity:1;
             }
 
@@ -248,7 +292,7 @@
                 transition:background .3s ease;
             }
 
-            .price-text {
+            .price-text-sb {
                 color:#dc3545;
                 font-weight:800;
                 font-size:12px;
@@ -270,7 +314,7 @@
                 hyphens: auto;
             }
 
-            .thumb-btn:hover .price-box {
+            .thumb-btn-sb:hover .price-box-sb {
                 background:#dee2e6;
             }
 
@@ -291,6 +335,7 @@
                 overflow:hidden;
                 transition:all .3s ease;
                 box-shadow:0 6px 20px rgba(37, 99, 235, 0.3);
+                font-family: inherit;
             }
             .view-more-btn::before {
                 content:'';
@@ -325,17 +370,22 @@
                     width:100px;
                     height:100px;
                 }
-                .thumb{
+                .thumb-sb{
                     height:70px;
                 }
-                .price-box{
+                .price-box-sb{
                     height:70px;
                 }
-                .price-text{
+                .price-text-sb{
                     font-size:10px;
                 }
                 .product-name{
                     font-size:11px;
+                }
+                .nav-item,
+                .sb-nav a {
+                    padding: 12px 14px;
+                    font-size: 13px;
                 }
             }
         </style>
@@ -350,10 +400,32 @@
 
             <!-- Menu -->
             <nav class="sb-nav">
-                <a href="">🏠 Trang chủ</a>
-                <a href="#">📰 Bài đăng gần đây</a>
+                <a href="">
+                    <span class="nav-icon">🏠</span>
+                    <span>Trang chủ</span>
+                </a>
+                <a href="#">
+                    <span class="nav-icon">📰</span>
+                    <span>Bài đăng gần đây</span>
+                </a>
+                
                 <c:if test="${not empty user}">
-                    <a href="">📰 Quan li san pham</a>
+                    <form action="MainController" method="get" class="nav-form">
+                        <input type="hidden" name="action" value="quanLyDanhMuc">
+                        <input class="nav-item" type="submit" value="🗂️ Quản lý danh mục">
+                    </form>
+                    <form action="MainController" method="get" class="nav-form">
+                        <input type="hidden" name="action" value="quanLySanPham">
+                        <input class="nav-item" type="submit" value="📦 Quản lý sản phẩm">
+                    </form>
+                    <form action="MainController" method="get" class="nav-form">
+                        <input type="hidden" name="action" value="quanLyPhuKien">
+                        <input class="nav-item" type="submit" value="🔧 Quản lý phụ kiện">
+                    </form>
+                    <form action="MainController" method="get" class="nav-form">
+                        <input type="hidden" name="action" value="quanLyDichVu">
+                        <input class="nav-item" type="submit" value="⚙️ Quản lý dịch vụ">
+                    </form>
                 </c:if>
 
             </nav>
@@ -402,9 +474,8 @@
             <!-- Nút Xem thêm -->
             <form action="MainController" method="get">
                 <input type="hidden" name="action" value="getProminentList">
-                <input class="view-more-btn" type="submit"  value="Xem thêm">
+                <input class="view-more-btn" type="submit" value="Xem thêm">
             </form>
-
 
         </aside>
 
