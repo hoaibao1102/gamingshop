@@ -222,6 +222,28 @@ CREATE INDEX IX_posts_publish_date ON dbo.Posts(publish_date);
 GO
 
 /* ============================================================
+   12) banner
+   ============================================================ */
+IF OBJECT_ID(N'dbo.Banners', N'U') IS NOT NULL DROP TABLE dbo.Banners;
+GO
+CREATE TABLE dbo.Banners (
+  id           INT IDENTITY(1,1) PRIMARY KEY,
+  image_url1   NVARCHAR(255) NULL,
+  image_url2   NVARCHAR(255) NULL,
+  image_url3   NVARCHAR(255) NULL,
+  image_url4   NVARCHAR(255) NULL,
+  image_url5   NVARCHAR(255) NULL,
+  title        NVARCHAR(255) NOT NULL,
+  status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Banners_Status CHECK (status IN (N'active', N'inactive')),
+  created_at   DATETIME2(3) NOT NULL CONSTRAINT DF_posts_created_at DEFAULT SYSDATETIME(),
+  updated_at   DATETIME2(3) NOT NULL CONSTRAINT DF_posts_updated_at DEFAULT SYSDATETIME()
+);
+GO
+CREATE INDEX IX_posts_publish_date ON dbo.Posts(publish_date);
+GO
+
+/* ============================================================
    TRIGGERS cập nhật updated_at khi UPDATE
    (tạo cho các bảng có cột updated_at)
    ============================================================ */

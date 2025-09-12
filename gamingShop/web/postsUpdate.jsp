@@ -52,7 +52,7 @@
             <% if (post != null) { 
                 java.util.Date pubDate = post.getPublish_date();
                 String formattedDate = (pubDate != null)
-                    ? new SimpleDateFormat("dd/MM/yyyy").format(pubDate)
+                    ? new SimpleDateFormat("yyyy-MM-dd").format(pubDate)
                     : "(chưa đặt)";
             %>
             <div class="card mb-4">
