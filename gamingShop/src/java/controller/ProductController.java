@@ -866,23 +866,28 @@ public class ProductController extends HttpServlet {
             String content_html = request.getParameter("content_html");
 
             // publish_date có thể để trống
-            String publishDateStr = request.getParameter("publish_date"); // ví dụ: "2025-09-12"
-            Date publishDate = null;
+            String publishDateStr = request.getParameter("publish_date");
+            Date publishDate;
             if (publishDateStr != null && !publishDateStr.trim().isEmpty()) {
                 try {
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-                    formatter.setLenient(false);
-                    publishDate = formatter.parse(publishDateStr.trim());
-                } catch (ParseException e) {
-                    // Nếu format sai -> fallback về ngày hiện tại
-                    publishDate = new Date();
-                    e.printStackTrace();
+                    // ĐÚNG với <input type="date">
+                    SimpleDateFormat iso = new SimpleDateFormat("yyyy-MM-dd");
+                    iso.setLenient(false);
+                    publishDate = iso.parse(publishDateStr.trim());
+                } catch (ParseException e1) {
+                    try {
+                        // Fallback khi client gửi dd-MMM-yyyy (ví dụ 13-Sep-2025)
+                        SimpleDateFormat alt = new SimpleDateFormat("dd-MMM-yyyy", java.util.Locale.ENGLISH);
+                        alt.setLenient(false);
+                        publishDate = alt.parse(publishDateStr.trim());
+                    } catch (ParseException e2) {
+                        publishDate = new Date(); // Cuối cùng lấy ngày hiện tại
+                    }
                 }
             } else {
-                // Nếu người dùng không nhập -> lấy ngày hiện tại
                 publishDate = new Date();
             }
-
+                    
             int status = 0;
             try {
                 status = Integer.parseInt(request.getParameter("status"));

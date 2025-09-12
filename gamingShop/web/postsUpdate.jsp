@@ -56,6 +56,28 @@
             <div class="alert alert-danger"><%= err %></div>
             <% } %>
 
+            <!-- Nếu vừa thêm xong -->
+            <% if (post != null) { 
+                java.util.Date pubDate = post.getPublish_date();
+                String formattedDate = (pubDate != null)
+                    ? new SimpleDateFormat("yyyy-MM-dd").format(pubDate)
+                    : "(chưa đặt)";
+            %>
+            <div class="card mb-4">
+                <div class="card-header">Bài viết vừa tạo</div>
+                <div class="card-body">
+                    <p><strong>ID:</strong> <%= post.getId() %></p>
+                    <p><strong>Tiêu đề:</strong> <%= post.getTitle() %></p>
+                    <p><strong>Tác giả:</strong> <%= post.getAuthor() %></p>
+                    <p><strong>Ngày xuất bản:</strong> <%= formattedDate %></p>
+                    <p><strong>Trạng thái:</strong> <%= post.getStatus() %></p>
+                    <% if (post.getImage_url() != null) { %>
+                    <img src="<%= request.getContextPath() + "/" + post.getImage_url() %>"
+                         alt="Ảnh bài viết" style="max-height:220px;">
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
 
 
             <!-- FORM thêm mới -->
