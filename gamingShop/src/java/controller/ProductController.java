@@ -7,9 +7,11 @@ package controller;
 import dao.GuaranteesDAO;
 import dao.MemoriesDAO;
 import dao.ModelsDAO;
+import dao.PostsDAO;
 import dao.ProductImagesDAO;
 import dao.ProductsDAO;
 import dto.Page;
+import dto.Posts;
 import dto.ProductFilter;
 import dto.Product_images;
 import dto.Products;
@@ -24,7 +26,10 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import utils.AuthUtils;
 
@@ -42,6 +47,7 @@ public class ProductController extends HttpServlet {
 
     private final ProductsDAO productsdao = new ProductsDAO();
     private final ProductImagesDAO productImagesDAO = new ProductImagesDAO();
+    private final PostsDAO postsDAO = new PostsDAO();
 
     String INDEX_PAGE = "index.jsp";
 
@@ -72,6 +78,16 @@ public class ProductController extends HttpServlet {
                 url = handleUpdateImageProduct(request, response);
             } else if (action.equals("deleteProduct")) {
                 url = handleDeleteProduct(request, response);
+            } else if (action.equals("viewAllPost")) {
+                url = handleViewAllPost(request, response);
+            } else if (action.equals("searchPosts")) {
+                url = handlePostSearching(request, response);
+            } else if (action.equals("editPosts")) {
+                url = handleUpdatePosts(request, response);
+            } else if (action.equals("addPosts")) {
+                url = handleAddPosts(request, response);
+            } else if (action.equals("deletePosts")) {
+                url = handleDeletePosts(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,6 +143,7 @@ public class ProductController extends HttpServlet {
 
     public String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
         try {
+            request.setCharacterEncoding("UTF-8");
             // Tạo filter mặc định
             ProductFilter filter = new ProductFilter();
 
@@ -199,6 +216,7 @@ public class ProductController extends HttpServlet {
      */
     private String handleProductFiltering(HttpServletRequest request, HttpServletResponse response) {
         try {
+            request.setCharacterEncoding("UTF-8");
             ProductFilter filter = createFilterFromRequest(request);
 
             Page<Products> pageResult = productsdao.getProductsWithFilter(filter);
@@ -300,6 +318,7 @@ public class ProductController extends HttpServlet {
 
     private String handleProductAdding(HttpServletRequest request, HttpServletResponse response) {
         try {
+            request.setCharacterEncoding("UTF-8");
             // ===== Lấy dữ liệu từ form =====
             String name = request.getParameter("name");
             String sku = request.getParameter("sku");
@@ -428,6 +447,7 @@ public class ProductController extends HttpServlet {
 
     private String handleUpdateMainProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
+            request.setCharacterEncoding("UTF-8");
             // Lấy product_id từ form (tham số hidden "product_id")
             int product_id = Integer.parseInt(request.getParameter("product_id"));
 
@@ -530,7 +550,7 @@ public class ProductController extends HttpServlet {
             Products refreshedProduct = productsdao.getById(product_id);
             request.setAttribute("product", refreshedProduct);
 
-            // ✅ Load ảnh hiện tại của sản phẩm (chỉ lấy ảnh status=1 theo DAO của bạn)
+            // Load ảnh hiện tại của sản phẩm (chỉ lấy ảnh status=1 theo DAO của bạn)
             ProductImagesDAO imageDao = new ProductImagesDAO();
             List<Product_images> productImages = imageDao.getByProductId(product_id);
             request.setAttribute("productImages", productImages);
@@ -569,6 +589,7 @@ public class ProductController extends HttpServlet {
 
     private String handleUpdateImageProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
+            request.setCharacterEncoding("UTF-8");
             // Lấy productId từ tham số form (hidden input "product_id")
             int productId = Integer.parseInt(request.getParameter("product_id"));
             // Lấy keyword (nếu có) để gán lại cho JSP sau khi xử lý
@@ -653,10 +674,11 @@ public class ProductController extends HttpServlet {
 
     private String handleDeleteProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
+            request.setCharacterEncoding("UTF-8");
             // Lấy productId từ tham số form (hidden input "product_id")
             int productId = Integer.parseInt(request.getParameter("product_id"));
 
-            if (productId > 0) {
+            if (productId < 1) {
                 request.setAttribute("checkErrorDeleteProduct", "Missing product_id.");
                 return "welcome.jsp";
             }
@@ -676,6 +698,209 @@ public class ProductController extends HttpServlet {
             request.setAttribute("checkErrorDeleteProduct", "Unexpected error: " + e.getMessage());
             return "welcome.jsp";
         }
-        return "welcome.jsp";
+        return "MainController?action=prepareHome";
     }
+
+    private String handleViewAllPost(HttpServletRequest request, HttpServletResponse response) {
+        List<Posts> list = postsDAO.getAll();
+        request.setAttribute("list", list);
+        return "posts.jsp";
+    }
+
+    private String handlePostSearching(HttpServletRequest request, HttpServletResponse response) {
+        String checkError = "";
+        String keyword = request.getParameter("keyword");
+        List<Posts> list;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            list = postsDAO.getByName(keyword.trim());
+            if (list == null || list.isEmpty()) {
+                checkError = "No products found with name: " + keyword;
+            }
+        } else {
+            list = postsDAO.getAll();
+        }
+
+        request.setAttribute("keyword", keyword);
+        request.setAttribute("list", list);
+        request.setAttribute("checkErrorSearchPosts", checkError);
+        return "posts.jsp";
+    }
+
+    private String handleUpdatePosts(HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private String handleAddPosts(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
+
+            // ===== Lấy dữ liệu từ form =====
+            String author = request.getParameter("author");
+            String title = request.getParameter("title");
+            String content_html = request.getParameter("content_html");
+
+            // publish_date có thể để trống
+            String publishDateStr = request.getParameter("publish_date"); // ví dụ: "2025-09-12"
+            Date publishDate = null;
+            if (publishDateStr != null && !publishDateStr.trim().isEmpty()) {
+                try {
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+                    formatter.setLenient(false);
+                    publishDate = formatter.parse(publishDateStr.trim());
+                } catch (ParseException e) {
+                    // Nếu format sai -> fallback về ngày hiện tại
+                    publishDate = new Date();
+                    e.printStackTrace();
+                }
+            } else {
+                // Nếu người dùng không nhập -> lấy ngày hiện tại
+                publishDate = new Date();
+            }
+
+            int status = 0;
+            try {
+                status = Integer.parseInt(request.getParameter("status"));
+            } catch (Exception ignore) {
+                // để mặc định 0 nếu không parse được
+            }
+
+            // ===== Tạo đối tượng Posts và set dữ liệu =====
+            Posts newPost = new Posts();
+            newPost.setAuthor(author);
+            newPost.setTitle(title);
+            newPost.setContent_html(content_html);
+            newPost.setPublish_date(publishDate);
+            newPost.setStatus(status);
+
+            // ===== Upload 1 ảnh (nếu có) và set vào image_url =====
+            // Tên field trong form: "imageFile"
+            Part imagePart = null;
+            try {
+                imagePart = request.getPart("imageFile");
+            } catch (Exception ignore) {
+            }
+
+            String storedRelativeUrl = null; // ví dụ: "assets/img/posts/123_1.jpg"
+            if (imagePart != null && imagePart.getSize() > 0) {
+                // Thư mục lưu ảnh trên server
+                String uploadDirPath = request.getServletContext().getRealPath("/assets/img/posts/");
+                File uploadDir = new File(uploadDirPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+
+                // Lấy extension an toàn
+                String originalFileName = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
+                String fileExtension = "";
+                int dot = originalFileName.lastIndexOf('.');
+                if (dot >= 0 && dot < originalFileName.length() - 1) {
+                    fileExtension = originalFileName.substring(dot); // gồm cả dấu chấm
+                }
+
+                // TẠM thời đặt tên file trước khi có id, sẽ đặt lại sau khi insert có id
+                // Lưu tạm với tên ngẫu nhiên để tránh đụng
+                String tempName = "tmp_" + System.currentTimeMillis() + fileExtension;
+                File tempFile = new File(uploadDir, tempName);
+                imagePart.write(tempFile.getAbsolutePath());
+
+                // Tạm set image_url là file tạm để vẫn insert được nếu cần (có thể để null)
+                newPost.setImage_url(null);
+
+                // ===== Insert để lấy generatedId =====
+                int generatedId = postsDAO.createNewPost(newPost);
+                if (generatedId > 0) {
+                    newPost.setId(generatedId);
+
+                    // Đặt lại tên file theo quy ước: {postId}_1{ext}
+                    String finalName = generatedId + "_1" + fileExtension;
+                    File finalFile = new File(uploadDir, finalName);
+
+                    // Đổi tên file tạm -> file chính thức
+                    boolean renamed = tempFile.renameTo(finalFile);
+                    if (!renamed) {
+                        // Nếu rename thất bại thì copy rồi xóa tạm
+                        try ( java.io.InputStream in = new java.io.FileInputStream(tempFile);  java.io.OutputStream out = new java.io.FileOutputStream(finalFile)) {
+                            byte[] buf = new byte[8192];
+                            int len;
+                            while ((len = in.read(buf)) > 0) {
+                                out.write(buf, 0, len);
+                            }
+                        }
+                        tempFile.delete();
+                    }
+
+                    storedRelativeUrl = "assets/img/posts/" + finalName;
+                    newPost.setImage_url(storedRelativeUrl);
+
+                    // Cập nhật lại image_url vào DB nếu cần (vì INSERT lúc đầu chưa có url)
+                    // Ở đây bạn có thể viết thêm 1 hàm updateImageUrl(postId, url).
+                    // Nếu CHƯA có hàm update, cách đơn giản là: nếu bắt buộc cần image_url ngay,
+                    // hãy set image_url trước rồi mới insert (xem biến thể bên dưới).
+                } else {
+                    // Insert thất bại -> xóa file tạm (nếu có)
+                    if (tempFile.exists()) {
+                        tempFile.delete();
+                    }
+                    request.setAttribute("checkErrorAddPost", "Failed to add post.");
+                    return "postsUpdate.jsp";
+                }
+
+            } else {
+                // KHÔNG có ảnh upload -> insert luôn
+                newPost.setImage_url(null);
+                int generatedId = postsDAO.createNewPost(newPost);
+                if (generatedId <= 0) {
+                    request.setAttribute("checkErrorAddPost", "Failed to add post.");
+                    return "postsUpdate.jsp";
+                }
+                newPost.setId(generatedId);
+            }
+
+            // ===== Success =====
+            HttpSession session = request.getSession();
+            // Nếu trước đó có cache gì liên quan posts thì xóa, ví dụ:
+            session.removeAttribute("cachedPostsListEdit");
+
+            request.setAttribute("messageAddPost", "New post added successfully.");
+            request.setAttribute("post", newPost); // để JSP show ra chi tiết
+
+            return "postsUpdate.jsp";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error while adding post: " + e.getMessage());
+            return "error.jsp";
+        }
+    }
+
+    private String handleDeletePosts(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
+            // Lấy productId từ tham số form (hidden input "product_id")
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            if (id < 1) {
+                request.setAttribute("checkErrorDeletePosts", "Missing product_id.");
+                return "posts.jsp";
+            }
+
+            boolean success = postsDAO.deleteProductById(id);
+
+            if (success) {
+                // Nếu có cache list sản phẩm để edit trong session thì xoá để lần sau nạp mới
+                request.getSession().removeAttribute("cachedProductListEdit");
+                request.setAttribute("messageDeletePosts", "Product deleted successfully.");
+            } else {
+                request.setAttribute("checkErrorDeletePosts", "Failed to delete product.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorDeletePosts", "Unexpected error: " + e.getMessage());
+            return "posts.jsp";
+        }
+        return "MainController?action=viewAllPost";
+    }
+
 }

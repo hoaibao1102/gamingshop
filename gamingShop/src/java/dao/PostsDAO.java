@@ -164,4 +164,57 @@ public class PostsDAO implements IDAO<Posts, Integer> {
         } catch (Exception ignore) {
         }
     }
+
+    public int createNewPost(Posts e) {
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        int generatedId = -1;
+        try {
+            c = DBUtils.getConnection();
+            // Thêm Statement.RETURN_GENERATED_KEYS để lấy id sinh ra
+            st = c.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
+            st.setString(1, e.getAuthor());
+            st.setString(2, e.getTitle());
+            st.setString(3, e.getContent_html());
+            st.setString(4, e.getImage_url());
+            if (e.getPublish_date() != null) {
+                st.setTimestamp(5, new Timestamp(e.getPublish_date().getTime()));
+            } else {
+                st.setNull(5, Types.TIMESTAMP);
+            }
+            st.setInt(6, e.getStatus());
+
+            int rows = st.executeUpdate();
+            if (rows > 0) {
+                rs = st.getGeneratedKeys();
+                if (rs.next()) {
+                    generatedId = rs.getInt(1);
+                    e.setId(generatedId); // gán lại vào object
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(c, st, rs);
+        }
+        return generatedId; // nếu lỗi trả về -1
+    }
+
+    public boolean deleteProductById(int id) {
+        Connection c = null;
+        PreparedStatement st = null;
+        String sql = "UPDATE Posts SET status = '0', updated_at = GETDATE() WHERE id = ?";
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(sql);
+            st.setInt(1, id);
+            return st.executeUpdate() > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            close(c, st, null);
+        }
+    }
 }
