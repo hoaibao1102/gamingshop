@@ -26,6 +26,20 @@ public class ProductsDAO implements IDAO<Products, Integer> {
     private static final String CREATE
             = "INSERT INTO dbo.Products (name, sku, price, product_type, model_id, memory_id, guarantee_id, quantity, description_html, status) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE
+            = "UPDATE dbo.Products SET "
+            + "name = ?, "
+            + "sku = ?, "
+            + "price = ?, "
+            + "product_type = ?, "
+            + "model_id = ?, "
+            + "memory_id = ?, "
+            + "guarantee_id = ?, "
+            + "quantity = ?, "
+            + "description_html = ?, "
+            + "status = ?, "
+            + "updated_at = GETDATE() "
+            + "WHERE id = ?";
 
     @Override
     public boolean create(Products e) {
@@ -353,6 +367,50 @@ public class ProductsDAO implements IDAO<Products, Integer> {
             close(c, st, rs);
         }
         return generatedId; // nếu lỗi trả về -1
+    }
+
+    public boolean update(Products newProduct) {
+        Connection c = null;
+        PreparedStatement st = null;
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(UPDATE);
+            st.setString(1, newProduct.getName());
+            st.setString(2, newProduct.getSku());
+            st.setDouble(3, newProduct.getPrice());
+            st.setString(4, newProduct.getProduct_type());
+            st.setInt(5, newProduct.getModel_id());
+            st.setInt(6, newProduct.getMemory_id());
+            st.setInt(7, newProduct.getGuarantee_id());
+            st.setInt(8, newProduct.getQuantity());
+            st.setString(9, newProduct.getDescription_html());
+            st.setString(10, newProduct.getStatus());
+            st.setInt(11, newProduct.getId());
+
+            return st.executeUpdate() > 0; // true nếu cập nhật thành công
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            close(c, st, null);
+        }
+    }
+
+    public boolean deleteProductById(int productId) {
+        Connection c = null;
+        PreparedStatement st = null;
+        String sql = "UPDATE Products SET status = 'inactive', updated_at = GETDATE() WHERE id = ?";
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(sql);
+            st.setInt(1, productId);
+            return st.executeUpdate() > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            close(c, st, null);
+        }
     }
 
 }

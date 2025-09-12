@@ -189,15 +189,15 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
-
-        String sql = "SELECT * FROM Product_images WHERE product_id = ? AND status = '1' ORDER BY created_at ASC";
-
+        // Sắp xếp theo sort_order để map đúng 4 slot
+        String sql = "SELECT * FROM Product_images "
+                + "WHERE product_id = ? AND status = 1 "
+                + "ORDER BY sort_order ASC, id ASC";
         try {
             c = DBUtils.getConnection();
             st = c.prepareStatement(sql);
             st.setInt(1, productId);
             rs = st.executeQuery();
-
             while (rs.next()) {
                 img.add(map(rs));
             }
@@ -206,8 +206,43 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
         } finally {
             close(c, st, rs);
         }
-
         return img;
     }
 
+    public boolean deleteImageById(int id) {
+        Connection c = null;
+        PreparedStatement st = null;
+        String sql = "UPDATE Product_images SET status = 0, updated_at = GETDATE() WHERE id = ?";
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(sql);
+            st.setInt(1, id);
+            return st.executeUpdate() > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            close(c, st, null);
+        }
+    }
+
+    public boolean softDeleteByProductAndSlot(int productId, int sortOrder) {
+        Connection c = null;
+        PreparedStatement st = null;
+        String sql = "UPDATE Product_images "
+                + "SET status = 0, updated_at = GETDATE() "
+                + "WHERE product_id = ? AND sort_order = ? AND status = 1";
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(sql);
+            st.setInt(1, productId);
+            st.setInt(2, sortOrder);
+            return st.executeUpdate() > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            close(c, st, null);
+        }
+    }
 }

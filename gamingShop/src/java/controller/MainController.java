@@ -90,7 +90,10 @@ public class MainController extends HttpServlet {
                 || "prepareHome".equals(action)
                 || "filterProducts".equals(action)
                 || "showAddProductForm".equals(action)
-                || "addProduct".equals(action);
+                || "addProduct".equals(action)
+                || "editMainProduct".equals(action)
+                || "editImageProduct".equals(action)
+                || "deleteProduct".equals(action);
     }
 
 }

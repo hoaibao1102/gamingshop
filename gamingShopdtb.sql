@@ -41,6 +41,8 @@ CREATE TABLE dbo.Models (
   image_url        NVARCHAR(1024) NULL,
   created_at       DATETIME2(3) NOT NULL CONSTRAINT DF_models_created_at DEFAULT SYSDATETIME(),
   updated_at       DATETIME2(3) NOT NULL CONSTRAINT DF_models_updated_at DEFAULT SYSDATETIME(),
+  status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Models_Status CHECK (status IN (N'active', N'inactive')),
   CONSTRAINT UK_models_type UNIQUE (model_type)
 );
 GO
@@ -59,6 +61,8 @@ CREATE TABLE dbo.Memories (
   image_url        NVARCHAR(1024) NULL,
   created_at       DATETIME2(3) NOT NULL CONSTRAINT DF_memories_created_at DEFAULT SYSDATETIME(),
   updated_at       DATETIME2(3) NOT NULL CONSTRAINT DF_memories_updated_at DEFAULT SYSDATETIME(),
+  status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Memories_Status CHECK (status IN (N'active', N'inactive')),
   CONSTRAINT UK_memories_type UNIQUE (memory_type)
 );
 GO
@@ -77,6 +81,8 @@ CREATE TABLE dbo.Guarantees (
   description_html NVARCHAR(MAX) NULL,
   created_at       DATETIME2(3) NOT NULL CONSTRAINT DF_guarantees_created_at DEFAULT SYSDATETIME(),
   updated_at       DATETIME2(3) NOT NULL CONSTRAINT DF_guarantees_updated_at DEFAULT SYSDATETIME(),
+  status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Guarantees_Status CHECK (status IN (N'active', N'inactive')),
   CONSTRAINT UK_guarantees_type UNIQUE (guarantee_type)
 );
 GO
@@ -95,6 +101,8 @@ CREATE TABLE dbo.Accessories (
   image_url        NVARCHAR(1024) NULL,
   created_at       DATETIME2(3) NOT NULL CONSTRAINT DF_accessories_created_at DEFAULT SYSDATETIME(),
   updated_at       DATETIME2(3) NOT NULL CONSTRAINT DF_accessories_updated_at DEFAULT SYSDATETIME(),
+  status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Accessories_Status CHECK (status IN (N'active', N'inactive')),
   CONSTRAINT UK_accessories_name UNIQUE (name)
 );
 GO
@@ -142,7 +150,9 @@ CREATE TABLE dbo.Product_accessories (
   quantity    INT NOT NULL CONSTRAINT CK_pa_qty CHECK (quantity > 0) CONSTRAINT DF_pa_qty DEFAULT (1),
   CONSTRAINT PK_product_accessories PRIMARY KEY (product_id, accessory_id),
   CONSTRAINT FK_pa_product   FOREIGN KEY (product_id)  REFERENCES dbo.Products(id)    ON UPDATE CASCADE ON DELETE CASCADE,
-  CONSTRAINT FK_pa_accessory FOREIGN KEY (accessory_id) REFERENCES dbo.Accessories(id) ON UPDATE CASCADE ON DELETE NO ACTION
+  CONSTRAINT FK_pa_accessory FOREIGN KEY (accessory_id) REFERENCES dbo.Accessories(id) ON UPDATE CASCADE ON DELETE NO ACTION,
+  status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Product_accessories_Status CHECK (status IN (N'active', N'inactive'))
 );
 GO
 
@@ -181,7 +191,9 @@ CREATE TABLE dbo.Services (
   price            DECIMAL(10,2) NOT NULL CONSTRAINT CK_services_price CHECK (price >= 0),
   created_at       DATETIME2(3) NOT NULL CONSTRAINT DF_services_created_at DEFAULT SYSDATETIME(),
   updated_at       DATETIME2(3) NOT NULL CONSTRAINT DF_services_updated_at DEFAULT SYSDATETIME(),
-  CONSTRAINT UK_services_type UNIQUE (service_type)
+  status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Services_Status CHECK (status IN (N'active', N'inactive')),
+	CONSTRAINT UK_services_type UNIQUE (service_type)
 );
 GO
 CREATE INDEX IX_services_price ON dbo.Services(price);
@@ -362,6 +374,30 @@ BEGIN
     LEFT JOIN base_max  AS b  ON b.product_id = na.product_id;
 END;
 GO
+
+ALTER TABLE [GamingShop].[dbo].[Services]
+	ADD status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Services_Status CHECK (status IN (N'active', N'inactive'));
+
+	ALTER TABLE [GamingShop].[dbo].[Product_accessories]
+	ADD status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Product_accessories_Status CHECK (status IN (N'active', N'inactive'));
+
+	ALTER TABLE [GamingShop].[dbo].[Models]
+	ADD status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Models_Status CHECK (status IN (N'active', N'inactive'));
+
+	ALTER TABLE [GamingShop].[dbo].[Memories]
+	ADD status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Memories_Status CHECK (status IN (N'active', N'inactive'));
+
+	ALTER TABLE [GamingShop].[dbo].[Guarantees]
+	ADD status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Guarantees_Status CHECK (status IN (N'active', N'inactive'));
+
+	ALTER TABLE [GamingShop].[dbo].[Accessories]
+	ADD status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Accessories_Status CHECK (status IN (N'active', N'inactive'));
 
 /* ============================================================
    DỮ LIỆU MẪU THẬT
