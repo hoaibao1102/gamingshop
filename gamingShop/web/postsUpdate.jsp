@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -24,8 +25,15 @@
     </head>
     <body>
         <div class="form-section">
+            <c:choose>
+                <c:when test="${not empty post}">
+                    <h1 class="mb-3">Sửa bài viết</h1>
+                </c:when>
+                <c:otherwise>
+                    <h1 class="mb-3">Thêm bài viết</h1>
+                </c:otherwise>
+            </c:choose>
 
-            <h1 class="mb-3">Thêm bài viết</h1>
 
             <!-- Thông báo từ servlet -->
             <%
@@ -71,43 +79,51 @@
             </div>
             <% } %>
 
-            <!-- FORM thêm mới -->
-            <form action="MainController" method="post" enctype="multipart/form-data">
-                <input type="hidden" name="action" value="addPosts"/>
 
-                <div class="mb-3">
-                    <label for="author" class="form-label">Tác giả<span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="author" name="author" required>
-                </div>
+            <!-- FORM thêm mới -->
+            <form action="MainController" method="get" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="${not empty post ? 'updatePosts' : 'addPosts'}"/>
+
+                <c:if test="${not empty post}">
+                    <input type="hidden" name="id" value="${post.id}">
+                </c:if>
 
                 <div class="mb-3">
                     <label for="title" class="form-label">Tiêu đề<span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" id="title" name="title" required>
+                    <input type="text" class="form-control" id="title" name="title"
+                           value="${not empty post ? post.title : '' }"  required>
                 </div>
 
                 <div class="mb-3">
                     <label for="content_html" class="form-label">Nội dung (HTML)<span class="text-danger">*</span></label>
-                    <textarea class="form-control" id="editor" name="content_html" rows="8" required></textarea>
+                    <textarea class="form-control" id="editor" name="content_html" rows="8" required> ${not empty post ? post.content_html : '' } </textarea>
                 </div>
 
                 <div class="row g-3">
                     <div class="col-sm-6">
-                        <label for="publish_date" class="form-label">Ngày xuất bản</label>
-                        <input type="date" class="form-control" id="publish_date" name="publish_date">
-                    </div>
-                    <div class="col-sm-6">
                         <label for="status" class="form-label">Trạng thái</label>
                         <select class="form-select" id="status" name="status">
-                            <option value="1" selected>Active</option>
-                            <option value="0">Inactive</option>
+                            <option value="1" ${not empty post && post.status == 1 ? 'selected' : ''}>Active</option>
+                            <option value="0" ${not empty post && post.status == 0 ? 'selected' : ''}>Inactive</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="mb-3 mt-3">
                     <label for="imageFile" class="form-label">Ảnh đại diện</label>
-                    <input class="form-control" type="file" id="imageFile" name="imageFile" accept="image/*">
-                    <img id="preview" class="img-preview" alt="Preview">
+
+                    <!-- file input: KHÔNG set value -->
+                    <input class="form-control" type="file" id="imageFile" name="imageFile" accept="image/*" >
+
+                    <!-- ảnh preview: nếu đang edit thì show luôn ảnh cũ -->
+                    <img id="preview" class="img-preview"
+                         src="${not empty post && not empty post.image_url ? post.image_url : ''}"
+                         alt="Preview"
+                         style="${not empty post && not empty post.image_url ? 'display:block' : 'display:none'}">
+
+                    <!-- tuỳ chọn: giữ URL ảnh cũ để server biết nếu người dùng không upload ảnh mới -->
+                    <input type="hidden" name="existingImageUrl"
+                           value="${not empty post ? post.image_url : ''}">
                 </div>
 
                 <div class="mt-4 d-flex gap-2">

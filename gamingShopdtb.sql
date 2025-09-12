@@ -432,22 +432,22 @@ VALUES
  N'admin@example.com', N'Nguyen Van A', N'0909123456');
 
 -- 2) models
-INSERT INTO dbo.Models (model_type, description_html, image_url)
+INSERT INTO dbo.Models (model_type, description_html, image_url,status)
 VALUES
-(N'PlayStation 5', N'Máy chơi game Sony PlayStation 5 chính hãng', N'https://example.com/img/ps5.jpg'),
-(N'Nintendo Switch', N'Máy chơi game cầm tay Nintendo Switch OLED', N'https://example.com/img/switch.jpg');
+(N'PlayStation 5', N'Máy chơi game Sony PlayStation 5 chính hãng', N'https://example.com/img/ps5.jpg','ACTIVE'),
+(N'Nintendo Switch', N'Máy chơi game cầm tay Nintendo Switch OLED', N'https://example.com/img/switch.jpg','ACTIVE');
 
 -- 3) memories
-INSERT INTO dbo.Memories (memory_type, description_html, quantity, price, image_url)
+INSERT INTO dbo.Memories (memory_type, description_html, quantity, price, image_url,status)
 VALUES
-(N'64GB',  N'Thẻ nhớ 64GB chính hãng SanDisk', 50, 350000, N'https://example.com/img/64gb.jpg'),
-(N'128GB', N'Thẻ nhớ 128GB tốc độ cao',        30, 650000, N'https://example.com/img/128gb.jpg');
+(N'64GB',  N'Thẻ nhớ 64GB chính hãng SanDisk', 50, 350000, N'https://example.com/img/64gb.jpg','ACTIVE'),
+(N'128GB', N'Thẻ nhớ 128GB tốc độ cao',        30, 650000, N'https://example.com/img/128gb.jpg','ACTIVE');
 
 -- 4) guarantees
-INSERT INTO dbo.Guarantees (guarantee_type, description_html)
+INSERT INTO dbo.Guarantees (guarantee_type, description_html,status)
 VALUES
-(N'12 tháng', N'Bảo hành 12 tháng chính hãng'),
-(N'24 tháng', N'Bảo hành 24 tháng mở rộng');
+(N'12 tháng', N'Bảo hành 12 tháng chính hãng','ACTIVE'),
+(N'24 tháng', N'Bảo hành 24 tháng mở rộng','ACTIVE');
 
 -- 5) accessories
 INSERT INTO dbo.Accessories (name, quantity, price, description_html, image_url)

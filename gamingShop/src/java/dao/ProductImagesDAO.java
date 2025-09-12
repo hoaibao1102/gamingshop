@@ -19,7 +19,7 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
 
     private static final String GET_ALL = "SELECT * FROM dbo.Product_images";
     private static final String GET_BY_ID = "SELECT * FROM dbo.Product_images WHERE id = ?";
-    private static final String GET_BY_PRODUCT = "SELECT TOP 1 * FROM Product_images WHERE product_id = ? AND status = '1' ORDER BY created_at ASC";
+    private static final String GET_BY_PRODUCT = "SELECT * FROM Product_images WHERE product_id = ? AND status = '1' ORDER BY created_at ASC";
     private static final String CREATE
             = "INSERT INTO dbo.Product_images (product_id, image_url, caption, sort_order, status) VALUES (?, ?, ?, ?, ?)";
 
