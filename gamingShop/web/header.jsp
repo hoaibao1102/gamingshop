@@ -63,7 +63,7 @@
                 .topbar{display:none}
                 .desktopbar{display:grid;grid-template-columns:7.5fr 2.5fr;grid-auto-rows:minmax(64px,auto);gap:0 16px;align-items:center;width:100%;padding:10px 20px;border-bottom:1px solid var(--ring);background:var(--bg)}
                 .nav{justify-self:center;width:100%;max-width:calc(var(--maxw) + 240px)}
-                .nav ul{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:5px 75px;list-style:none;margin:0;padding:0}
+                .nav ul{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:7px;list-style:none;margin:0;padding:0}
                 .nav a{display:inline-flex;align-items:center;gap:8px;font-weight:600;padding:10px 6px;border-radius:8px;white-space:nowrap;line-height:1}
                 .nav a svg{width:18px;height:18px}
                 .nav a:hover{color:var(--primary);background:#eff6ff}

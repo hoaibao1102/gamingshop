@@ -400,7 +400,7 @@
 
             <!-- Menu -->
             <nav class="sb-nav">
-                <a href="">
+                <a href="MainController?action=prepareHome">
                     <span class="nav-icon">🏠</span>
                     <span>Trang chủ</span>
                 </a>

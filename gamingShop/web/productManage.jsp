@@ -602,48 +602,8 @@
             <div class="Main_content">
                 <jsp:include page="header.jsp"/>
 
-                <!-- ====== Marquee (thanh thông báo chạy ngang) ====== -->
-                <div class="marquee-bar">
-                    <div class="marquee-inner">
-                        <span class="marquee-item"><span class="badge">HOT</span> Mua 2 tặng 1 phụ kiện chính hãng</span>
-                        <span class="marquee-item"><span class="badge">NEW</span> Hàng mới về mỗi ngày — xem ngay</span>
-                        <span class="marquee-item"><span class="badge">SALE</span> Giảm đến 40% cho bộ sưu tập tuần này</span>
-                        <span class="marquee-item"><a href="#">Xem tất cả khuyến mãi →</a></span>
-                    </div>
-                </div>
 
-                <!-- ====== Hero Slider (banner chạy qua) ====== -->
-                <div class="hero-wrap">
-                    <div class="swiper hero-slider">
-                        <div class="swiper-wrapper">
-                            <!-- Thay ảnh & link theo banner của bạn -->
-                            <div class="swiper-slide">
-                                <a href="#"><img src="https://i.pinimg.com/1200x/02/0b/b4/020bb4b5afb678cd58829cf05c04cced.jpg" alt="Khuyến mãi 1"></a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="#"><img src="https://i.pinimg.com/1200x/f3/8d/c6/f38dc68007559c8ea03dcb2546bc1ab8.jpg" alt="Khuyến mãi 2"></a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="#"><img src="https://i.pinimg.com/1200x/6a/4c/eb/6a4ceb3f4a5cd6da10507decea99381c.jpg" alt="Khuyến mãi 3"></a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="#"><img src="https://i.pinimg.com/1200x/0c/49/db/0c49dbfd037a955d2bc9b4a4a55387d6.jpg" alt="Khuyến mãi 4"></a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="#"><img src="https://i.pinimg.com/1200x/a6/9f/bd/a69fbdf9416aec95d80a1281d44e025f.jpg" alt="Khuyến mãi 5"></a>
-                            </div>
-                        </div>
-
-                        <!-- Dots -->
-                        <div class="swiper-pagination"></div>
-                        <!-- Prev/Next -->
-                        <div class="swiper-button-prev"></div>
-                        <div class="swiper-button-next"></div>
-                    </div>
-                </div>
-
-                <!-- ====== Filter Form (sau banner) ====== -->
-                <jsp:include page="filter-form.jsp"/>
+       
 
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
@@ -657,7 +617,7 @@
                                     <c:if test="${product.status ne 'inactive'}">
                                         <li class="item">
                                             <form action="MainController" method="get" class="product-form">
-                                                <input type="hidden" name="idProduct" value="${product.id}">
+                                                <input type="hidden" name="id" value="${product.id}">
                                                 <input type="hidden" name="action" value="getProduct">
 
                                                 <button type="submit" class="product-button">
