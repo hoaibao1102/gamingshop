@@ -463,10 +463,10 @@ VALUES
 (N'Vệ sinh bảo dưỡng máy', N'Vệ sinh PlayStation/Nintendo, tra keo tản nhiệt', 300000);
 
 -- 10) posts
-INSERT INTO dbo.Posts (author, title, content_html, image_url, publish_date)
+INSERT INTO dbo.Posts (author, title, content_html, image_url, status ,publish_date)
 VALUES
 (N'Admin', N'Sony ra mắt PS5 Slim', N'<p>Phiên bản PS5 Slim nhẹ hơn, mỏng hơn, dự kiến phát hành cuối năm.</p>',
- N'https://example.com/img/ps5-slim.jpg', '2025-08-01'),
+ N'https://example.com/img/ps5-slim.jpg', 1,'2025-08-01'),
 (N'Admin', N'Nintendo công bố game Zelda mới', N'<p>Zelda: Breath of the Wild 2 chính thức có trailer mới tại E3.</p>',
- N'https://example.com/img/zelda.jpg', '2025-08-15');
+ N'https://example.com/img/zelda.jpg', 1,'2025-08-15');
 GO

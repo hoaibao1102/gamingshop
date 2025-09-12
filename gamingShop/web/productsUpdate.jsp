@@ -5,6 +5,13 @@
     <head>
         <title>Product Management</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+        <style>
+            .img-preview {
+                max-height: 150px;
+                display: none;
+                margin-top: 8px;
+            }
+        </style>
     </head>
     <body class="bg-light">
         <%
@@ -164,20 +171,24 @@
                     <label class="form-label">Upload Images (max 4)</label>
                     <div class="row g-2">
                         <div class="col-md-3">
-                            <input type="file" name="imageFile1" class="form-control" accept="image/*"/>
+                            <input type="file" name="imageFile1" id="imageFile1" class="form-control" accept="image/*"/>
+                            <img id="preview1" class="img-preview" alt="Preview 1">
                         </div>
                         <div class="col-md-3">
-                            <input type="file" name="imageFile2" class="form-control" accept="image/*"/>
+                            <input type="file" name="imageFile2" id="imageFile2" class="form-control" accept="image/*"/>
+                            <img id="preview2" class="img-preview" alt="Preview 2">
                         </div>
                         <div class="col-md-3">
-                            <input type="file" name="imageFile3" class="form-control" accept="image/*"/>
+                            <input type="file" name="imageFile3" id="imageFile3" class="form-control" accept="image/*"/>
+                            <img id="preview3" class="img-preview" alt="Preview 3">
                         </div>
                         <div class="col-md-3">
-                            <input type="file" name="imageFile4" class="form-control" accept="image/*"/>
+                            <input type="file" name="imageFile4" id="imageFile4" class="form-control" accept="image/*"/>
+                            <img id="preview4" class="img-preview" alt="Preview 4">
                         </div>
                     </div>
                     <% } else if (justAdded) { %>
-                    <!-- Vừa Add xong: hiển thị ảnh vừa upload (chỉ ở đây, không hiển thị phần quản lý slot) -->
+                    <!-- Vừa Add xong: hiển thị ảnh vừa upload -->
                     <% if (productImages != null && !productImages.isEmpty()) { %>
                     <div class="mt-3">
                         <p>Current Images:</p>
@@ -225,15 +236,22 @@
                     %>
                     <div class="col-md-3 mb-4 text-center">
                         <% if (slotImg != null) { %>
+                        <!-- Ảnh cũ -->
                         <img src="<%= request.getContextPath() %>/<%= slotImg.getImage_url() %>"
-                             class="img-thumbnail mb-2" style="max-width:200px; height:auto;"/>
+                             class="img-thumbnail mb-2" style="max-width:200px; height:auto;"
+                             id="preview<%= slot %>_old"/>
                         <div class="text-muted mb-2">Slot <%= slot %> (Giữ nguyên nếu không chọn ảnh mới)</div>
                         <% } else { %>
+                        <!-- Placeholder -->
                         <div class="mb-2" style="height:200px; display:flex; align-items:center; justify-content:center; background:#f8f9fa;">
                             <span class="text-muted">No Image (Slot <%= slot %>)</span>
                         </div>
+                        <img id="preview<%= slot %>_old" style="display:none;"/>
                         <% } %>
-                        <input type="file" name="imageFile<%= slot %>" accept="image/*" class="form-control form-control-sm"/>
+                        <!-- Input + preview ảnh mới -->
+                        <input type="file" id="imageFile<%= slot %>" name="imageFile<%= slot %>" accept="image/*"
+                               class="form-control form-control-sm"/>
+                        <img id="preview<%= slot %>" class="img-thumbnail mt-2" style="max-width:200px; display:none;"/>
                     </div>
                     <% } %>
                 </div>
@@ -243,6 +261,62 @@
             </form>
         </div>
         <% } %>
+
+        <script>
+            // Bind preview cho từng input
+            function bindPreview(inputId, imgId) {
+                const input = document.getElementById(inputId);
+                const img = document.getElementById(imgId);
+                let lastURL = null;
+
+                if (!input || !img)
+                    return;
+
+                input.addEventListener('change', function () {
+                    const file = this.files && this.files[0];
+                    if (lastURL) {
+                        URL.revokeObjectURL(lastURL);
+                        lastURL = null;
+                    }
+                    if (file) {
+                        const url = URL.createObjectURL(file);
+                        lastURL = url;
+                        img.src = url;
+                        img.style.display = 'block';
+                    } else {
+                        img.removeAttribute('src');
+                        img.style.display = 'none';
+                    }
+                });
+
+                // Khi rời trang/refresh, thu hồi URL
+                window.addEventListener('beforeunload', function () {
+                    if (lastURL)
+                        URL.revokeObjectURL(lastURL);
+                });
+            }
+
+            bindPreview('imageFile1', 'preview1');
+            bindPreview('imageFile2', 'preview2');
+            bindPreview('imageFile3', 'preview3');
+            bindPreview('imageFile4', 'preview4');
+
+            // Reset form -> ẩn tất cả preview
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('reset', function () {
+                    setTimeout(() => {
+                        ['preview1', 'preview2', 'preview3', 'preview4'].forEach(id => {
+                            const img = document.getElementById(id);
+                            if (img) {
+                                img.removeAttribute('src');
+                                img.style.display = 'none';
+                            }
+                        });
+                    }, 0);
+                });
+            }
+        </script>
 
         <!-- TinyMCE -->
         <script src="https://cdn.tiny.cloud/1/9q1kybnxbgq2f5l3c8palpboawfgsnqsdd53b7gk5ny3dh19/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
