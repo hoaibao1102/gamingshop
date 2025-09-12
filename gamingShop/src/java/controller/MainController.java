@@ -97,7 +97,9 @@ public class MainController extends HttpServlet {
                 || "searchPosts".equals(action)
                 || "viewAllPost".equals(action)
                 || "addPosts".equals(action)
-                || "deletePosts".equals(action);
+                || "deletePosts".equals(action)
+                || "updatePosts".equals(action)
+                || "goToUpdatePosts".equals(action);
     }
 
 }

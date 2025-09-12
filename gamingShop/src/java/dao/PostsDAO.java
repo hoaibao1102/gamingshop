@@ -22,6 +22,8 @@ public class PostsDAO implements IDAO<Posts, Integer> {
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Posts WHERE title LIKE ?";
     private static final String CREATE
             = "INSERT INTO dbo.Posts (author, title, content_html, image_url, publish_date, status) VALUES (?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE
+            = "UPDATE dbo.Posts set author = ?,  title = ?, content_html = ?, image_url = ?, publish_date = ?, status = ? WHERE id = ?";
 
     @Override
     public boolean create(Posts e) {
@@ -210,6 +212,39 @@ public class PostsDAO implements IDAO<Posts, Integer> {
             st = c.prepareStatement(sql);
             st.setInt(1, id);
             return st.executeUpdate() > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            close(c, st, null);
+        }
+    }
+
+    public boolean updatePost(Posts post, int id) {
+        Connection c = null;
+        PreparedStatement st = null;
+        try {
+            c = DBUtils.getConnection();
+            // Không cần RETURN_GENERATED_KEYS cho UPDATE
+            st = c.prepareStatement(UPDATE);
+
+            st.setString(1, post.getAuthor());
+            st.setString(2, post.getTitle());
+            st.setString(3, post.getContent_html());
+            st.setString(4, post.getImage_url());
+
+            if (post.getPublish_date() != null) {
+                st.setTimestamp(5, new Timestamp(post.getPublish_date().getTime()));
+            } else {
+                st.setNull(5, Types.TIMESTAMP);
+            }
+
+            st.setInt(6, post.getStatus());
+            st.setInt(7, id); // ĐÂY LÀ PARAMETER QUAN TRỌNG BỊ THIẾU
+
+            int rowsAffected = st.executeUpdate();
+            return rowsAffected > 0;
+
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;

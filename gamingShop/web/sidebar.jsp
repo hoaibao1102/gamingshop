@@ -439,7 +439,7 @@
                     <c:set var="shown" value="0"/>
                     <ul class="featured-list-sb">
                         <c:forEach var="i" items="${list}">
-                            <c:if test="${i.status eq 'prominent' and shown < 4}">
+                            <c:if test="${i.status eq 'prominent' and shown < 7}">
                                 <li class="item-sb">
                                     <form action="MainController" method="get" class="card">
                                         <input type="hidden" name="action" value="getProduct"/>
