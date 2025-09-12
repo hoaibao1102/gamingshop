@@ -86,12 +86,14 @@ public class ProductController extends HttpServlet {
                 url = handleViewAllPost(request, response);
             } else if (action.equals("searchPosts")) {
                 url = handlePostSearching(request, response);
-            } else if (action.equals("editPosts")) {
-                url = handleUpdatePosts(request, response);
             } else if (action.equals("addPosts")) {
                 url = handleAddPosts(request, response);
             } else if (action.equals("deletePosts")) {
                 url = handleDeletePosts(request, response);
+            } else if (action.equals("goToUpdatePosts")) {
+                url = handleGoToUpdatePosts(request, response);
+            } else if (action.equals("updatePosts")) {
+                url = handleUpdatePosts(request, response);
             } else if (action.equals("getProduct")) {
                 url = handleGetProduct(request, response);
             }
@@ -734,7 +736,121 @@ public class ProductController extends HttpServlet {
     }
 
     private String handleUpdatePosts(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            request.setCharacterEncoding("UTF-8");
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            // ===== Lấy dữ liệu từ form =====
+            String author = request.getParameter("author");
+            if (author == null || author.trim().isEmpty()) {
+                author = "admin";
+            }
+            String title = request.getParameter("title");
+            String content_html = request.getParameter("content_html");
+
+            // publish_date có thể để trống
+            String publishDateStr = request.getParameter("publish_date");
+            Date publishDate = null;
+            if (publishDateStr != null && !publishDateStr.trim().isEmpty()) {
+                try {
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+                    formatter.setLenient(false);
+                    publishDate = formatter.parse(publishDateStr.trim());
+                } catch (ParseException e) {
+                    publishDate = new Date();
+                    e.printStackTrace();
+                }
+            } else {
+                publishDate = new Date();
+            }
+
+            int status = 1; // mặc định active
+            try {
+                status = Integer.parseInt(request.getParameter("status"));
+            } catch (Exception ignore) {
+                status = 1;
+            }
+
+            // ===== Tạo đối tượng Posts và set dữ liệu =====
+            Posts updatePost = new Posts();
+            updatePost.setAuthor(author);
+            updatePost.setTitle(title);
+            updatePost.setContent_html(content_html);
+            updatePost.setPublish_date(publishDate);
+            updatePost.setStatus(status);
+
+            // ===== Xử lý ảnh =====
+            String finalImageUrl = null;
+
+            // Lấy ảnh cũ từ hidden input (nếu có)
+            String existingImageUrl = request.getParameter("existingImageUrl");
+
+            // Kiểm tra xem có upload ảnh mới không
+            Part imagePart = null;
+            try {
+                imagePart = request.getPart("imageFile");
+            } catch (Exception ignore) {
+                // Không có part imageFile hoặc lỗi khác
+            }
+
+            if (imagePart != null && imagePart.getSize() > 0) {
+                // CÓ upload ảnh mới
+                String uploadDirPath = request.getServletContext().getRealPath("/assets/img/posts/");
+                File uploadDir = new File(uploadDirPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+
+                // Lấy extension
+                String originalFileName = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
+                String fileExtension = "";
+                int dot = originalFileName.lastIndexOf('.');
+                if (dot >= 0 && dot < originalFileName.length() - 1) {
+                    fileExtension = originalFileName.substring(dot);
+                }
+
+                // Đặt tên file mới
+                String finalName = id + "_1" + fileExtension;
+                File finalFile = new File(uploadDir, finalName);
+
+                // Lưu file
+                imagePart.write(finalFile.getAbsolutePath());
+
+                finalImageUrl = "assets/img/posts/" + finalName;
+            } else {
+                // KHÔNG upload ảnh mới, giữ ảnh cũ
+                finalImageUrl = existingImageUrl;
+            }
+
+            updatePost.setImage_url(finalImageUrl);
+
+            // ===== Thực hiện update =====
+            boolean success = postsDAO.updatePost(updatePost, id);
+
+            if (success) {
+                HttpSession session = request.getSession();
+                session.removeAttribute("cachedPostsListEdit");
+
+                request.setAttribute("messageAddPost", "Post updated successfully.");
+
+                // Load lại post đã update để hiển thị
+                Posts updatedPost = postsDAO.getById(id);
+                request.setAttribute("post", updatedPost);
+            } else {
+                request.setAttribute("checkErrorAddPost", "Failed to update post.");
+
+                // Load lại post cũ khi lỗi
+                Posts post = postsDAO.getById(id);
+                request.setAttribute("post", post);
+            }
+
+            return "postsUpdate.jsp";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error while updating post: " + e.getMessage());
+            return "error.jsp";
+        }
     }
 
     private String handleAddPosts(HttpServletRequest request, HttpServletResponse response) {
@@ -743,6 +859,9 @@ public class ProductController extends HttpServlet {
 
             // ===== Lấy dữ liệu từ form =====
             String author = request.getParameter("author");
+            if (author == null) {
+                author = "admin";
+            }
             String title = request.getParameter("title");
             String content_html = request.getParameter("content_html");
 
@@ -909,6 +1028,15 @@ public class ProductController extends HttpServlet {
         return "MainController?action=viewAllPost";
     }
 
+    private String handleGoToUpdatePosts(HttpServletRequest request, HttpServletResponse response) {
+        int id = Integer.parseInt(request.getParameter("id"));
+        PostsDAO pd = new PostsDAO();
+        try {
+            Posts post = pd.getById(id);
+            request.setAttribute("post", post);
+        } catch (Exception e) {
+        }
+        return "postsUpdate.jsp";
     private String handleGetProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
             request.setCharacterEncoding("UTF-8");
@@ -937,6 +1065,7 @@ public class ProductController extends HttpServlet {
             return "welcome.jsp";
         }
         return "productDetail.jsp";
+
     }
 
 }
