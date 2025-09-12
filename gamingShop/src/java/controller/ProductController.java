@@ -45,7 +45,7 @@ public class ProductController extends HttpServlet {
 
     private final ProductsDAO productsdao = new ProductsDAO();
     private final ProductImagesDAO productImagesDAO = new ProductImagesDAO();
-    private final  AccessoriesDAO accessoriesDAO  = new AccessoriesDAO();
+    private final AccessoriesDAO accessoriesDAO = new AccessoriesDAO();
 
     String INDEX_PAGE = "index.jsp";
 
@@ -70,19 +70,21 @@ public class ProductController extends HttpServlet {
                 url = handleShowAddProductForm(request, response);
             } else if (action.equals("addProduct")) {
                 url = handleProductAdding(request, response);
-//            } else if (action.equals("editProduct")) {
-//                url = handleProductEditing(request, response);
-// Thêm các action handlers vào processRequest method
+// ***Thêm các action handlers vào processRequest method ACCESSORY***
+            } else if (action.equals("viewAllAccessories")) {
+                url = handleViewAllAccessories(request, response);
+            } else if (action.equals("searchAccessory")) {
+                url = handleAccessorySearching(request, response);
             } else if (action.equals("showAddAccessoryForm")) {
                 url = handleShowAddAccessoryForm(request, response);
             } else if (action.equals("addAccessory")) {
                 url = handleAccessoryAdding(request, response);
             } else if (action.equals("showEditAccessoryForm")) {
-//     url = handleShowEditAccessoryForm(request, response);
-// } else if (action.equals("editAccessory")) {
-//     url = handleAccessoryEditing(request, response);
+                url = handleShowEditAccessoryForm(request, response);
+            } else if (action.equals("editAccessory")) {
+                url = handleAccessoryEditing(request, response);
 // } else if (action.equals("removeAccessory")) {
-//     url = handleAccessoryRemoving(request, response);
+//     url = handleAccessoryDelete(request, response);
             } else if (action.equals("editMainProduct")) {
                 url = handleUpdateMainProduct(request, response);
             } else if (action.equals("editImageProduct")) {
@@ -442,65 +444,7 @@ public class ProductController extends HttpServlet {
             return "error.jsp";
         }
     }
-    /**
-     * Hiển thị form thêm accessory mới
-     */
-    private String handleShowAddAccessoryForm(HttpServletRequest request, HttpServletResponse response) {
-        request.setAttribute("accessory", null);
-        return "accessoryUpdate.jsp";
-    }
 
-    /**
-     * Xử lý thêm accessory mới
-     */
-    private String handleAccessoryAdding(HttpServletRequest request, HttpServletResponse response) {
-        try {
-
-            // Lấy dữ liệu từ form
-            String name = request.getParameter("name");
-            double quantity = Double.parseDouble(request.getParameter("quantity"));
-            double price = Double.parseDouble(request.getParameter("price"));
-            String description = request.getParameter("description");
-            String status = request.getParameter("status");
-
-            // Xử lý upload ảnh
-            String imageUrl = "";
-            Part imagePart = request.getPart("imageFile");
-            if (imagePart != null && imagePart.getSize() > 0) {
-                String uploadDir = getServletContext().getRealPath("/assets/img/accessories/");
-                new File(uploadDir).mkdirs();
-
-                String originalFileName = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
-                String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
-                String storedFileName = System.currentTimeMillis() + fileExtension;
-                String imagePath = uploadDir + File.separator + storedFileName;
-
-                imagePart.write(imagePath);
-                imageUrl = "assets/img/accessories/" + storedFileName;
-            }
-
-            // Tạo accessory mới
-            Accessories newAccessory = new Accessories();
-            newAccessory.setName(name);
-            newAccessory.setQuantity(quantity);
-            newAccessory.setPrice(price);
-            newAccessory.setDescription(description);
-            newAccessory.setImage_url(imageUrl);
-            newAccessory.setStatus(status);
-            newAccessory.setCreated_at(new java.util.Date());
-            newAccessory.setUpdated_at(new java.util.Date());
-
-            // Thêm vào database
-            boolean success = accessoriesDAO.create(newAccessory);
-            if (success) {
-                HttpSession session = request.getSession();
-                session.removeAttribute("cachedAccessoryList");
-                request.setAttribute("messageAddAccessory", "New accessory added successfully.");
-                return "accessoryList.jsp";
-            } else {
-                request.setAttribute("checkErrorAddAccessory", "Failed to add accessory.");
-                request.setAttribute("accessory", newAccessory);
-                return "accessoryUpdate.jsp";
     private String handleUpdateMainProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
             // Lấy product_id từ form (tham số hidden "product_id")
@@ -753,4 +697,275 @@ public class ProductController extends HttpServlet {
         }
         return "welcome.jsp";
     }
+
+    /**
+     * Hiển thị danh sách tất cả accessories với phân trang
+     */
+    private String handleViewAllAccessories(HttpServletRequest request, HttpServletResponse response) {
+        try {
+        // Lấy tất cả accessories từ database
+        List<Accessories> accessories = accessoriesDAO.getAll();
+        
+        // Set vào request để JSP hiển thị
+        request.setAttribute("accessories", accessories);
+        
+        // Thông báo nếu không có dữ liệu
+        if (accessories == null || accessories.isEmpty()) {
+            request.setAttribute("checkError", "No accessories found. Start by adding your first accessory.");
+        }
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+        request.setAttribute("checkError", "Error loading accessories: " + e.getMessage());
+        // Set empty list để tránh null pointer trong JSP
+        request.setAttribute("accessories", new ArrayList<Accessories>());
+    }
+    
+    return "accessoryList.jsp";
+    }
+
+    /**
+     * Tìm kiếm accessories theo từ khóa
+     */
+    private String handleAccessorySearching(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            // Lấy từ khóa tìm kiếm
+            String keyword = request.getParameter("keyword");
+            List<Accessories> accessories = new ArrayList<>();
+
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String trimmedKeyword = keyword.trim();
+
+                // Tìm kiếm theo tên
+                accessories = accessoriesDAO.getByName(trimmedKeyword);
+
+                // Set keyword để hiển thị lại trong form
+                request.setAttribute("keyword", trimmedKeyword);
+
+                if (accessories == null || accessories.isEmpty()) {
+                    request.setAttribute("checkError", "No accessories found with name containing: \"" + trimmedKeyword + "\"");
+                    accessories = new ArrayList<>(); // Ensure not null
+                } else {
+                    // Thông báo số kết quả tìm được
+                    request.setAttribute("searchResultCount", accessories.size());
+                }
+            } else {
+                // Nếu không có từ khóa, hiển thị tất cả accessories
+                accessories = accessoriesDAO.getAll();
+
+                if (accessories == null) {
+                    accessories = new ArrayList<>();
+                }
+
+                if (accessories.isEmpty()) {
+                    request.setAttribute("checkError", "No accessories available.");
+                }
+
+                // Clear keyword
+                request.setAttribute("keyword", "");
+            }
+
+            // Set accessories list
+            request.setAttribute("accessories", accessories);
+
+            // Set thông tin cho pagination (disable pagination trong search mode)
+            request.setAttribute("currentPage", 1);
+            request.setAttribute("totalPages", 1);
+            request.setAttribute("totalAccessories", accessories.size());
+            request.setAttribute("isSearchMode", true); // Flag để JSP biết đang ở search mode
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error searching accessories: " + e.getMessage());
+
+            // Set empty results
+            request.setAttribute("accessories", new ArrayList<Accessories>());
+            request.setAttribute("keyword", request.getParameter("keyword"));
+            request.setAttribute("currentPage", 1);
+            request.setAttribute("totalPages", 0);
+            request.setAttribute("totalAccessories", 0);
+        }
+
+        return "accessoryList.jsp";
+    }
+
+    /**
+     * Hiển thị form thêm accessory mới
+     */
+    private String handleShowAddAccessoryForm(HttpServletRequest request, HttpServletResponse response) {
+        request.setAttribute("accessory", null);
+        return "accessoryUpdate.jsp";
+    }
+
+    /**
+     * Xử lý thêm accessory mới
+     */
+    private String handleAccessoryAdding(HttpServletRequest request, HttpServletResponse response) {
+        try {
+
+            // Lấy dữ liệu từ form
+            String name = request.getParameter("name");
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            double price = Double.parseDouble(request.getParameter("price"));
+            String description = request.getParameter("description");
+            String status = request.getParameter("status");
+            String gift = request.getParameter("gift");
+
+            // Xử lý upload ảnh
+            String imageUrl = "";
+            Part imagePart = request.getPart("imageFile");
+            if (imagePart != null && imagePart.getSize() > 0) {
+                String uploadDir = getServletContext().getRealPath("/assets/img/accessories/");
+                new File(uploadDir).mkdir();
+
+                String originalFileName = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
+                String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
+                String storedFileName = System.currentTimeMillis() + fileExtension;
+                String imagePath = uploadDir + File.separator + storedFileName;
+
+                imagePart.write(imagePath);
+                imageUrl = "assets/img/accessories/" + storedFileName;
+            }
+
+            // Tạo accessory mới
+            Accessories newAccessory = new Accessories();
+            newAccessory.setName(name);
+            newAccessory.setQuantity(quantity);
+            newAccessory.setPrice(price);
+            newAccessory.setDescription(description);
+            newAccessory.setImage_url(imageUrl);
+            newAccessory.setStatus(status);
+            newAccessory.setGift(gift);
+            newAccessory.setCreated_at(new java.util.Date());
+            newAccessory.setUpdated_at(new java.util.Date());
+
+            // Thêm vào database
+            boolean success = accessoriesDAO.create(newAccessory);
+            
+            System.out.println("++++++++++++++++++++++dây là san pham duoc them:++++++++++++++++++++===" + newAccessory.getId() +  "|" + newAccessory.getName() + "|" + newAccessory.getImage_url()+  "|"+ newAccessory.getPrice()+  "|"+ newAccessory.getDescription()+ "|" + newAccessory.getQuantity()+ "|" + newAccessory.getGift()+ "|" + newAccessory.getStatus());
+            if (success) {
+                HttpSession session = request.getSession();
+                session.removeAttribute("cachedAccessoryList");
+                request.setAttribute("messageAddAccessory", "New accessory added successfully.");
+                return "accessoryList.jsp";
+            } else {
+                request.setAttribute("checkErrorAddAccessory", "Failed to add accessory.");
+                request.setAttribute("accessory", newAccessory);
+                return "accessoryUpdate.jsp";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error while adding accessory: " + e.getMessage());
+            return "error.jsp";
+        }
+    }
+
+    /**
+     * Hiển thị form edit accessory
+     */
+    private String handleShowEditAccessoryForm(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String idStr = request.getParameter("id");
+            if (idStr != null && !idStr.isEmpty()) {
+                int accessoryId = Integer.parseInt(idStr);
+                Accessories accessory = accessoriesDAO.getById(accessoryId);
+
+                if (accessory != null) {
+                    request.setAttribute("accessory", accessory);
+                    return "accessoryUpdate.jsp";
+                } else {
+                    request.setAttribute("checkError", "Accessory not found with ID: " + accessoryId);
+                }
+            } else {
+                request.setAttribute("checkError", "Invalid accessory ID.");
+            }
+        } catch (NumberFormatException e) {
+            request.setAttribute("checkError", "Invalid accessory ID format.");
+        } catch (Exception e) {
+            request.setAttribute("checkError", "Error loading accessory: " + e.getMessage());
+        }
+
+        return "accessoryList.jsp";
+    }
+
+    /**
+     * Xử lý cập nhật accessory
+     */
+    private String handleAccessoryEditing(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            // Lấy ID của accessory cần edit
+            int accessoryId = Integer.parseInt(request.getParameter("id"));
+
+            // Lấy accessory hiện tại từ database
+            Accessories existingAccessory = accessoriesDAO.getById(accessoryId);
+            if (existingAccessory == null) {
+                request.setAttribute("checkError", "Accessory not found.");
+                return "accessoryList.jsp";
+            }
+
+            // Cập nhật thông tin từ form
+            String name = request.getParameter("name");
+            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            double price = Double.parseDouble(request.getParameter("price"));
+            String description = request.getParameter("description");
+            String status = request.getParameter("status");
+            String gift = request.getParameter("gift");
+
+            existingAccessory.setName(name);
+            existingAccessory.setQuantity(quantity);
+            existingAccessory.setPrice(price);
+            existingAccessory.setDescription(description);
+            existingAccessory.setStatus(status);
+            existingAccessory.setGift(gift);
+            existingAccessory.setUpdated_at(new java.util.Date());
+
+            // Xử lý upload ảnh mới (nếu có)
+            Part imagePart = request.getPart("imageFile");
+            if (imagePart != null && imagePart.getSize() > 0) {
+                // Xóa ảnh cũ nếu có
+                String oldImageUrl = existingAccessory.getImage_url();
+                if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
+                    String oldImagePath = getServletContext().getRealPath("/") + oldImageUrl;
+                    File oldImageFile = new File(oldImagePath);
+                    if (oldImageFile.exists()) {
+                        oldImageFile.delete();
+                    }
+                }
+
+                // Upload ảnh mới
+                String uploadDir = getServletContext().getRealPath("/assets/img/accessories/");
+                new File(uploadDir).mkdirs();
+
+                String originalFileName = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
+                String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
+                String storedFileName = accessoryId + "_" + System.currentTimeMillis() + fileExtension;
+                String imagePath = uploadDir + File.separator + storedFileName;
+
+                imagePart.write(imagePath);
+                existingAccessory.setImage_url("assets/img/accessories/" + storedFileName);
+            }
+
+            // Cập nhật trong database
+            boolean success = accessoriesDAO.update(existingAccessory);
+
+            if (success) {
+                HttpSession session = request.getSession();
+                session.removeAttribute("cachedAccessoryList");
+                request.setAttribute("messageEditAccessory", "Accessory updated successfully.");
+                request.setAttribute("accessory", existingAccessory);
+                return "accessoryUpdate.jsp";
+            } else {
+                request.setAttribute("checkErrorEditAccessory", "Failed to update accessory.");
+                request.setAttribute("accessory", existingAccessory);
+                return "accessoryUpdate.jsp";
+            }
+
+        } catch (ServletException | IOException | NumberFormatException e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error while updating accessory: " + e.getMessage());
+            return "error.jsp";
+        }
+    }
+
 }
