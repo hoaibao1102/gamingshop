@@ -10,6 +10,8 @@ import dao.ModelsDAO;
 import dao.PostsDAO;
 import dao.ProductImagesDAO;
 import dao.ProductsDAO;
+import dto.Guarantees;
+import dto.Memories;
 import dto.Page;
 import dto.Posts;
 import dto.ProductFilter;
@@ -48,6 +50,8 @@ public class ProductController extends HttpServlet {
     private final ProductsDAO productsdao = new ProductsDAO();
     private final ProductImagesDAO productImagesDAO = new ProductImagesDAO();
     private final PostsDAO postsDAO = new PostsDAO();
+    private final GuaranteesDAO guaranteesDAO = new GuaranteesDAO();
+    private final MemoriesDAO memoriesDAO = new MemoriesDAO();
 
     String INDEX_PAGE = "index.jsp";
 
@@ -90,6 +94,8 @@ public class ProductController extends HttpServlet {
                 url = handleGoToUpdatePosts(request, response);
             } else if (action.equals("updatePosts")) {
                 url = handleUpdatePosts(request, response);
+            } else if (action.equals("getProduct")) {
+                url = handleGetProduct(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1031,6 +1037,35 @@ public class ProductController extends HttpServlet {
         } catch (Exception e) {
         }
         return "postsUpdate.jsp";
+    private String handleGetProduct(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
+            // Lấy productId từ tham số form (hidden input "product_id")
+            int productId = Integer.parseInt(request.getParameter("idProduct"));
+
+            if (productId < 1) {
+                request.setAttribute("checkErrorDeleteProduct", "Missing product_id.");
+                return "welcome.jsp";
+            }
+            List<Product_images> imgList = new ArrayList<>();
+            imgList = productImagesDAO.getByAllProductId(productId);
+            Products productDetail = productsdao.getById(productId);
+            productDetail.setImage(imgList);
+            Guarantees guarantee = guaranteesDAO.getById(productDetail.getGuarantee_id());
+            Memories memory = memoriesDAO.getById(productDetail.getMemory_id());
+            String guaranteeProduct = guarantee.getGuarantee_type();
+            String memoryProduct = memory.getMemory_type();
+            request.setAttribute("productDetail", productDetail);
+            request.setAttribute("guaranteeProduct", guaranteeProduct);
+            request.setAttribute("memoryProduct", memoryProduct);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorDeleteProduct", "Unexpected error: " + e.getMessage());
+            return "welcome.jsp";
+        }
+        return "productDetail.jsp";
+
     }
 
 }
