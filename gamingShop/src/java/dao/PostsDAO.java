@@ -22,6 +22,8 @@ public class PostsDAO implements IDAO<Posts, Integer> {
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Posts WHERE title LIKE ?";
     private static final String CREATE
             = "INSERT INTO dbo.Posts (author, title, content_html, image_url, publish_date, status) VALUES (?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE
+            = "UPDATE dbo.Posts set author = ?,  title = ?, content_html = ?, image_url = ?, publish_date = ?, status = ? WHERE id = ?";
 
     @Override
     public boolean create(Posts e) {
@@ -162,6 +164,92 @@ public class PostsDAO implements IDAO<Posts, Integer> {
                 c.close();
             }
         } catch (Exception ignore) {
+        }
+    }
+
+    public int createNewPost(Posts e) {
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        int generatedId = -1;
+        try {
+            c = DBUtils.getConnection();
+            // Thêm Statement.RETURN_GENERATED_KEYS để lấy id sinh ra
+            st = c.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
+            st.setString(1, e.getAuthor());
+            st.setString(2, e.getTitle());
+            st.setString(3, e.getContent_html());
+            st.setString(4, e.getImage_url());
+            if (e.getPublish_date() != null) {
+                st.setTimestamp(5, new Timestamp(e.getPublish_date().getTime()));
+            } else {
+                st.setNull(5, Types.TIMESTAMP);
+            }
+            st.setInt(6, e.getStatus());
+
+            int rows = st.executeUpdate();
+            if (rows > 0) {
+                rs = st.getGeneratedKeys();
+                if (rs.next()) {
+                    generatedId = rs.getInt(1);
+                    e.setId(generatedId); // gán lại vào object
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(c, st, rs);
+        }
+        return generatedId; // nếu lỗi trả về -1
+    }
+
+    public boolean deleteProductById(int id) {
+        Connection c = null;
+        PreparedStatement st = null;
+        String sql = "UPDATE Posts SET status = '0', updated_at = GETDATE() WHERE id = ?";
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(sql);
+            st.setInt(1, id);
+            return st.executeUpdate() > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            close(c, st, null);
+        }
+    }
+
+    public boolean updatePost(Posts post, int id) {
+        Connection c = null;
+        PreparedStatement st = null;
+        try {
+            c = DBUtils.getConnection();
+            // Không cần RETURN_GENERATED_KEYS cho UPDATE
+            st = c.prepareStatement(UPDATE);
+
+            st.setString(1, post.getAuthor());
+            st.setString(2, post.getTitle());
+            st.setString(3, post.getContent_html());
+            st.setString(4, post.getImage_url());
+
+            if (post.getPublish_date() != null) {
+                st.setTimestamp(5, new Timestamp(post.getPublish_date().getTime()));
+            } else {
+                st.setNull(5, Types.TIMESTAMP);
+            }
+
+            st.setInt(6, post.getStatus());
+            st.setInt(7, id); // ĐÂY LÀ PARAMETER QUAN TRỌNG BỊ THIẾU
+
+            int rowsAffected = st.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            close(c, st, null);
         }
     }
 }

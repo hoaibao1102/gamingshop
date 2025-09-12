@@ -33,6 +33,8 @@
             List<Products> list = (List<Products>) request.getAttribute("list");
             String messageUpdateProductImage = (String) request.getAttribute("messageUpdateProductImage");
             String checkErrorUpdateProductImage = (String) request.getAttribute("checkErrorUpdateProductImage");
+            String messageDeleteProduct = (String) request.getAttribute("messageDeleteProduct");
+            String checkErrorDeleteProduct = (String) request.getAttribute("checkErrorUpdateProduct");
         %>
         <div class="container">
             <div class="header-section">
@@ -125,7 +127,7 @@
                         <% } %>
                     </tbody>
                 </table>
-                <% } else if (checkErrorSearch != null && !checkError.isEmpty()) { %>
+                <% } else if (checkErrorSearch != null && !checkErrorSearch.isEmpty()) { %>
                 <div class="error-message"><%= checkErrorSearch %></div>
                 <% } else if (messageDeleteProduct != null) { %>
                 <div class="alert alert-success"><%= messageDeleteProduct %></div>

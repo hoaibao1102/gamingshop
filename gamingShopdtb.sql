@@ -222,6 +222,28 @@ CREATE INDEX IX_posts_publish_date ON dbo.Posts(publish_date);
 GO
 
 /* ============================================================
+   12) banner
+   ============================================================ */
+IF OBJECT_ID(N'dbo.Banners', N'U') IS NOT NULL DROP TABLE dbo.Banners;
+GO
+CREATE TABLE dbo.Banners (
+  id           INT IDENTITY(1,1) PRIMARY KEY,
+  image_url1   NVARCHAR(255) NULL,
+  image_url2   NVARCHAR(255) NULL,
+  image_url3   NVARCHAR(255) NULL,
+  image_url4   NVARCHAR(255) NULL,
+  image_url5   NVARCHAR(255) NULL,
+  title        NVARCHAR(255) NOT NULL,
+  status NVARCHAR(50) NOT NULL 
+    CONSTRAINT CK_Banners_Status CHECK (status IN (N'active', N'inactive')),
+  created_at   DATETIME2(3) NOT NULL CONSTRAINT DF_posts_created_at DEFAULT SYSDATETIME(),
+  updated_at   DATETIME2(3) NOT NULL CONSTRAINT DF_posts_updated_at DEFAULT SYSDATETIME()
+);
+GO
+CREATE INDEX IX_posts_publish_date ON dbo.Posts(publish_date);
+GO
+
+/* ============================================================
    TRIGGERS cập nhật updated_at khi UPDATE
    (tạo cho các bảng có cột updated_at)
    ============================================================ */
@@ -410,22 +432,22 @@ VALUES
  N'admin@example.com', N'Nguyen Van A', N'0909123456');
 
 -- 2) models
-INSERT INTO dbo.Models (model_type, description_html, image_url)
+INSERT INTO dbo.Models (model_type, description_html, image_url,status)
 VALUES
-(N'PlayStation 5', N'Máy chơi game Sony PlayStation 5 chính hãng', N'https://example.com/img/ps5.jpg'),
-(N'Nintendo Switch', N'Máy chơi game cầm tay Nintendo Switch OLED', N'https://example.com/img/switch.jpg');
+(N'PlayStation 5', N'Máy chơi game Sony PlayStation 5 chính hãng', N'https://example.com/img/ps5.jpg','ACTIVE'),
+(N'Nintendo Switch', N'Máy chơi game cầm tay Nintendo Switch OLED', N'https://example.com/img/switch.jpg','ACTIVE');
 
 -- 3) memories
-INSERT INTO dbo.Memories (memory_type, description_html, quantity, price, image_url)
+INSERT INTO dbo.Memories (memory_type, description_html, quantity, price, image_url,status)
 VALUES
-(N'64GB',  N'Thẻ nhớ 64GB chính hãng SanDisk', 50, 350000, N'https://example.com/img/64gb.jpg'),
-(N'128GB', N'Thẻ nhớ 128GB tốc độ cao',        30, 650000, N'https://example.com/img/128gb.jpg');
+(N'64GB',  N'Thẻ nhớ 64GB chính hãng SanDisk', 50, 350000, N'https://example.com/img/64gb.jpg','ACTIVE'),
+(N'128GB', N'Thẻ nhớ 128GB tốc độ cao',        30, 650000, N'https://example.com/img/128gb.jpg','ACTIVE');
 
 -- 4) guarantees
-INSERT INTO dbo.Guarantees (guarantee_type, description_html)
+INSERT INTO dbo.Guarantees (guarantee_type, description_html,status)
 VALUES
-(N'12 tháng', N'Bảo hành 12 tháng chính hãng'),
-(N'24 tháng', N'Bảo hành 24 tháng mở rộng');
+(N'12 tháng', N'Bảo hành 12 tháng chính hãng','ACTIVE'),
+(N'24 tháng', N'Bảo hành 24 tháng mở rộng','ACTIVE');
 
 -- 5) accessories
 INSERT INTO dbo.Accessories (name, quantity, price, description_html, image_url)
@@ -463,10 +485,10 @@ VALUES
 (N'Vệ sinh bảo dưỡng máy', N'Vệ sinh PlayStation/Nintendo, tra keo tản nhiệt', 300000);
 
 -- 10) posts
-INSERT INTO dbo.Posts (author, title, content_html, image_url, publish_date)
+INSERT INTO dbo.Posts (author, title, content_html, image_url, status ,publish_date)
 VALUES
 (N'Admin', N'Sony ra mắt PS5 Slim', N'<p>Phiên bản PS5 Slim nhẹ hơn, mỏng hơn, dự kiến phát hành cuối năm.</p>',
- N'https://example.com/img/ps5-slim.jpg', '2025-08-01'),
+ N'https://example.com/img/ps5-slim.jpg', 1,'2025-08-01'),
 (N'Admin', N'Nintendo công bố game Zelda mới', N'<p>Zelda: Breath of the Wild 2 chính thức có trailer mới tại E3.</p>',
- N'https://example.com/img/zelda.jpg', '2025-08-15');
+ N'https://example.com/img/zelda.jpg', 1,'2025-08-15');
 GO
