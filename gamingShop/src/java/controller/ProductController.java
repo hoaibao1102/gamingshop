@@ -67,10 +67,8 @@ public class ProductController extends HttpServlet {
                 handleViewAllProducts_sidebar(request, response);
                 url = handleViewAllProducts(request, response);
             } else if (action.equals("searchProduct")) {
-                handleViewAllProducts_sidebar(request, response);
                 url = handleProductSearching(request, response);
             } else if (action.equals("filterProducts")) {
-                handleViewAllProducts_sidebar(request, response);
                 url = handleProductFiltering(request, response);
             } else if (action.equals("showAddProductForm")) {
                 url = handleShowAddProductForm(request, response);
@@ -148,7 +146,7 @@ public class ProductController extends HttpServlet {
 
     public void handleViewAllProducts_sidebar(HttpServletRequest request, HttpServletResponse response) {
         List<Products> list = productsdao.getAll();
-        request.setAttribute("list", list);
+        request.getSession().setAttribute("listForSidebar", list);
     }
 
     public String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
@@ -1080,7 +1078,6 @@ public class ProductController extends HttpServlet {
     }
 
     private String handleGetProminentList(HttpServletRequest request, HttpServletResponse response) {
-        List<Products> list = new ArrayList<>();
         try {
             request.setCharacterEncoding("UTF-8");
             // Tạo filter mặc định
@@ -1102,13 +1099,17 @@ public class ProductController extends HttpServlet {
             // Lấy dữ liệu với phân trang
             Page<Products> pageResult = productsdao.getProminentProducts(filter);
 
-            // Gán hình ảnh cho từng sản phẩm
-            for (Products p : pageResult.getContent()) {
-                List<Product_images> images = productImagesDAO.getByProductId(p.getId());
-                p.setImage(images);
+            // ===== Gán ảnh cho từng sản phẩm =====
+        for (Products p : pageResult.getContent()) {
+            // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
+            Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
+            if (coverImg != null) {
+                p.setCoverImg(coverImg.getImage_url());
             }
+        }
 
-            request.setAttribute("list", pageResult);
+
+            request.setAttribute("listProminent", pageResult.getContent()); 
             request.setAttribute("currentFilter", filter);
 
         } catch (Exception e) {

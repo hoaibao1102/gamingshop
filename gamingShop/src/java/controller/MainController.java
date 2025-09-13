@@ -25,8 +25,8 @@ public class MainController extends HttpServlet {
 
         try {
             String action = request.getParameter("action");
-            if (action == null) {
-                action = "prepareHome";
+            if (action == null || !isUserAction(action) || !isProductAction(action)) {
+                url = "ProductController?action=prepareHome";
             }
             if (isUserAction(action)) {
                 url = "/UserController";
@@ -87,7 +87,6 @@ public class MainController extends HttpServlet {
 
     private boolean isProductAction(String action) {
         return "searchProduct".equals(action)
-                || "prepareHome".equals(action)
                 || "filterProducts".equals(action)
                 || "showAddProductForm".equals(action)
                 || "addProduct".equals(action)

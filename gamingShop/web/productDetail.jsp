@@ -34,7 +34,6 @@
             html, body{
                 margin:0;
                 padding:0;
-                height:100%;
                 width:100%;
                 font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
                 background: var(--bg);
@@ -50,7 +49,9 @@
                 padding:0 20px;
                 min-height:100vh;
                 width:100vw;
+
             }
+            
             .sidebar{
                 flex:3;
                 background: linear-gradient(135deg,#2c3e50 0%,#34495e 100%);
@@ -62,6 +63,7 @@
                 top:20px;
                 height: fit-content;
             }
+            
             .Main_content{
                 flex:7;
                 background:#fff;
@@ -70,9 +72,12 @@
                 display:flex;
                 flex-direction:column;
                 overflow:auto;
+
             }
+            
             .container{
                 padding:16px;
+
             }
 
             /* =========================
@@ -184,6 +189,7 @@
                 border-radius:12px;
                 padding:14px 16px;
                 margin-top:6px;
+
             }
             .pd-row-price span{
                 color:var(--danger);
@@ -233,6 +239,7 @@
                 background:#9ca3af;
             }
 
+
             /* =========================
                Responsive
             ========================= */
@@ -263,6 +270,10 @@
                 .pd-main{
                     height: clamp(320px, 42vh, 520px);
                 }
+                .site-footer {
+                    margin-top: 15px;
+                    padding: 20px 10px;
+                }
             }
             /* Mobile */
             @media (max-width: 640px){
@@ -289,11 +300,12 @@
     </head>
 
     <body>
-        <div class="wrapper">
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <jsp:include page="sidebar.jsp"/>
-            </div>
+        <div class="page-container">
+            <div class="wrapper">
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <jsp:include page="sidebar.jsp"/>
+                </div>
 
             <!-- Main -->
             <div class="Main_content">
@@ -327,7 +339,6 @@
                                             </c:if>
                                         </c:forEach>
                                     </div>
-                                </div>
 
                                 <!-- RIGHT: Info + Description (6 phần) -->
                                 <div class="pd-right">
@@ -366,12 +377,15 @@
                             </div>
                         </c:otherwise>
                     </c:choose>
+
                 </div>
             </div>
-        </div>
 
-        <!-- Footer đặt NGOÀI wrapper để luôn hiển thị khi body cuộn -->
-        <jsp:include page="footer.jsp"/>
+            <!-- Footer đặt trong page-container để đảm bảo hiển thị -->
+            <footer class="site-footer">
+                <jsp:include page="footer.jsp"/>
+            </footer>
+        </div>
 
         <script>
             (function () {
