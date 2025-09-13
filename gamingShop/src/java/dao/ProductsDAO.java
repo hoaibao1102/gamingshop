@@ -23,6 +23,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
     private static final String GET_BY_ID = "SELECT * FROM dbo.Products WHERE id = ?";
     private static final String GET_BY_STATUS = "SELECT * FROM dbo.Products WHERE status = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Products WHERE name LIKE ?";
+    
     private static final String CREATE
             = "INSERT INTO dbo.Products (name, sku, price, product_type, model_id, memory_id, guarantee_id, quantity, description_html, status) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -155,6 +156,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
     /**
      * Lấy danh sách sản phẩm có phân trang và lọc
      */
+    
     public Page<Products> getProductsWithFilter(ProductFilter filter) {
         Connection c = null;
         PreparedStatement st = null;
@@ -213,7 +215,69 @@ public class ProductsDAO implements IDAO<Products, Integer> {
 
         return new Page<>(products, filter.getPage(), filter.getPageSize(), totalCount);
     }
+    
+    
+    public Page<Products> getProminentProducts(ProductFilter filter){
+        return getProductsByCondition(filter, "status", "prominent");
+    }
+    
+    public Page<Products> getProductsByCondition(ProductFilter filter,String field, String value) {
+    Connection c = null;
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    List<Products> products = new ArrayList<>();
+    int totalCount = 0;
 
+    try {
+        c = DBUtils.getConnection();
+
+        StringBuilder queryBuilder = new StringBuilder("SELECT * FROM dbo.Products WHERE 1=1");
+        StringBuilder countQueryBuilder = new StringBuilder("SELECT COUNT(*) FROM dbo.Products WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        // điều kiện từ ProductFilter
+        addFilterConditions(queryBuilder, countQueryBuilder, filter, params);
+
+        // điều kiện thêm vào
+        if (value != null && !value.isEmpty()) {
+            queryBuilder.append(" AND " + field + " = ?");
+            countQueryBuilder.append(" AND " + field + " = ?");
+            params.add(value);
+        }
+
+        // ORDER BY
+        addOrderBy(queryBuilder, filter.getSortBy());
+
+        // phân trang
+        int offset = (filter.getPage() - 1) * filter.getPageSize();
+        queryBuilder.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+        // Đếm tổng
+        st = c.prepareStatement(countQueryBuilder.toString());
+        setParameters(st, params);
+        rs = st.executeQuery();
+        if (rs.next()) totalCount = rs.getInt(1);
+        rs.close(); st.close();
+
+        // Lấy data
+        st = c.prepareStatement(queryBuilder.toString());
+        setParameters(st, params);
+        st.setInt(params.size() + 1, offset);
+        st.setInt(params.size() + 2, filter.getPageSize());
+
+        rs = st.executeQuery();
+        while (rs.next()) {
+            products.add(map(rs));
+        }
+
+    } catch (Exception ex) {
+        ex.printStackTrace();
+    } finally {
+        close(c, st, rs);
+    }
+
+    return new Page<>(products, filter.getPage(), filter.getPageSize(), totalCount);
+}
     private void addFilterConditions(StringBuilder queryBuilder, StringBuilder countQueryBuilder,
             ProductFilter filter, List<Object> params) {
         String conditions = "";

@@ -83,9 +83,9 @@
                 margin: 0;
                 width: 100%;
             }
-            
+
             /* Styling chung cho input submit và anchor */
-            .nav-item, 
+            .nav-item,
             .sb-nav a {
                 display: flex;
                 align-items: center;
@@ -126,7 +126,7 @@
                 background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
                 transition: left 0.5s ease;
             }
-            
+
             .nav-item:hover,
             .sb-nav a:hover {
                 transform: translateY(-2px);
@@ -141,7 +141,7 @@
                 background: linear-gradient(145deg, #ffffff, #fef2f2);
                 border-color: #fca5a5;
             }
-            
+
             .nav-item:hover::before,
             .sb-nav a:hover::before {
                 left: 100%;
@@ -279,7 +279,7 @@
             /* Giá chiếm 3 phần */
             .price-box-sb{
                 color: #e12e2e;
-                flex: 3;
+                flex: 36%;
                 height:80px;
                 background:#f8f9fa;
                 border-radius:10px;
@@ -408,7 +408,7 @@
                     <span class="nav-icon">📰</span>
                     <span>Bài đăng gần đây</span>
                 </a>
-                
+
                 <c:if test="${not empty user}">
                     <form action="MainController" method="get" class="nav-form">
                         <input type="hidden" name="action" value="quanLyDanhMuc">
@@ -432,51 +432,50 @@
 
             <hr class="divider">
 
-            <!-- Danh sách sản phẩm nổi bật -->
-            <h3 class="sb-title">Sản phẩm nổi bật</h3>
-            <c:choose>
-                <c:when test="${not empty list}">
-                    <c:set var="shown" value="0"/>
-                    <ul class="featured-list-sb">
-                        <c:forEach var="i" items="${list}">
-                            <c:if test="${i.status eq 'prominent' and shown < 7}">
-                                <li class="item-sb">
-                                    <form action="MainController" method="get" class="card">
-                                        <input type="hidden" name="action" value="getProduct"/>
-                                        <input type="hidden" name="id" value="${i.id}"/>
+            <c:if test="${ empty listProminent}">
+                <!-- Danh sách sản phẩm nổi bật -->
+                <h3 class="sb-title">Sản phẩm nổi bật</h3>
+                <c:choose>
+                    <c:when test="${not empty listForSidebar}">
+                        <c:set var="shown" value="0"/>
+                        <ul class="featured-list-sb">
+                            <c:forEach var="i" items="${listForSidebar}">
+                                <c:if test="${i.status eq 'prominent' and shown < 7}">
+                                    <li class="item-sb">
+                                        <form action="MainController" method="get" class="card">
+                                            <input type="hidden" name="action" value="getProduct"/>
+                                            <input type="hidden" name="id" value="${i.id}"/>
 
-                                        <!-- Bấm vào cả card là submit -->
-                                        <button type="submit" class="thumb-btn-sb">
-                                            <!-- Container cho ảnh và giá -->
-                                            <div class="image-price-container-sb">
-                                                <img class="thumb-sb" src="${i.image.image_url}" alt="${i.name}"/>
-                                                <div class="price-box-sb">
-                                                    <div class="price-text-sb"><fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" />
-                                                        VND</div>
+                                            <!-- Bấm vào cả card là submit -->
+                                            <button type="submit" class="thumb-btn-sb">
+                                                <!-- Container cho ảnh và giá -->
+                                                <div class="image-price-container-sb">
+                                                    <img class="thumb-sb" src="${i.image.image_url}" alt="${i.name}"/>
+                                                    <div class="price-box-sb">
+                                                        <div class="price-text-sb"><fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" />
+                                                            VND</div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <!-- Tên sản phẩm ở dưới -->
-                                            <div class="product-name">${i.name}</div>
-                                        </button>
-                                    </form>
-                                </li>
-                                <c:set var="shown" value="${shown + 1}"/>
-                            </c:if>
-                        </c:forEach>
-                    </ul>
-
-                </c:when>
-                <c:otherwise>
-                    <p>Hiện danh sách đang trống!</p>
-                </c:otherwise>
-            </c:choose>
-
-            <!-- Nút Xem thêm -->
-            <form action="MainController" method="get">
-                <input type="hidden" name="action" value="getProminentList">
-                <input class="view-more-btn" type="submit" value="Xem thêm">
-            </form>
-
+                                                <!-- Tên sản phẩm ở dưới -->
+                                                <div class="product-name">${i.name}</div>
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <c:set var="shown" value="${shown + 1}"/>
+                                </c:if>
+                            </c:forEach>
+                        </ul>
+                        <!-- Nút Xem thêm -->
+                        <form action="MainController" method="post">
+                            <input type="hidden" name="action" value="getProminentList">
+                            <input class="view-more-btn" type="submit" value="Xem thêm">
+                        </form>
+                    </c:when>
+                    <c:otherwise>
+                        <p>Hiện danh sách đang trống!</p>
+                    </c:otherwise>
+                </c:choose>
+            </c:if>
         </aside>
 
     </body>

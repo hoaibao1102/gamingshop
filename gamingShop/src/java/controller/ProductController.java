@@ -67,10 +67,8 @@ public class ProductController extends HttpServlet {
                 handleViewAllProducts_sidebar(request, response);
                 url = handleViewAllProducts(request, response);
             } else if (action.equals("searchProduct")) {
-                handleViewAllProducts_sidebar(request, response);
                 url = handleProductSearching(request, response);
             } else if (action.equals("filterProducts")) {
-                handleViewAllProducts_sidebar(request, response);
                 url = handleProductFiltering(request, response);
             } else if (action.equals("showAddProductForm")) {
                 url = handleShowAddProductForm(request, response);
@@ -100,6 +98,8 @@ public class ProductController extends HttpServlet {
                 url = handleUpdatePosts(request, response);
             } else if (action.equals("getProduct")) {
                 url = handleGetProduct(request, response);
+            }else if (action.equals("getProminentList")) {
+                url = handleGetProminentList(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -150,7 +150,7 @@ public class ProductController extends HttpServlet {
 
     public void handleViewAllProducts_sidebar(HttpServletRequest request, HttpServletResponse response) {
         List<Products> list = productsdao.getAll();
-        request.setAttribute("list", list);
+        request.getSession().setAttribute("listForSidebar", list);
     }
 
     public String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
@@ -898,8 +898,10 @@ public class ProductController extends HttpServlet {
                 publishDate = new Date();
             }
 
+
             // status
             int status = 1;
+
             try {
                 status = Integer.parseInt(request.getParameter("status"));
             } catch (Exception ignore) {
@@ -1006,6 +1008,18 @@ public class ProductController extends HttpServlet {
         }
     }
 
+    private String handleGoToUpdatePosts(HttpServletRequest request, HttpServletResponse response) {
+        int id = Integer.parseInt(request.getParameter("id"));
+        PostsDAO pd = new PostsDAO();
+        try {
+            Posts post = pd.getById(id);
+            request.setAttribute("post", post);
+        } catch (Exception e) {
+        }
+        return "postsUpdate.jsp";
+    }
+
+
     private String handleGetProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
             request.setCharacterEncoding("UTF-8");
@@ -1013,9 +1027,10 @@ public class ProductController extends HttpServlet {
             int productId = Integer.parseInt(request.getParameter("idProduct"));
 
             if (productId < 1) {
-                request.setAttribute("checkErrorDeleteProduct", "Missing product_id.");
-                return "welcome.jsp";
+                request.setAttribute("checkErrorDeleteProduct", "không có san pham phu hop");
+                return "productDetail.jsp";
             }
+
             List<Product_images> imgList = new ArrayList<>();
             imgList = productImagesDAO.getByAllProductId(productId);
             Products productDetail = productsdao.getById(productId);
@@ -1024,6 +1039,7 @@ public class ProductController extends HttpServlet {
             Memories memory = memoriesDAO.getById(productDetail.getMemory_id());
             String guaranteeProduct = guarantee.getGuarantee_type();
             String memoryProduct = memory.getMemory_type();
+            System.out.println(productDetail.getDescription_html());
             request.setAttribute("productDetail", productDetail);
             request.setAttribute("guaranteeProduct", guaranteeProduct);
             request.setAttribute("memoryProduct", memoryProduct);
@@ -1031,9 +1047,52 @@ public class ProductController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("checkErrorDeleteProduct", "Unexpected error: " + e.getMessage());
-            return "welcome.jsp";
+            return "productDetail.jsp";
         }
         return "productDetail.jsp";
 
+    }
+
+
+    private String handleGetProminentList(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
+            // Tạo filter mặc định
+            ProductFilter filter = new ProductFilter();
+
+            // Lấy tham số page nếu có
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.isEmpty()) {
+                try {
+                    int page = Integer.parseInt(pageParam);
+                    if (page > 0) {
+                        filter.setPage(page);
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore, use default page
+                }
+            }
+
+            // Lấy dữ liệu với phân trang
+            Page<Products> pageResult = productsdao.getProminentProducts(filter);
+
+            // ===== Gán ảnh cho từng sản phẩm =====
+        for (Products p : pageResult.getContent()) {
+            // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
+            Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
+            if (coverImg != null) {
+                p.setCoverImg(coverImg.getImage_url());
+            }
+        }
+
+
+            request.setAttribute("listProminent", pageResult.getContent()); 
+            request.setAttribute("currentFilter", filter);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error loading products: " + e.getMessage());
+        }
+        return "productsByCategories.jsp";
     }
 }
