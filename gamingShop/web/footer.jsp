@@ -131,9 +131,7 @@
                 --primary:#232E76;
                 --accent:#78ADDB;
                 color:#e0d9d9;
-                background:
-                    radial-gradient(90% 140% at 100% 0%, rgba(120, 173, 219, .15), transparent 42%),
-                    linear-gradient(180deg, #19245c 0%, #06070c 100%);
+                background: radial-gradient(90% 140% at 100% 0%, rgba(120, 173, 219, .15), transparent 42%), linear-gradient(68deg, #190b3df5 0%, #06070c 100%);
                 padding: 20px 0;
                 border-top: 1px solid rgba(255,255,255,.06);
             }

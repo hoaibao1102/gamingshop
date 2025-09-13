@@ -32,7 +32,6 @@
             html,body{
                 margin:0;
                 padding:0;
-                height:100%;
                 width:100%;
                 font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;
                 background:var(--bg-light);
@@ -40,15 +39,23 @@
                 scroll-behavior:smooth;
             }
 
-            /* ====== Khung giống trang chủ ====== */
+            /* ====== Main Layout Container ====== */
+            .page-container {
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* ====== Khung chính ====== */
             .wrapper{
-                padding:0 20px;
+                flex: 1; /* Chiếm hết không gian còn lại */
+                padding:20px;
                 display:flex;
                 gap:20px;
-                min-height:100vh;
-                width:100vw;
+                width:100%;
                 box-sizing:border-box;
             }
+            
             .sidebar{
                 flex:3;
                 background:var(--dark-gradient);
@@ -60,21 +67,32 @@
                 top:20px;
                 height:fit-content;
             }
+            
             .Main_content{
                 flex:7;
                 background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);
                 border-radius:20px;
                 box-shadow:var(--card-shadow);
                 position:relative;
-
-                /* CÁCH A: body sẽ cuộn, KHÔNG cuộn bên trong hộp */
-                overflow: visible; /* hoặc có thể xóa dòng này */
+                overflow: visible;
             }
+            
             .container{
                 padding:24px
             }
 
-            /* Scrollbar của Main_content (giữ để đồng bộ visual, dù không dùng cuộn nội bộ) */
+            /* ====== Footer Styles ====== */
+            .site-footer {
+                width: 100%;
+                background: var(--dark-gradient);
+                color: var(--text-light);
+                padding: 24px 20px;
+                margin-top: 20px;
+                border-radius: 20px 20px 0 0;
+                box-shadow: var(--card-shadow);
+            }
+
+            /* Scrollbar của Main_content */
             .Main_content::-webkit-scrollbar{
                 width:8px
             }
@@ -277,6 +295,7 @@
             .pd-desc{
                 grid-column: 1 / -1;
                 padding:20px;
+                margin-top: 20px;
             }
             .pd-desc h3{
                 margin:0 0 10px 0;
@@ -329,7 +348,7 @@
                 animation:fadeInUp .6s ease-out
             }
 
-            /* ====== Responsive giống trang chủ ====== */
+            /* ====== Responsive ====== */
             @media (max-width: 1200px){
                 .product-detail{
                     grid-template-columns: 1.1fr 0.9fr
@@ -357,6 +376,10 @@
                 #pd-main-img{
                     height:clamp(220px, 55vw, 420px)
                 }
+                .site-footer {
+                    margin-top: 15px;
+                    padding: 20px 10px;
+                }
             }
             @media (max-width: 480px){
                 .pd-thumbs{
@@ -374,118 +397,128 @@
     </head>
 
     <body>
-        <div class="wrapper">
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <jsp:include page="sidebar.jsp"/>
-            </div>
+        <div class="page-container">
+            <div class="wrapper">
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <jsp:include page="sidebar.jsp"/>
+                </div>
 
-            <!-- Main -->
-            <div class="Main_content">
-                <!-- Header -->
-                <jsp:include page="header.jsp"/>
+                <!-- Main -->
+                <div class="Main_content">
+                    <!-- Header -->
+                    <jsp:include page="header.jsp"/>
 
-                <!-- ====== Nội dung trang ====== -->
-                <div class="container">
-                    <c:choose>
-                        <c:when test="${not empty productDetail}">
-                            <div class="product-detail">
-                                <!-- ====== Cột trái: Gallery ====== -->
-                                <div class="pd-gallery card">
-                                    <div class="pd-main">
-                                        <c:set var="firstImg"
-                                               value="${(not empty productDetail.image and not empty productDetail.image[0].image_url) 
-                                                        ? productDetail.image[0].image_url 
-                                                        : (not empty productDetail.coverImg ? productDetail.coverImg : '/assets/images/no-image.jpg')}" />
-                                        <img id="pd-main-img" src="${firstImg}" alt="${productDetail.name}" loading="eager" />
+                    <!-- ====== Nội dung trang ====== -->
+                    <div class="container">
+                        <c:choose>
+                            <c:when test="${not empty productDetail}">
+                                <div class="product-detail">
+                                    <!-- ====== Cột trái: Gallery ====== -->
+                                    <div class="pd-gallery card">
+                                        <div class="pd-main">
+                                            <c:set var="firstImg"
+                                                   value="${(not empty productDetail.image and not empty productDetail.image[0].image_url) 
+                                                            ? productDetail.image[0].image_url 
+                                                            : (not empty productDetail.coverImg ? productDetail.coverImg : '/assets/images/no-image.jpg')}" />
+                                            <img id="pd-main-img" src="${firstImg}" alt="${productDetail.name}" loading="eager" />
 
-                                        <!-- Nút điều hướng ảnh -->
-                                        <div class="pd-nav" aria-hidden="false">
-                                            <button type="button" class="pd-arrow pd-arrow--prev" id="pd-prev" aria-label="Ảnh trước">‹</button>
-                                            <button type="button" class="pd-arrow pd-arrow--next" id="pd-next" aria-label="Ảnh sau">›</button>
-                                        </div>
-                                    </div>
-
-                                    <div class="pd-thumbs" id="pd-thumbs">
-                                        <c:choose>
-                                            <c:when test="${not empty productDetail.image}">
-                                                <c:forEach var="img" items="${productDetail.image}" varStatus="s">
-                                                    <c:if test="${s.count <= 5 && not empty img.image_url}">
-                                                        <button type="button" class="pd-thumb" data-src="${img.image_url}" aria-label="Xem ảnh ${s.count}">
-                                                            <img src="${img.image_url}" alt="${productDetail.name}" loading="lazy" />
-                                                        </button>
-                                                    </c:if>
-                                                </c:forEach>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <button type="button" class="pd-thumb is-active" data-src="${firstImg}" aria-label="Xem ảnh 1">
-                                                    <img src="${firstImg}" alt="${productDetail.name}" loading="lazy" />
-                                                </button>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </div>
-                                </div>
-
-                                <!-- ====== Cột phải: Thông tin sản phẩm ====== -->
-                                <div class="pd-info card">
-                                    <div class="pd-title"><c:out value="${productDetail.name}" /></div>
-                                    <div class="pd-sku">
-                                        <c:if test="${not empty productDetail.sku}">
-                                            SKU: <c:out value="${productDetail.sku}" />
-                                        </c:if>
-                                    </div>
-
-                                    <div class="pd-price">
-                                        <fmt:formatNumber value="${productDetail.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
-                                    </div>
-
-                                    <div class="pd-attrs">
-                                        <div class="pd-attr"><strong>Loại:</strong> <span><c:out value="${productDetail.product_type}" default="Không xác định"/></span></div>
-                                        <div class="pd-attr"><strong>Bảo hành:</strong> <span><c:out value="${guaranteeProduct}" default="Liên hệ"/></span></div>
-                                        <div class="pd-attr"><strong>Bộ nhớ:</strong> <span><c:out value="${memoryProduct}" default="Tùy phiên bản"/></span></div>
-                                        <c:if test="${not empty productDetail.brand}">
-                                            <div class="pd-attr"><strong>Thương hiệu:</strong> <span><c:out value="${productDetail.brand}" /></span></div>
-                                        </c:if>
-
-                                        <!-- ====== Mô tả chi tiết ====== -->
-                                        <div class="pd-desc card">
-                                            <h3>Mô tả sản phẩm</h3>
-                                            <div class="content">
-                                                <c:choose>
-                                                    <c:when test="${not empty productDetail.description_html}">
-                                                        <c:out value="${productDetail.description_html}" escapeXml="false" />
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <p>Chưa có mô tả chi tiết cho sản phẩm này.</p>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                            <!-- Nút điều hướng ảnh -->
+                                            <div class="pd-nav" aria-hidden="false">
+                                                <button type="button" class="pd-arrow pd-arrow--prev" id="pd-prev" aria-label="Ảnh trước">‹</button>
+                                                <button type="button" class="pd-arrow pd-arrow--next" id="pd-next" aria-label="Ảnh sau">›</button>
                                             </div>
                                         </div>
+
+                                        <div class="pd-thumbs" id="pd-thumbs">
+                                            <c:choose>
+                                                <c:when test="${not empty productDetail.image}">
+                                                    <c:forEach var="img" items="${productDetail.image}" varStatus="s">
+                                                        <c:if test="${s.count <= 5 && not empty img.image_url}">
+                                                            <button type="button" class="pd-thumb" data-src="${img.image_url}" aria-label="Xem ảnh ${s.count}">
+                                                                <img src="${img.image_url}" alt="${productDetail.name}" loading="lazy" />
+                                                            </button>
+                                                        </c:if>
+                                                    </c:forEach>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <button type="button" class="pd-thumb is-active" data-src="${firstImg}" aria-label="Xem ảnh 1">
+                                                        <img src="${firstImg}" alt="${productDetail.name}" loading="lazy" />
+                                                    </button>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </div>
+
+                                    <!-- ====== Cột phải: Thông tin sản phẩm ====== -->
+                                    <div class="pd-info card">
+                                        <div class="pd-title"><c:out value="${productDetail.name}" /></div>
+                                        <div class="pd-sku">
+                                            <c:if test="${not empty productDetail.sku}">
+                                                SKU: <c:out value="${productDetail.sku}" />
+                                            </c:if>
+                                        </div>
+
+                                        <div class="pd-price">
+                                            <fmt:formatNumber value="${productDetail.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
+                                        </div>
+
+                                        <div class="pd-attrs">
+                                            <div class="pd-attr"><strong>Loại:</strong> <span><c:out value="${productDetail.product_type}" default="Không xác định"/></span></div>
+                                            <div class="pd-attr"><strong>Bảo hành:</strong> <span><c:out value="${guaranteeProduct}" default="Liên hệ"/></span></div>
+                                            <div class="pd-attr"><strong>Bộ nhớ:</strong> <span><c:out value="${memoryProduct}" default="Tùy phiên bản"/></span></div>
+                                            <c:if test="${not empty productDetail.brand}">
+                                                <div class="pd-attr"><strong>Thương hiệu:</strong> <span><c:out value="${productDetail.brand}" /></span></div>
+                                            </c:if>
+                                        </div>
+
+                                        <!-- Buttons/Actions có thể thêm ở đây -->
+                                        <div class="pd-actions">
+                                            <button class="btn-primary" type="button">Thêm vào giỏ</button>
+                                            <button class="btn-ghost" type="button">Yêu thích</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- ====== Mô tả chi tiết ====== -->
+                                    <div class="pd-desc card">
+                                        <h3>Mô tả sản phẩm</h3>
+                                        <div class="content">
+                                            <c:choose>
+                                                <c:when test="${not empty productDetail.description_html}">
+                                                    <c:out value="${productDetail.description_html}" escapeXml="false" />
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <p>Chưa có mô tả chi tiết cho sản phẩm này.</p>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </c:when>
+                            </c:when>
 
-                        <c:otherwise>
-                            <div class="empty-state">
-                                <h3>Không tìm thấy sản phẩm</h3>
-                                <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí của bạn.</p>
-                                <c:if test="${not empty checkErrorDeleteProduct}">
-                                    <p style="opacity:.8;"><c:out value="${checkErrorDeleteProduct}"/></p>
-                                </c:if>
-                                <form action="MainController" method="get" style="margin-top:12px;">
-                                    <input type="hidden" name="action" value="listProducts"/>
-                                    <button class="btn-filter" type="submit">Xem tất cả sản phẩm</button>
-                                </form>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
+                            <c:otherwise>
+                                <div class="empty-state">
+                                    <h3>Không tìm thấy sản phẩm</h3>
+                                    <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí của bạn.</p>
+                                    <c:if test="${not empty checkErrorDeleteProduct}">
+                                        <p style="opacity:.8;"><c:out value="${checkErrorDeleteProduct}"/></p>
+                                    </c:if>
+                                    <form action="MainController" method="get" style="margin-top:12px;">
+                                        <input type="hidden" name="action" value="listProducts"/>
+                                        <button class="btn-filter" type="submit">Xem tất cả sản phẩm</button>
+                                    </form>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Footer đặt NGOÀI wrapper để luôn hiển thị khi body cuộn -->
-        <jsp:include page="footer.jsp"/>
+            <!-- Footer đặt trong page-container để đảm bảo hiển thị -->
+            <footer class="site-footer">
+                <jsp:include page="footer.jsp"/>
+            </footer>
+        </div>
 
         <!-- JS gallery: đổi ảnh + prev/next + bàn phím -->
         <script>
@@ -509,7 +542,7 @@
                 if (btnPrev)
                     btnPrev.setAttribute('type', 'button');
                 if (btnNext)
-                    btnNext.setAttribute('type', 'button'); // << sửa lỗi dấu ) thừa
+                    btnNext.setAttribute('type', 'button');
 
                 let images = thumbs
                         .map(t => t.getAttribute('data-src') || (t.querySelector('img') && t.querySelector('img').getAttribute('src')))
