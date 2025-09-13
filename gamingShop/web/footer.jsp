@@ -156,7 +156,7 @@
     <!-- SOCIAL FOLLOW -->
     <section class="social-follow">
       <div class="sf-inner">
-        <h3 class="sf-title">Theo dõi Việt Phát tại</h3>
+        <h3 class="sf-title">Theo dõi thông tin tại</h3>
         <nav class="sf-icons">
           <a class="sf-btn sf-fb" href="https://facebook.com/" target="_blank">
             <span class="ring"></span>
