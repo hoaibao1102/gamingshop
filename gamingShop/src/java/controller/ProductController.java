@@ -117,6 +117,8 @@ public class ProductController extends HttpServlet {
                 url = handleUpdatePosts(request, response);
             } else if (action.equals("getProduct")) {
                 url = handleGetProduct(request, response);
+            }else if (action.equals("getProminentList")) {
+                url = handleGetProminentList(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1582,9 +1584,10 @@ private String handleAccessoryDelete(HttpServletRequest request, HttpServletResp
             int productId = Integer.parseInt(request.getParameter("idProduct"));
 
             if (productId < 1) {
-                request.setAttribute("checkErrorDeleteProduct", "Missing product_id.");
-                return "welcome.jsp";
+                request.setAttribute("checkErrorDeleteProduct", "không có san pham phu hop");
+                return "productDetail.jsp";
             }
+
             List<Product_images> imgList = new ArrayList<>();
             imgList = productImagesDAO.getByAllProductId(productId);
             Products productDetail = productsdao.getById(productId);
@@ -1600,10 +1603,49 @@ private String handleAccessoryDelete(HttpServletRequest request, HttpServletResp
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("checkErrorDeleteProduct", "Unexpected error: " + e.getMessage());
-            return "welcome.jsp";
+            return "productDetail.jsp";
         }
         return "productDetail.jsp";
 
+    }
+
+    private String handleGetProminentList(HttpServletRequest request, HttpServletResponse response) {
+        List<Products> list = new ArrayList<>();
+        try {
+            request.setCharacterEncoding("UTF-8");
+            // Tạo filter mặc định
+            ProductFilter filter = new ProductFilter();
+
+            // Lấy tham số page nếu có
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.isEmpty()) {
+                try {
+                    int page = Integer.parseInt(pageParam);
+                    if (page > 0) {
+                        filter.setPage(page);
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore, use default page
+                }
+            }
+
+            // Lấy dữ liệu với phân trang
+            Page<Products> pageResult = productsdao.getProminentProducts(filter);
+
+            // Gán hình ảnh cho từng sản phẩm
+            for (Products p : pageResult.getContent()) {
+                List<Product_images> images = productImagesDAO.getByProductId(p.getId());
+                p.setImage(images);
+            }
+
+            request.setAttribute("list", pageResult);
+            request.setAttribute("currentFilter", filter);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error loading products: " + e.getMessage());
+        }
+        return "productsByCategories.jsp";
     }
 
 }
