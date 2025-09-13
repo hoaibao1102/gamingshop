@@ -279,7 +279,7 @@
             /* Giá chiếm 3 phần */
             .price-box-sb{
                 color: #e12e2e;
-                flex: 3;
+                flex: 36%;
                 height:80px;
                 background:#f8f9fa;
                 border-radius:10px;

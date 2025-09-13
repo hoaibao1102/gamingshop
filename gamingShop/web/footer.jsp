@@ -230,30 +230,31 @@
     </head>
     <body>
 
-        <!-- SOCIAL FOLLOW -->
-        <section class="social-follow">
-            <div class="sf-inner">
-                <h3 class="sf-title">Theo dõi Việt Phát tại</h3>
-                <nav class="sf-icons">
-                    <a class="sf-btn sf-fb" href="https://facebook.com/" target="_blank">
-                        <span class="ring"></span>
-                        <svg viewBox="0 0 24 24"><path d="M22 12.06C22 6.49 17.52 2 12 2S2 6.49 2 12.06c0 4.99 3.66 9.13 8.44 9.94v-7.03H7.9v-2.91h2.54V9.41c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.2 2.23.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22c4.78-.81 8.44-4.95 8.44-9.94Z"/></svg>
-                    </a>
-                    <a class="sf-btn sf-ig" href="https://instagram.com/" target="_blank">
-                        <span class="ring"></span>
-                        <svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5Zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5Zm5.75-3.25a1.25 1.25 0 1 1-1.25 1.25 1.25 1.25 0 0 1 1.25-1.25Z"/></svg>
-                    </a>
-                    <a class="sf-btn sf-yt" href="https://youtube.com/" target="_blank">
-                        <span class="ring"></span>
-                        <svg viewBox="0 0 24 24"><path d="M23.5 7.2a3.2 3.2 0 0 0-2.24-2.27C19.6 4.5 12 4.5 12 4.5s-7.6 0-9.26.43A3.2 3.2 0 0 0 .5 7.2 33 33 0 0 0 .5 12a33 33 0 0 0 .24 4.8 3.2 3.2 0 0 0 2.24 2.27C4.6 19.5 12 19.5 12 19.5s7.6 0 9.26-.43a3.2 3.2 0 0 0 2.24-2.27A33 33 0 0 0 23.5 12a33 33 0 0 0 0-4.8ZM9.75 15.02v-6L15.5 12l-5.75 3.02Z"/></svg>
-                    </a>
-                    <a class="sf-btn sf-tt" href="https://tiktok.com/" target="_blank">
-                        <span class="ring"></span>
-                        <svg viewBox="0 0 24 24"><path d="M21 8.13a7.3 7.3 0 0 1-4.26-1.36v7.3A6.93 6.93 0 1 1 9.9 7.2v2.6a3.87 3.87 0 1 0 2.65 3.67V2h2.58a4.7 4.7 0 0 0 4.07 4.2V8.1Z"/></svg>
-                    </a>
-                </nav>
-            </div>
-        </section>
+    <!-- SOCIAL FOLLOW -->
+    <section class="social-follow">
+      <div class="sf-inner">
+        <h3 class="sf-title">Theo dõi thông tin tại</h3>
+        <nav class="sf-icons">
+          <a class="sf-btn sf-fb" href="https://facebook.com/" target="_blank">
+            <span class="ring"></span>
+            <svg viewBox="0 0 24 24"><path d="M22 12.06C22 6.49 17.52 2 12 2S2 6.49 2 12.06c0 4.99 3.66 9.13 8.44 9.94v-7.03H7.9v-2.91h2.54V9.41c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.2 2.23.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22c4.78-.81 8.44-4.95 8.44-9.94Z"/></svg>
+          </a>
+          <a class="sf-btn sf-ig" href="https://instagram.com/" target="_blank">
+            <span class="ring"></span>
+            <svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5Zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5Zm5.75-3.25a1.25 1.25 0 1 1-1.25 1.25 1.25 1.25 0 0 1 1.25-1.25Z"/></svg>
+          </a>
+          <a class="sf-btn sf-yt" href="https://youtube.com/" target="_blank">
+            <span class="ring"></span>
+            <svg viewBox="0 0 24 24"><path d="M23.5 7.2a3.2 3.2 0 0 0-2.24-2.27C19.6 4.5 12 4.5 12 4.5s-7.6 0-9.26.43A3.2 3.2 0 0 0 .5 7.2 33 33 0 0 0 .5 12a33 33 0 0 0 .24 4.8 3.2 3.2 0 0 0 2.24 2.27C4.6 19.5 12 19.5 12 19.5s7.6 0 9.26-.43a3.2 3.2 0 0 0 2.24-2.27A33 33 0 0 0 23.5 12a33 33 0 0 0 0-4.8ZM9.75 15.02v-6L15.5 12l-5.75 3.02Z"/></svg>
+          </a>
+          <a class="sf-btn sf-tt" href="https://tiktok.com/" target="_blank">
+            <span class="ring"></span>
+            <svg viewBox="0 0 24 24"><path d="M21 8.13a7.3 7.3 0 0 1-4.26-1.36v7.3A6.93 6.93 0 1 1 9.9 7.2v2.6a3.87 3.87 0 1 0 2.65 3.67V2h2.58a4.7 4.7 0 0 0 4.07 4.2V8.1Z"/></svg>
+          </a>
+        </nav>
+      </div>
+    </section>
+
 
         <!-- FOOTER -->
         <footer class="site-footer">
