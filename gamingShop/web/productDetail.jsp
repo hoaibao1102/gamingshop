@@ -14,385 +14,288 @@
         <meta charset="UTF-8" />
         <title>Gaming Shop</title>
 
-        <!-- ====== CSS đồng bộ layout với trang chủ (Cách A: body cuộn, footer ngoài wrapper) ====== -->
         <style>
+            /* =========================
+   Base + Variables
+========================= */
             :root{
-                --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-                --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-                --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-                --card-shadow: 0 10px 40px rgba(0,0,0,0.1);
-                --hover-shadow: 0 20px 60px rgba(0,0,0,0.2);
-                --text-dark: #2c3e50;
-                --text-light: #ffffff;
-                --bg-light: #f8fafc;
-                --border-soft: rgba(255,255,255,0.8);
+                --bg: #f8fafc;
+                --text: #1f2937;
+                --muted: #6b7280;
+                --accent: #7c3aed;
+                --danger: #e11d48;
+                --border: #e5e7eb;
+                --card-shadow: 0 10px 40px rgba(0,0,0,.08);
             }
 
-            html,body{
+            *{
+                box-sizing: border-box;
+            }
+            html, body{
                 margin:0;
                 padding:0;
                 width:100%;
-                font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;
-                background:var(--bg-light);
-                color:var(--text-dark);
-                scroll-behavior:smooth;
+                font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                background: var(--bg);
+                color: var(--text);
             }
 
-            /* ====== Main Layout Container ====== */
-            .page-container {
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
-
-            /* ====== Khung chính ====== */
+            /* =========================
+               App Shell (giữ khung cũ)
+            ========================= */
             .wrapper{
-                flex: 1; /* Chiếm hết không gian còn lại */
-                padding:20px;
                 display:flex;
                 gap:20px;
-                width:100%;
-                box-sizing:border-box;
+                padding:0 20px;
+                min-height:100vh;
+                width:100vw;
+
             }
             
             .sidebar{
                 flex:3;
-                background:var(--dark-gradient);
-                color:var(--text-light);
-                padding:24px;
+                background: linear-gradient(135deg,#2c3e50 0%,#34495e 100%);
+                color:#fff;
                 border-radius:20px;
+                padding:24px;
                 box-shadow:var(--card-shadow);
-                position:sticky;
+                position: sticky;
                 top:20px;
-                height:fit-content;
+                height: fit-content;
             }
             
             .Main_content{
                 flex:7;
-                background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%);
+                background:#fff;
                 border-radius:20px;
                 box-shadow:var(--card-shadow);
-                position:relative;
-                overflow: visible;
+                display:flex;
+                flex-direction:column;
+                overflow:auto;
+
             }
             
             .container{
-                padding:24px
+                padding:16px;
+
             }
 
-            /* ====== Footer Styles ====== */
-            .site-footer {
-                width: 100%;
-                background: var(--dark-gradient);
-                color: var(--text-light);
-                padding: 24px 20px;
-                margin-top: 20px;
-                border-radius: 20px 20px 0 0;
-                box-shadow: var(--card-shadow);
-            }
-
-            /* Scrollbar của Main_content */
-            .Main_content::-webkit-scrollbar{
-                width:8px
-            }
-            .Main_content::-webkit-scrollbar-track{
-                background:#f1f1f1;
-                border-radius:4px
-            }
-            .Main_content::-webkit-scrollbar-thumb{
-                background:var(--primary-gradient);
-                border-radius:4px
-            }
-            .Main_content::-webkit-scrollbar-thumb:hover{
-                background:var(--secondary-gradient)
-            }
-
-            /* ====== Card dùng chung ====== */
-            .card{
-                background:linear-gradient(145deg,#ffffff 0%,#f8fafc 100%);
-                border-radius:20px;
-                box-shadow:var(--card-shadow);
-                border:1px solid var(--border-soft);
-            }
-
-            /* ====== Lưới trang chi tiết ====== */
+            /* =========================
+               Product Detail Layout
+               - 4 phần (gallery) | 6 phần (info + description)
+            ========================= */
             .product-detail{
                 display:grid;
-                grid-template-columns: 1.25fr 1fr;
-                gap:24px;
+                gap:10px;
+                align-items:start;
+                grid-template-columns: minmax(420px, 3fr) minmax(0, 7fr);
             }
 
-            /* ====== Gallery trái ====== */
-            .pd-gallery{
-                padding:16px;
-                display:flex;
-                flex-direction:column;
-                gap:12px;
+            /* ---------- LEFT: Gallery ---------- */
+            .pd-left{
+                background:#fff;
+                border-radius:16px;
+                box-shadow:var(--card-shadow);
+                padding:5px;
             }
             .pd-main{
-                position:relative;
-                border-radius:16px;
-                overflow:hidden;
-            }
-            #pd-main-img{
                 width:100%;
-                height:clamp(280px, 38vw, 520px);
-                object-fit:cover;
-                display:block;
-                filter:brightness(1.05) contrast(1.03);
-                transition:transform .6s ease;
-            }
-            .pd-main:hover #pd-main-img{
-                transform:scale(1.02)
-            }
-
-            .pd-nav{
-                position:absolute;
-                inset:0;
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                padding:0 8px;
-                pointer-events:none;
-            }
-            .pd-arrow{
-                pointer-events:auto;
-                width:48px;
-                height:48px;
-                border-radius:50%;
-                border:1px solid rgba(255,255,255,.35);
-                background:rgba(255,255,255,.25);
-                backdrop-filter: blur(10px);
-                color:#fff;
-                font-size:22px;
-                font-weight:700;
+                /* Chiều cao linh hoạt, không ép vuông để giữ tỉ lệ ảnh tự nhiên */
+                height: clamp(380px, 48vh, 560px);
+                border:1px solid #eee;
+                border-radius:12px;
+                overflow:hidden;
                 display:flex;
                 align-items:center;
                 justify-content:center;
-                cursor:pointer;
-                transition:.25s;
+                background:#fff;
             }
-            .pd-arrow:hover{
-                transform:scale(1.08);
-                box-shadow:0 8px 32px rgba(0,0,0,.25)
+            .pd-main img{
+                width:100%;
+                height:100%;
+                object-fit:contain;
             }
 
             .pd-thumbs{
+                margin-top:12px;
                 display:grid;
                 grid-template-columns: repeat(4, 1fr);
-                gap:10px;
+                gap:12px;
             }
             .pd-thumb{
-                border:none;
-                padding:0;
-                cursor:pointer;
-                border-radius:12px;
-                overflow:hidden;
+                border:1px solid #eee;
+                border-radius:10px;
                 background:#fff;
-                position:relative;
-                outline-offset:2px;
-                transition:transform .2s ease, box-shadow .2s ease;
+                padding:6px;
+                cursor:pointer;
+                transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
             }
             .pd-thumb img{
                 width:100%;
-                height:90px;
-                object-fit:cover;
+                aspect-ratio: 1 / 1;
+                object-fit:contain;
                 display:block;
-                transition:transform .35s ease;
             }
             .pd-thumb:hover{
-                transform:translateY(-2px);
-                box-shadow:var(--hover-shadow)
-            }
-            .pd-thumb:hover img{
-                transform:scale(1.06)
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0,0,0,.06);
+                border-color:#ddd;
             }
             .pd-thumb.is-active{
-                box-shadow:0 0 0 2px #fff, 0 0 0 4px rgba(102,126,234,.8);
+                border-color: var(--accent);
+                box-shadow: 0 0 0 2px rgba(124,58,237,.12) inset;
             }
 
-            /* ====== Thông tin phải ====== */
-            .pd-info{
-                padding:20px;
-                display:flex;
-                flex-direction:column;
-                gap:16px;
-            }
-            .pd-title{
-                font-size:clamp(20px, 2.2vw, 28px);
-                font-weight:800;
-                line-height:1.2;
-                margin-bottom:4px;
-                background:var(--primary-gradient);
-                -webkit-background-clip:text;
-                background-clip:text;
-                -webkit-text-fill-color:transparent;
-            }
-            .pd-sku{
-                font-size:13px;
-                opacity:.75
-            }
-            .pd-price{
-                font-size:clamp(18px, 2vw, 22px);
-                font-weight:800;
-                color:#e11d48;
-            }
-            .pd-attrs{
-                display:grid;
-                grid-template-columns:1fr;
-                gap:10px;
-                padding:12px;
-                border-radius:14px;
-                background:rgba(102,126,234,.06);
-                border:1px dashed rgba(102,126,234,.25);
-            }
-            .pd-attr strong{
-                margin-right:6px
-            }
-
-            .pd-actions{
-                display:flex;
-                gap:12px;
-                flex-wrap:wrap;
-                margin-top:4px;
-            }
-            .btn-primary, .btn-ghost, .btn-filter{
-                appearance:none;
-                border:none;
-                cursor:pointer;
-                padding:12px 16px;
-                border-radius:14px;
-                font-weight:700;
-                transition:.25s;
-                box-shadow: var(--card-shadow);
-            }
-            .btn-primary{
-                background:var(--primary-gradient);
-                color:#fff
-            }
-            .btn-primary:hover{
-                transform:translateY(-2px) scale(1.02);
-                box-shadow:var(--hover-shadow)
-            }
-
-            .btn-ghost{
+            /* ---------- RIGHT: Info + Description ---------- */
+            .pd-right{
+                position: sticky;
+                top:16px;
                 background:#fff;
-                color:#374151;
-                border:1px solid rgba(0,0,0,.06);
-            }
-            .btn-ghost:hover{
-                transform:translateY(-2px);
-                box-shadow:var(--hover-shadow)
-            }
-
-            .btn-filter{
-                background:var(--success-gradient);
-                color:#fff
-            }
-
-            /* ====== Mô tả dưới ====== */
-            .pd-desc{
-                grid-column: 1 / -1;
+                border-radius:16px;
+                box-shadow:var(--card-shadow);
                 padding:20px;
-                margin-top: 20px;
+                height: fit-content;
             }
-            .pd-desc h3{
-                margin:0 0 10px 0;
+            .pd-name{
+                margin:0 0 12px;
+                font-size:22px;
+                font-weight:800;
+                line-height:1.3;
+            }
+            .pd-basic{
+                display:grid;
+                gap:10px;
+                margin-bottom:16px;
+            }
+            .pd-row{
+                display:grid;
+                grid-template-columns: 110px 1fr;
+                gap:12px;
+                align-items:center;
+                font-size:14px;
+            }
+            .pd-row b{
+                color:var(--muted);
+                font-weight:600;
+            }
+            .pd-row span{
+                color:#111827;
+                font-weight:600;
+            }
+
+            .pd-row-price{
+                background:#f9fafb;
+                border:1px solid #f0f0f0;
+                border-radius:12px;
+                padding:14px 16px;
+                margin-top:6px;
+
+            }
+            .pd-row-price span{
+                color:var(--danger);
                 font-size:20px;
                 font-weight:800;
-                background:var(--primary-gradient);
-                -webkit-background-clip:text;
-                background-clip:text;
-                -webkit-text-fill-color:transparent;
-            }
-            .pd-desc .content{
-                line-height:1.65;
-                font-size:15px
-            }
-            .pd-desc .content img{
-                max-width:100%;
-                height:auto
             }
 
-            /* ====== Empty state ====== */
+            /* description_html nằm chung cột phải, ngay dưới info */
+            .pd-desc{
+                margin-top:16px;
+                padding-top:16px;
+                border-top:1px dashed var(--border);
+            }
+            .pd-desc h1,.pd-desc h2,.pd-desc h3{
+                margin-top:0;
+            }
+
+            /* ---------- Empty state ---------- */
             .empty-state{
                 text-align:center;
                 padding:60px 20px;
-                color:var(--text-dark);
             }
             .empty-state h3{
                 font-size:24px;
-                margin:0 0 8px 0;
-                background:var(--primary-gradient);
-                -webkit-background-clip:text;
-                background-clip:text;
-                -webkit-text-fill-color:transparent;
+                margin-bottom:10px;
             }
             .empty-state p{
-                opacity:.7
+                font-size:16px;
+                opacity:.8;
             }
 
-            /* ====== Hiệu ứng ====== */
-            @keyframes fadeInUp{
-                from{
-                    opacity:0;
-                    transform:translateY(30px)
-                }
-                to{
-                    opacity:1;
-                    transform:translateY(0)
-                }
+            /* =========================
+               Scrollbar (tuỳ chọn)
+            ========================= */
+            .Main_content::-webkit-scrollbar{
+                width:8px;
             }
-            .pd-gallery, .pd-info, .pd-desc{
-                animation:fadeInUp .6s ease-out
+            .Main_content::-webkit-scrollbar-track{
+                background:#f1f5f9;
+                border-radius:4px;
+            }
+            .Main_content::-webkit-scrollbar-thumb{
+                background:#d1d5db;
+                border-radius:4px;
+            }
+            .Main_content::-webkit-scrollbar-thumb:hover{
+                background:#9ca3af;
             }
 
-            /* ====== Responsive ====== */
+
+            /* =========================
+               Responsive
+            ========================= */
+            /* Desktop hẹp */
+            @media (max-width: 1440px){
+                .product-detail{
+                    grid-template-columns: minmax(350px, 3fr) minmax(0, 7fr);
+                }
+            }
+            /* Tablet ngang / laptop nhỏ */
             @media (max-width: 1200px){
                 .product-detail{
-                    grid-template-columns: 1.1fr 0.9fr
+                    grid-template-columns: minmax(400px, 4fr) minmax(0, 6fr);
+                    gap:20px;
+                }
+                .pd-main{
+                    height: clamp(340px, 44vh, 520px);
                 }
             }
-            @media (max-width: 968px){
-                .wrapper{
-                    padding:10px;
-                    flex-direction:column;
-                    gap:15px
-                }
-                .sidebar{
-                    display:none
-                }
-                .Main_content{
-                    flex:1;
-                    border-radius:16px
-                }
-                .container{
-                    padding:16px
-                }
+            /* Tablet dọc & mobile lớn: xếp dọc */
+            @media (max-width: 1024px){
                 .product-detail{
-                    grid-template-columns: 1fr
+                    grid-template-columns: 1fr;
                 }
-                #pd-main-img{
-                    height:clamp(220px, 55vw, 420px)
+                .pd-right{
+                    position: static;
+                }
+                .pd-main{
+                    height: clamp(320px, 42vh, 520px);
                 }
                 .site-footer {
                     margin-top: 15px;
                     padding: 20px 10px;
                 }
             }
-            @media (max-width: 480px){
+            /* Mobile */
+            @media (max-width: 640px){
+                .container{
+                    padding:16px;
+                }
                 .pd-thumbs{
                     grid-template-columns: repeat(4, 1fr);
-                    gap:8px
+                    gap:10px;
                 }
-                .pd-thumb img{
-                    height:72px
-                }
-                .pd-actions{
-                    flex-direction:column
+                .pd-row{
+                    grid-template-columns: 96px 1fr;
                 }
             }
+
+            /* Trợ năng: tắt animation nếu người dùng chọn giảm chuyển động */
+            @media (prefers-reduced-motion: reduce){
+                .pd-thumb{
+                    transition: none;
+                }
+            }
+
         </style>
     </head>
 
@@ -404,113 +307,77 @@
                     <jsp:include page="sidebar.jsp"/>
                 </div>
 
-                <!-- Main -->
-                <div class="Main_content">
-                    <!-- Header -->
-                    <jsp:include page="header.jsp"/>
+            <!-- Main -->
+            <div class="Main_content">
+                <!-- Header -->
+                <jsp:include page="header.jsp"/>
 
-                    <!-- ====== Nội dung trang ====== -->
-                    <div class="container">
-                        <c:choose>
-                            <c:when test="${not empty productDetail}">
-                                <div class="product-detail">
-                                    <!-- ====== Cột trái: Gallery ====== -->
-                                    <div class="pd-gallery card">
-                                        <div class="pd-main">
-                                            <c:set var="firstImg"
-                                                   value="${(not empty productDetail.image and not empty productDetail.image[0].image_url) 
-                                                            ? productDetail.image[0].image_url 
-                                                            : (not empty productDetail.coverImg ? productDetail.coverImg : '/assets/images/no-image.jpg')}" />
-                                            <img id="pd-main-img" src="${firstImg}" alt="${productDetail.name}" loading="eager" />
-
-                                            <!-- Nút điều hướng ảnh -->
-                                            <div class="pd-nav" aria-hidden="false">
-                                                <button type="button" class="pd-arrow pd-arrow--prev" id="pd-prev" aria-label="Ảnh trước">‹</button>
-                                                <button type="button" class="pd-arrow pd-arrow--next" id="pd-next" aria-label="Ảnh sau">›</button>
-                                            </div>
-                                        </div>
-
-                                        <div class="pd-thumbs" id="pd-thumbs">
-                                            <c:choose>
-                                                <c:when test="${not empty productDetail.image}">
-                                                    <c:forEach var="img" items="${productDetail.image}" varStatus="s">
-                                                        <c:if test="${s.count <= 5 && not empty img.image_url}">
-                                                            <button type="button" class="pd-thumb" data-src="${img.image_url}" aria-label="Xem ảnh ${s.count}">
-                                                                <img src="${img.image_url}" alt="${productDetail.name}" loading="lazy" />
-                                                            </button>
-                                                        </c:if>
-                                                    </c:forEach>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <button type="button" class="pd-thumb is-active" data-src="${firstImg}" aria-label="Xem ảnh 1">
-                                                        <img src="${firstImg}" alt="${productDetail.name}" loading="lazy" />
-                                                    </button>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </div>
+                <!-- ====== Nội dung trang ====== -->
+                <div class="container">
+                    <c:choose>
+                        <c:when test="${not empty productDetail}">
+                            <div class="product-detail">
+                                <!-- LEFT: Gallery (4 phần) -->
+                                <div class="pd-left">
+                                    <c:set var="firstImg"
+                                           value="${(not empty productDetail.image and not empty productDetail.image[0].image_url) 
+                                                    ? productDetail.image[0].image_url 
+                                                    : '/assets/images/no-image.jpg'}" />
+                                    <div class="pd-main">
+                                        <img id="pd-main-img" src="${firstImg}" alt="${productDetail.name}" loading="eager"/>
                                     </div>
 
-                                    <!-- ====== Cột phải: Thông tin sản phẩm ====== -->
-                                    <div class="pd-info card">
-                                        <div class="pd-title"><c:out value="${productDetail.name}" /></div>
-                                        <div class="pd-sku">
-                                            <c:if test="${not empty productDetail.sku}">
-                                                SKU: <c:out value="${productDetail.sku}" />
+                                    <div class="pd-thumbs" id="pd-thumbs">
+                                        <c:forEach var="img" items="${productDetail.image}" varStatus="s">
+                                            <c:if test="${not empty img.image_url}">
+                                                <button type="button"
+                                                        class="pd-thumb${s.index == 0 ? ' is-active' : ''}"
+                                                        data-src="${img.image_url}"
+                                                        aria-label="Ảnh ${s.count}">
+                                                    <img src="${img.image_url}" alt="${productDetail.name}" loading="lazy"/>
+                                                </button>
                                             </c:if>
-                                        </div>
-
-                                        <div class="pd-price">
-                                            <fmt:formatNumber value="${productDetail.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
-                                        </div>
-
-                                        <div class="pd-attrs">
-                                            <div class="pd-attr"><strong>Loại:</strong> <span><c:out value="${productDetail.product_type}" default="Không xác định"/></span></div>
-                                            <div class="pd-attr"><strong>Bảo hành:</strong> <span><c:out value="${guaranteeProduct}" default="Liên hệ"/></span></div>
-                                            <div class="pd-attr"><strong>Bộ nhớ:</strong> <span><c:out value="${memoryProduct}" default="Tùy phiên bản"/></span></div>
-                                            <c:if test="${not empty productDetail.brand}">
-                                                <div class="pd-attr"><strong>Thương hiệu:</strong> <span><c:out value="${productDetail.brand}" /></span></div>
-                                            </c:if>
-                                        </div>
-
-                                        <!-- Buttons/Actions có thể thêm ở đây -->
-                                        <div class="pd-actions">
-                                            <button class="btn-primary" type="button">Thêm vào giỏ</button>
-                                            <button class="btn-ghost" type="button">Yêu thích</button>
-                                        </div>
+                                        </c:forEach>
                                     </div>
 
-                                    <!-- ====== Mô tả chi tiết ====== -->
-                                    <div class="pd-desc card">
-                                        <h3>Mô tả sản phẩm</h3>
-                                        <div class="content">
-                                            <c:choose>
-                                                <c:when test="${not empty productDetail.description_html}">
-                                                    <c:out value="${productDetail.description_html}" escapeXml="false" />
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <p>Chưa có mô tả chi tiết cho sản phẩm này.</p>
-                                                </c:otherwise>
-                                            </c:choose>
+                                <!-- RIGHT: Info + Description (6 phần) -->
+                                <div class="pd-right">
+                                    <div class="pd-name">${productDetail.name}</div>
+
+                                    <div class="pd-basic">
+                                        <div class="pd-row"><b>SKU</b><span>${productDetail.sku}</span></div>
+                                        <div class="pd-row"><b>Loại</b><span>${productDetail.product_type}</span></div>
+                                        <div class="pd-row pd-row-price">
+                                            <b>Giá</b>
+                                            <span><fmt:formatNumber value="${productDetail.price}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND</span>
                                         </div>
+                                        <div class="pd-row"><b>Bảo hành</b><span>${guaranteeProduct}</span></div>
+                                        <div class="pd-row"><b>Bộ nhớ</b><span>${memoryProduct}</span></div>
+                                    </div>
+
+                                    <!-- Description_html nằm chung cột phải -->
+                                    <div class="pd-desc">
+                                        ${productDetail.description_html}
                                     </div>
                                 </div>
-                            </c:when>
+                            </div>
+                        </c:when>
 
-                            <c:otherwise>
-                                <div class="empty-state">
-                                    <h3>Không tìm thấy sản phẩm</h3>
-                                    <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí của bạn.</p>
-                                    <c:if test="${not empty checkErrorDeleteProduct}">
-                                        <p style="opacity:.8;"><c:out value="${checkErrorDeleteProduct}"/></p>
-                                    </c:if>
-                                    <form action="MainController" method="get" style="margin-top:12px;">
-                                        <input type="hidden" name="action" value="listProducts"/>
-                                        <button class="btn-filter" type="submit">Xem tất cả sản phẩm</button>
-                                    </form>
-                                </div>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
+                        <c:otherwise>
+                            <div class="empty-state">
+                                <h3>Không tìm thấy sản phẩm</h3>
+                                <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí của bạn.</p>
+                                <c:if test="${not empty checkErrorDeleteProduct}">
+                                    <p><c:out value="${checkErrorDeleteProduct}"/></p>
+                                </c:if>
+                                <form action="MainController" method="get" style="margin-top:12px;">
+                                    <input type="hidden" name="action" value="listProducts"/>
+                                    <button class="btn-filter" type="submit">Xem tất cả sản phẩm</button>
+                                </form>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+
                 </div>
             </div>
 
@@ -520,92 +387,27 @@
             </footer>
         </div>
 
-        <!-- JS gallery: đổi ảnh + prev/next + bàn phím -->
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            (function () {
                 const main = document.getElementById('pd-main-img');
-                const btnPrev = document.getElementById('pd-prev');
-                const btnNext = document.getElementById('pd-next');
                 const thumbsWrap = document.getElementById('pd-thumbs');
                 if (!main || !thumbsWrap)
                     return;
 
-                let thumbs = Array.from(thumbsWrap.querySelectorAll('.pd-thumb')).slice(0, 4);
-                if (thumbs.length === 0) {
-                    if (btnPrev)
-                        btnPrev.hidden = true;
-                    if (btnNext)
-                        btnNext.hidden = true;
-                    return;
-                }
-                thumbs.forEach(t => t.setAttribute('type', 'button'));
-                if (btnPrev)
-                    btnPrev.setAttribute('type', 'button');
-                if (btnNext)
-                    btnNext.setAttribute('type', 'button');
-
-                let images = thumbs
-                        .map(t => t.getAttribute('data-src') || (t.querySelector('img') && t.querySelector('img').getAttribute('src')))
-                        .filter(Boolean);
-
-                const mainAttrSrc = main.getAttribute('src');
-                if (mainAttrSrc && !images.includes(mainAttrSrc))
-                    images.unshift(mainAttrSrc);
-                images = images.filter((v, i, a) => a.indexOf(v) === i);
-
-                if (images.length < 2) {
-                    if (btnPrev)
-                        btnPrev.hidden = true;
-                    if (btnNext)
-                        btnNext.hidden = true;
-                }
-
-                let idx = 0;
-                function render(i) {
-                    if (!images.length)
+                thumbsWrap.addEventListener('click', function (e) {
+                    const btn = e.target.closest('.pd-thumb');
+                    if (!btn)
                         return;
-                    idx = (i + images.length) % images.length;
-                    const nextSrc = images[idx];
-                    if (nextSrc)
-                        main.setAttribute('src', nextSrc);
-                    thumbs.forEach(t => t.classList.remove('is-active'));
-                    if (thumbs[idx])
-                        thumbs[idx].classList.add('is-active');
-                }
+                    const src = btn.getAttribute('data-src');
+                    if (!src || main.src === src)
+                        return;
+                    main.src = src;
 
-                thumbs.forEach((t) => {
-                    t.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const src = t.getAttribute('data-src') || (t.querySelector('img') && t.querySelector('img').getAttribute('src'));
-                        const i = images.indexOf(src);
-                        render(i >= 0 ? i : 0);
-                    });
-                });
-
-                if (btnPrev)
-                    btnPrev.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        render(idx - 1);
-                    });
-                if (btnNext)
-                    btnNext.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        render(idx + 1);
-                    });
-
-                window.addEventListener('keydown', function (e) {
-                    if (e.key === 'ArrowLeft')
-                        render(idx - 1);
-                    if (e.key === 'ArrowRight')
-                        render(idx + 1);
-                });
-
-                const found = images.indexOf(mainAttrSrc);
-                render(found >= 0 ? found : 0);
-            });
+                    document.querySelectorAll('.pd-thumb.is-active')
+                            .forEach(el => el.classList.remove('is-active'));
+                    btn.classList.add('is-active');
+                }, false);
+            })();
         </script>
     </body>
 </html>
