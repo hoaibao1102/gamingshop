@@ -80,7 +80,7 @@
                             <td><%= p.getStatus() %></td>
                             <td>
                                 <form action="MainController" method="post" style="display:inline;">
-                                    <input type="hidden" name="action" value="editPosts"/>
+                                    <input type="hidden" name="action" value="goToUpdatePosts"/>
                                     <input type="hidden" name="id" value="<%= p.getId() %>"/>
                                     <input type="hidden" name="keyword" value="<%= (keyword != null) ? keyword : "" %>" />
                                     <input type="submit" value="Edit" class="edit-btn" />

@@ -25,6 +25,8 @@
             String checkErrorUpdateProductMain = (String) request.getAttribute("checkErrorUpdateProductMain");
             String messageUpdateProductImage = (String) request.getAttribute("messageUpdateProductImage");
             String checkErrorUpdateProductImage = (String) request.getAttribute("checkErrorUpdateProductImage");
+            String messageDeleteImg = (String) request.getAttribute("messageDeleteImg");
+            String checkErrorDeleteImg = (String) request.getAttribute("checkErrorDeleteImg");
             
             // Khai bào list Images
             List<Product_images> productImages = (List<Product_images>) request.getAttribute("productImages");
@@ -55,6 +57,10 @@
             <div class="alert alert-success"><%= messageUpdateProductImage %></div>
             <% } else if (checkErrorUpdateProductImage != null) { %>
             <div class="alert alert-danger"><%= checkErrorUpdateProductImage %></div>
+            <% } else if (messageDeleteImg != null) { %>
+            <div class="alert alert-success"><%= messageDeleteImg %></div>
+            <% } else if (checkErrorDeleteImg != null) { %>
+            <div class="alert alert-danger"><%= checkErrorDeleteImg %></div>
             <% } %>
 
             <!-- Form -->
@@ -229,6 +235,8 @@
             <form action="MainController" method="post" enctype="multipart/form-data" class="border rounded p-3">
                 <input type="hidden" name="action" value="editImageProduct"/>
                 <input type="hidden" name="product_id" value="<%= product.getId() %>"/>
+                <input type="hidden" name="deleteImgId" id="deleteImgId" />
+
                 <div class="row">
                     <% for (int i = 0; i < 4; i++) {
                            int slot = i + 1;
@@ -241,6 +249,13 @@
                              class="img-thumbnail mb-2" style="max-width:200px; height:auto;"
                              id="preview<%= slot %>_old"/>
                         <div class="text-muted mb-2">Slot <%= slot %> (Giữ nguyên nếu không chọn ảnh mới)</div>
+
+                        <!-- Nút xoá ảnh -->
+                        <button type="button" class="btn btn-sm btn-danger mb-2"
+                                onclick="deleteImage('<%= slotImg.getId() %>', '<%= product.getId() %>')">
+                            Xoá ảnh
+                        </button>
+
                         <% } else { %>
                         <!-- Placeholder -->
                         <div class="mb-2" style="height:200px; display:flex; align-items:center; justify-content:center; background:#f8f9fa;">
@@ -248,6 +263,7 @@
                         </div>
                         <img id="preview<%= slot %>_old" style="display:none;"/>
                         <% } %>
+
                         <!-- Input + preview ảnh mới -->
                         <input type="file" id="imageFile<%= slot %>" name="imageFile<%= slot %>" accept="image/*"
                                class="form-control form-control-sm"/>
@@ -255,6 +271,7 @@
                     </div>
                     <% } %>
                 </div>
+
                 <div class="text-center">
                     <button type="submit" class="btn btn-warning">Update Images</button>
                 </div>
@@ -315,6 +332,23 @@
                         });
                     }, 0);
                 });
+            }
+
+            function deleteImage(imgId, productId) {
+                if (!confirm("Bạn có chắc muốn xoá ảnh này không?"))
+                    return;
+
+                fetch("MainController?action=deleteImageProduct", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                    body: "deleteImgId=" + imgId + "&product_id=" + productId
+                })
+                        .then(res => res.text())
+                        .then(data => {
+                            console.log(data);
+                            location.reload(); // reload lại trang sau khi xoá
+                        })
+                        .catch(err => console.error(err));
             }
         </script>
 
