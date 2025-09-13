@@ -14,18 +14,19 @@ public class Accessories {
 
     private int id;
     private String name;
-    private double quantity;
+    private int quantity;
     private double price;
     private String description;
     private String image_url;
     private Date created_at;
     private Date updated_at;
     private String status;
+    private String gift;
 
     public Accessories() {
     }
 
-    public Accessories(int id, String name, double quantity, double price, String description, String image_url, Date created_at, Date updated_at, String status) {
+    public Accessories(int id, String name, int quantity, double price, String description, String image_url, Date created_at, Date updated_at, String status, String gift) {
         this.id = id;
         this.name = name;
         this.quantity = quantity;
@@ -35,6 +36,7 @@ public class Accessories {
         this.created_at = created_at;
         this.updated_at = updated_at;
         this.status = status;
+        this.gift = gift;
     }
 
     public int getId() {
@@ -53,11 +55,11 @@ public class Accessories {
         this.name = name;
     }
 
-    public double getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(double quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
@@ -109,6 +111,12 @@ public class Accessories {
         this.status = status;
     }
 
-    
+    public String getGift() {
+        return gift;
+    }
+
+    public void setGift(String gift) {
+        this.gift = gift;
+    }
 
 }

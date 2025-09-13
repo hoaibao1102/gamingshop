@@ -6,7 +6,6 @@
 /gamingShop/nbproject/private/
 /gamingShop/nbproject/Makefile-*.mk
 /gamingShop/nbproject/Package-*.bash
-/gamingShop/nbproject/project.properties
 
 # === Build artifacts ===
 /gamingShop/build/
@@ -31,3 +30,4 @@
 /gamingShop/buildNumber.properties
 /gamingShop/.mvn/timing.properties
 /gamingShop/.mvn/wrapper/maven-wrapper.jar
+

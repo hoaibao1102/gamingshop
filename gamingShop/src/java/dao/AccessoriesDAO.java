@@ -20,8 +20,10 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     private static final String GET_ALL = "SELECT * FROM dbo.Accessories";
     private static final String GET_BY_ID = "SELECT * FROM dbo.Accessories WHERE id = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Accessories WHERE name LIKE ?";
-    private static final String CREATE
-            = "INSERT INTO dbo.Accessories (name, quantity, price, description, image_url, status) VALUES (?, ?, ?, ?, ?, ?)";
+    private static final String CREATE = "INSERT INTO dbo.Accessories (name, quantity, price, description_html, image_url, status, gift) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE = "UPDATE dbo.Accessories SET name = ?, quantity = ?, price = ?, description_html = ?, image_url = ?, status = ?, gift = ?, updated_at = GETDATE() WHERE id = ?";
+
+    private static final String CHECK_EXIST_NAME = "SELECT COUNT(1) FROM dbo.Accessories WHERE name = ? AND status = 'active'";
 
     @Override
     public boolean create(Accessories e) {
@@ -29,14 +31,25 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         PreparedStatement st = null;
         try {
             c = DBUtils.getConnection();
-            st = c.prepareStatement(CREATE);
+            st = c.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
             st.setString(1, e.getName());
-            st.setDouble(2, e.getQuantity());
+            st.setInt(2, e.getQuantity());
             st.setDouble(3, e.getPrice());
             st.setString(4, e.getDescription());
             st.setString(5, e.getImage_url());
             st.setString(6, e.getStatus());
-            return st.executeUpdate() > 0; // Cách B: không lấy id sinh tự động
+            st.setString(7, e.getGift());
+            int affectedRows = st.executeUpdate();
+
+            if (affectedRows > 0) {
+                try ( ResultSet rs = st.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        e.setId(rs.getInt(1)); // Gán ID cho object
+                    }
+                }
+                return true;
+            }
+            return false;
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
@@ -113,9 +126,9 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         Accessories a = new Accessories();
         a.setId(rs.getInt("id"));
         a.setName(rs.getString("name"));
-        a.setQuantity(rs.getDouble("quantity"));
+        a.setQuantity(rs.getInt("quantity"));
         a.setPrice(rs.getDouble("price"));
-        a.setDescription(rs.getString("description"));
+        a.setDescription(rs.getString("description_html"));
         a.setImage_url(rs.getString("image_url"));
 
         // created_at
@@ -131,8 +144,58 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         }
 
         a.setStatus(rs.getString("status"));
+        a.setGift(rs.getString("gift"));
         return a;
     }
+
+// NEW UPDATE METHOD
+    public boolean update(Accessories e) {
+        Connection c = null;
+        PreparedStatement st = null;
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(UPDATE);
+            st.setString(1, e.getName());
+            st.setInt(2, (int) e.getQuantity());
+            st.setDouble(3, e.getPrice());
+            st.setString(4, e.getDescription()); // Maps to description_html
+            st.setString(5, e.getImage_url());
+            st.setString(6, e.getStatus());
+            st.setString(7, e.getGift());
+            st.setInt(8, e.getId()); // WHERE condition
+
+            return st.executeUpdate() > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            close(c, st, null);
+        }
+    }
+
+    /**
+     * Kiểm tra tên accessory đã tồn tại chưa
+     */
+    public boolean isNameExists(String name) throws SQLException, ClassNotFoundException {
+    
+    try (Connection c = DBUtils.getConnection();
+         PreparedStatement st = c.prepareStatement(CHECK_EXIST_NAME)) {
+        
+        st.setString(1, name);
+        
+        try (ResultSet rs = st.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        throw new SQLException("Error checking name existence: " + ex.getMessage(), ex);
+    }
+    
+    return false;
+}
 
     private void close(Connection c, PreparedStatement st, ResultSet rs) {
         try {
@@ -154,4 +217,5 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         } catch (Exception ignore) {
         }
     }
+
 }
