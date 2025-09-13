@@ -889,7 +889,7 @@ public class ProductController extends HttpServlet {
             } else {
                 publishDate = new Date();
             }
-                    
+
             int status = 0;
             try {
                 status = Integer.parseInt(request.getParameter("status"));
@@ -1045,6 +1045,7 @@ public class ProductController extends HttpServlet {
         }
         return "postsUpdate.jsp";
     }
+
     private String handleGetProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
             request.setCharacterEncoding("UTF-8");
@@ -1052,9 +1053,10 @@ public class ProductController extends HttpServlet {
             int productId = Integer.parseInt(request.getParameter("idProduct"));
 
             if (productId < 1) {
-                request.setAttribute("checkErrorDeleteProduct", "Missing product_id.");
-                return "welcome.jsp";
+                request.setAttribute("checkErrorDeleteProduct", "không có san pham phu hop");
+                return "productDetail.jsp";
             }
+
             List<Product_images> imgList = new ArrayList<>();
             imgList = productImagesDAO.getByAllProductId(productId);
             Products productDetail = productsdao.getById(productId);
@@ -1070,7 +1072,7 @@ public class ProductController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("checkErrorDeleteProduct", "Unexpected error: " + e.getMessage());
-            return "welcome.jsp";
+            return "productDetail.jsp";
         }
         return "productDetail.jsp";
 
