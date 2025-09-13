@@ -1627,18 +1627,6 @@ public class ProductController extends HttpServlet {
         }
     }
 
-    private String handleGoToUpdatePosts(HttpServletRequest request, HttpServletResponse response) {
-        int id = Integer.parseInt(request.getParameter("id"));
-        PostsDAO pd = new PostsDAO();
-        try {
-            Posts post = pd.getById(id);
-            request.setAttribute("post", post);
-        } catch (Exception e) {
-        }
-        return "postsUpdate.jsp";
-    }
-
-
     private String handleGetProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
             request.setCharacterEncoding("UTF-8");
