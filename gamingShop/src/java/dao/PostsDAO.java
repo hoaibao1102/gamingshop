@@ -203,7 +203,7 @@ public class PostsDAO implements IDAO<Posts, Integer> {
         return generatedId; // nếu lỗi trả về -1
     }
 
-    public boolean deleteProductById(int id) {
+    public boolean deletePostById(int id) {
         Connection c = null;
         PreparedStatement st = null;
         String sql = "UPDATE Posts SET status = '0', updated_at = GETDATE() WHERE id = ?";
@@ -223,33 +223,95 @@ public class PostsDAO implements IDAO<Posts, Integer> {
     public boolean updatePost(Posts post, int id) {
         Connection c = null;
         PreparedStatement st = null;
+        ResultSet rs = null;
         try {
             c = DBUtils.getConnection();
-            // Không cần RETURN_GENERATED_KEYS cho UPDATE
-            st = c.prepareStatement(UPDATE);
+
+            final String sql
+                    = "UPDATE posts SET author=?, title=?, content_html=?, image_url=?, publish_date=?, status=? WHERE id=?";
+            st = c.prepareStatement(sql);
 
             st.setString(1, post.getAuthor());
             st.setString(2, post.getTitle());
             st.setString(3, post.getContent_html());
             st.setString(4, post.getImage_url());
-
             if (post.getPublish_date() != null) {
                 st.setTimestamp(5, new Timestamp(post.getPublish_date().getTime()));
             } else {
                 st.setNull(5, Types.TIMESTAMP);
             }
-
             st.setInt(6, post.getStatus());
-            st.setInt(7, id); // ĐÂY LÀ PARAMETER QUAN TRỌNG BỊ THIẾU
+            st.setInt(7, id);
 
-            int rowsAffected = st.executeUpdate();
-            return rowsAffected > 0;
+            int rows = st.executeUpdate();
+            if (rows > 0) {
+                return true;              // có thay đổi
+            }
+            // rows == 0 -> kiểm tra ID có tồn tại không (no-op update)
+            close(null, st, null);
+            final String existsSql = "SELECT 1 FROM posts WHERE id=? LIMIT 1";
+            st = c.prepareStatement(existsSql);
+            st.setInt(1, id);
+            rs = st.executeQuery();
+            return rs.next();                        // tồn tại -> xem như thành công (không có thay đổi)
 
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
         } finally {
-            close(c, st, null);
+            close(c, st, rs);
         }
+    }
+
+    public boolean updateImageUrl(int postId, String url) {
+        Connection c = null;
+        PreparedStatement st = null;
+        try {
+            c = DBUtils.getConnection(); // giống cách bạn lấy ở updatePost
+            String sql = "UPDATE posts SET image_url = ? WHERE id = ?";
+            st = c.prepareStatement(sql);
+            st.setString(1, url);
+            st.setInt(2, postId);
+
+            int rowsAffected = st.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            close(c, st, null); // hàm close(c, st, rs) bạn đã có sẵn
+        }
+    }
+
+    public boolean updatePost(Posts e) {
+        try ( Connection c = DBUtils.getConnection();  PreparedStatement st = c.prepareStatement(
+                "UPDATE posts SET author=?, title=?, content_html=?, image_url=?, publish_date=?, status=?, updated_at=NOW() WHERE id=?")) {
+            st.setString(1, e.getAuthor());
+            st.setString(2, e.getTitle());
+            st.setString(3, e.getContent_html());
+            st.setString(4, e.getImage_url());
+            if (e.getPublish_date() != null) {
+                st.setTimestamp(5, new Timestamp(e.getPublish_date().getTime()));
+            } else {
+                st.setNull(5, Types.TIMESTAMP);
+            }
+            st.setInt(6, e.getStatus());
+            st.setInt(7, e.getId());
+            return st.executeUpdate() > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean disableOldImage(int postId) {
+        String sql = "UPDATE posts SET status = 0 WHERE id = ?";
+        try ( Connection c = DBUtils.getConnection();  PreparedStatement st = c.prepareStatement(sql)) {
+            st.setInt(1, postId);
+            return st.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

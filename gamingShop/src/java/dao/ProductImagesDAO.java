@@ -245,4 +245,5 @@ public class ProductImagesDAO implements IDAO<Product_images, Integer> {
             close(c, st, null);
         }
     }
+
 }

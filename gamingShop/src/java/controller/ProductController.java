@@ -80,6 +80,8 @@ public class ProductController extends HttpServlet {
                 url = handleUpdateImageProduct(request, response);
             } else if (action.equals("deleteProduct")) {
                 url = handleDeleteProduct(request, response);
+            } else if (action.equals("deleteImageProduct")) {
+                url = handleDeleteImageProduct(request, response);
             } else if (action.equals("viewAllPost")) {
                 url = handleViewAllPost(request, response);
             } else if (action.equals("searchPosts")) {
@@ -88,6 +90,8 @@ public class ProductController extends HttpServlet {
                 url = handleAddPosts(request, response);
             } else if (action.equals("deletePosts")) {
                 url = handleDeletePosts(request, response);
+            } else if (action.equals("deleteImagePost")) {
+                url = handleDeleteImagePost(request, response);
             } else if (action.equals("goToUpdatePosts")) {
                 url = handleGoToUpdatePosts(request, response);
             } else if (action.equals("updatePosts")) {
@@ -680,6 +684,35 @@ public class ProductController extends HttpServlet {
         }
     }
 
+    private String handleDeleteImageProduct(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String deleteImgId = request.getParameter("deleteImgId");
+            if (deleteImgId != null && !deleteImgId.isEmpty()) {
+                int imgId = Integer.parseInt(deleteImgId);
+                boolean success = productImagesDAO.deleteImageById(imgId);
+                if (success) {
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.getWriter().write("OK");
+                } else {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("Failed");
+                }
+            } else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("Missing image ID");
+            }
+            return null; // vì Ajax không cần forward/redirect JSP
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("Error: " + e.getMessage());
+            } catch (IOException ignored) {
+            }
+            return null;
+        }
+    }
+
     private String handleDeleteProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
             request.setCharacterEncoding("UTF-8");
@@ -735,273 +768,78 @@ public class ProductController extends HttpServlet {
         return "posts.jsp";
     }
 
-    private String handleUpdatePosts(HttpServletRequest request, HttpServletResponse response) {
+    private String handleAddPosts(HttpServletRequest request, HttpServletResponse response) {
+        String message = "";
+        String checkError = "";
         try {
             request.setCharacterEncoding("UTF-8");
-            int id = Integer.parseInt(request.getParameter("id"));
-
-            // ===== Lấy dữ liệu từ form =====
             String author = request.getParameter("author");
-            if (author == null || author.trim().isEmpty()) {
-                author = "admin";
-            }
             String title = request.getParameter("title");
-            String content_html = request.getParameter("content_html");
-
-            // publish_date có thể để trống
+            String content = request.getParameter("content_html");
+            String statusStr = request.getParameter("status");
             String publishDateStr = request.getParameter("publish_date");
+            int status = (statusStr != null && !statusStr.isEmpty()) ? Integer.parseInt(statusStr) : 0;
             Date publishDate = null;
-            if (publishDateStr != null && !publishDateStr.trim().isEmpty()) {
+            if (publishDateStr != null && !publishDateStr.isEmpty()) {
                 try {
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-                    formatter.setLenient(false);
-                    publishDate = formatter.parse(publishDateStr.trim());
-                } catch (ParseException e) {
-                    publishDate = new Date();
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                    publishDate = sdf.parse(publishDateStr);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else {
-                publishDate = new Date();
             }
 
-            int status = 1; // mặc định active
-            try {
-                status = Integer.parseInt(request.getParameter("status"));
-            } catch (Exception ignore) {
-                status = 1;
-            }
-
-            // ===== Tạo đối tượng Posts và set dữ liệu =====
-            Posts updatePost = new Posts();
-            updatePost.setAuthor(author);
-            updatePost.setTitle(title);
-            updatePost.setContent_html(content_html);
-            updatePost.setPublish_date(publishDate);
-            updatePost.setStatus(status);
-
-            // ===== Xử lý ảnh =====
-            String finalImageUrl = null;
-
-            // Lấy ảnh cũ từ hidden input (nếu có)
-            String existingImageUrl = request.getParameter("existingImageUrl");
-
-            // Kiểm tra xem có upload ảnh mới không
-            Part imagePart = null;
-            try {
-                imagePart = request.getPart("imageFile");
-            } catch (Exception ignore) {
-                // Không có part imageFile hoặc lỗi khác
-            }
-
-            if (imagePart != null && imagePart.getSize() > 0) {
-                // CÓ upload ảnh mới
-                String uploadDirPath = request.getServletContext().getRealPath("/assets/img/posts/");
-                File uploadDir = new File(uploadDirPath);
+            // --- Xử lý file upload ---
+            Part filePart = request.getPart("image"); // input name="image"
+            String fileName = null;
+            String imageUrl = null;
+            if (filePart != null && filePart.getSize() > 0) {
+                fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                String uploadPath = request.getServletContext().getRealPath("/assets/img/posts");
+                File uploadDir = new File(uploadPath);
                 if (!uploadDir.exists()) {
                     uploadDir.mkdirs();
                 }
-
-                // Lấy extension
-                String originalFileName = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
-                String fileExtension = "";
-                int dot = originalFileName.lastIndexOf('.');
-                if (dot >= 0 && dot < originalFileName.length() - 1) {
-                    fileExtension = originalFileName.substring(dot);
-                }
-
-                // Đặt tên file mới
-                String finalName = id + "_1" + fileExtension;
-                File finalFile = new File(uploadDir, finalName);
-
-                // Lưu file
-                imagePart.write(finalFile.getAbsolutePath());
-
-                finalImageUrl = "assets/img/posts/" + finalName;
-            } else {
-                // KHÔNG upload ảnh mới, giữ ảnh cũ
-                finalImageUrl = existingImageUrl;
+                String filePath = uploadPath + File.separator + fileName;
+                filePart.write(filePath);
+                imageUrl = "assets/img/posts/" + fileName;
             }
 
-            updatePost.setImage_url(finalImageUrl);
+            // --- Tạo object ---
+            Posts post = new Posts();
+            post.setAuthor(author);
+            post.setTitle(title);
+            post.setContent_html(content);
+            post.setImage_url(imageUrl);
+            post.setPublish_date(publishDate);
+            post.setStatus(status);
 
-            // ===== Thực hiện update =====
-            boolean success = postsDAO.updatePost(updatePost, id);
-
-            if (success) {
-                HttpSession session = request.getSession();
-                session.removeAttribute("cachedPostsListEdit");
-
-                request.setAttribute("messageAddPost", "Post updated successfully.");
-
-                // Load lại post đã update để hiển thị
-                Posts updatedPost = postsDAO.getById(id);
-                request.setAttribute("post", updatedPost);
+            // --- Lưu xuống DB ---
+            PostsDAO dao = new PostsDAO();
+            int newId = dao.createNewPost(post);
+            if (newId > 0) {
+                message = "Post created successfully";
+                request.setAttribute("messageAddPosts", message);
             } else {
-                request.setAttribute("checkErrorAddPost", "Failed to update post.");
-
-                // Load lại post cũ khi lỗi
-                Posts post = postsDAO.getById(id);
-                request.setAttribute("post", post);
+                checkError = "Failed to create post.";
+                request.setAttribute("checkErrorAddPosts", checkError);
             }
 
-            return "postsUpdate.jsp";
+            // --- set lại dữ liệu nhập ---
+            request.setAttribute("post", post); // ✅ Quan trọng: đưa object post vào request
+            request.setAttribute("author", author);
+            request.setAttribute("title", title);
+            request.setAttribute("content_html", content);
+            request.setAttribute("publish_date", publishDateStr); // giữ nguyên string cho input date
+            request.setAttribute("status", statusStr);
+            request.setAttribute("image_url", imageUrl);
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("checkError", "Error while updating post: " + e.getMessage());
-            return "error.jsp";
+            message = "Error: " + e.getMessage();
+            request.setAttribute("messageAddPosts", message);
         }
-    }
-
-    private String handleAddPosts(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            request.setCharacterEncoding("UTF-8");
-
-            // ===== Lấy dữ liệu từ form =====
-            String author = request.getParameter("author");
-            if (author == null) {
-                author = "admin";
-            }
-            String title = request.getParameter("title");
-            String content_html = request.getParameter("content_html");
-
-            // publish_date có thể để trống
-            String publishDateStr = request.getParameter("publish_date");
-            Date publishDate;
-            if (publishDateStr != null && !publishDateStr.trim().isEmpty()) {
-                try {
-                    // ĐÚNG với <input type="date">
-                    SimpleDateFormat iso = new SimpleDateFormat("yyyy-MM-dd");
-                    iso.setLenient(false);
-                    publishDate = iso.parse(publishDateStr.trim());
-                } catch (ParseException e1) {
-                    try {
-                        // Fallback khi client gửi dd-MMM-yyyy (ví dụ 13-Sep-2025)
-                        SimpleDateFormat alt = new SimpleDateFormat("dd-MMM-yyyy", java.util.Locale.ENGLISH);
-                        alt.setLenient(false);
-                        publishDate = alt.parse(publishDateStr.trim());
-                    } catch (ParseException e2) {
-                        publishDate = new Date(); // Cuối cùng lấy ngày hiện tại
-                    }
-                }
-            } else {
-                publishDate = new Date();
-            }
-
-            int status = 0;
-            try {
-                status = Integer.parseInt(request.getParameter("status"));
-            } catch (Exception ignore) {
-                // để mặc định 0 nếu không parse được
-            }
-
-            // ===== Tạo đối tượng Posts và set dữ liệu =====
-            Posts newPost = new Posts();
-            newPost.setAuthor(author);
-            newPost.setTitle(title);
-            newPost.setContent_html(content_html);
-            newPost.setPublish_date(publishDate);
-            newPost.setStatus(status);
-
-            // ===== Upload 1 ảnh (nếu có) và set vào image_url =====
-            // Tên field trong form: "imageFile"
-            Part imagePart = null;
-            try {
-                imagePart = request.getPart("imageFile");
-            } catch (Exception ignore) {
-            }
-
-            String storedRelativeUrl = null; // ví dụ: "assets/img/posts/123_1.jpg"
-            if (imagePart != null && imagePart.getSize() > 0) {
-                // Thư mục lưu ảnh trên server
-                String uploadDirPath = request.getServletContext().getRealPath("/assets/img/posts/");
-                File uploadDir = new File(uploadDirPath);
-                if (!uploadDir.exists()) {
-                    uploadDir.mkdirs();
-                }
-
-                // Lấy extension an toàn
-                String originalFileName = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
-                String fileExtension = "";
-                int dot = originalFileName.lastIndexOf('.');
-                if (dot >= 0 && dot < originalFileName.length() - 1) {
-                    fileExtension = originalFileName.substring(dot); // gồm cả dấu chấm
-                }
-
-                // TẠM thời đặt tên file trước khi có id, sẽ đặt lại sau khi insert có id
-                // Lưu tạm với tên ngẫu nhiên để tránh đụng
-                String tempName = "tmp_" + System.currentTimeMillis() + fileExtension;
-                File tempFile = new File(uploadDir, tempName);
-                imagePart.write(tempFile.getAbsolutePath());
-
-                // Tạm set image_url là file tạm để vẫn insert được nếu cần (có thể để null)
-                newPost.setImage_url(null);
-
-                // ===== Insert để lấy generatedId =====
-                int generatedId = postsDAO.createNewPost(newPost);
-                if (generatedId > 0) {
-                    newPost.setId(generatedId);
-
-                    // Đặt lại tên file theo quy ước: {postId}_1{ext}
-                    String finalName = generatedId + "_1" + fileExtension;
-                    File finalFile = new File(uploadDir, finalName);
-
-                    // Đổi tên file tạm -> file chính thức
-                    boolean renamed = tempFile.renameTo(finalFile);
-                    if (!renamed) {
-                        // Nếu rename thất bại thì copy rồi xóa tạm
-                        try ( java.io.InputStream in = new java.io.FileInputStream(tempFile);  java.io.OutputStream out = new java.io.FileOutputStream(finalFile)) {
-                            byte[] buf = new byte[8192];
-                            int len;
-                            while ((len = in.read(buf)) > 0) {
-                                out.write(buf, 0, len);
-                            }
-                        }
-                        tempFile.delete();
-                    }
-
-                    storedRelativeUrl = "assets/img/posts/" + finalName;
-                    newPost.setImage_url(storedRelativeUrl);
-
-                    // Cập nhật lại image_url vào DB nếu cần (vì INSERT lúc đầu chưa có url)
-                    // Ở đây bạn có thể viết thêm 1 hàm updateImageUrl(postId, url).
-                    // Nếu CHƯA có hàm update, cách đơn giản là: nếu bắt buộc cần image_url ngay,
-                    // hãy set image_url trước rồi mới insert (xem biến thể bên dưới).
-                } else {
-                    // Insert thất bại -> xóa file tạm (nếu có)
-                    if (tempFile.exists()) {
-                        tempFile.delete();
-                    }
-                    request.setAttribute("checkErrorAddPost", "Failed to add post.");
-                    return "postsUpdate.jsp";
-                }
-
-            } else {
-                // KHÔNG có ảnh upload -> insert luôn
-                newPost.setImage_url(null);
-                int generatedId = postsDAO.createNewPost(newPost);
-                if (generatedId <= 0) {
-                    request.setAttribute("checkErrorAddPost", "Failed to add post.");
-                    return "postsUpdate.jsp";
-                }
-                newPost.setId(generatedId);
-            }
-
-            // ===== Success =====
-            HttpSession session = request.getSession();
-            // Nếu trước đó có cache gì liên quan posts thì xóa, ví dụ:
-            session.removeAttribute("cachedPostsListEdit");
-
-            request.setAttribute("messageAddPost", "New post added successfully.");
-            request.setAttribute("post", newPost); // để JSP show ra chi tiết
-
-            return "postsUpdate.jsp";
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("checkError", "Error while adding post: " + e.getMessage());
-            return "error.jsp";
-        }
+        return "postsUpdate.jsp";
     }
 
     private String handleDeletePosts(HttpServletRequest request, HttpServletResponse response) {
@@ -1015,7 +853,7 @@ public class ProductController extends HttpServlet {
                 return "posts.jsp";
             }
 
-            boolean success = postsDAO.deleteProductById(id);
+            boolean success = postsDAO.deletePostById(id);
 
             if (success) {
                 // Nếu có cache list sản phẩm để edit trong session thì xoá để lần sau nạp mới
@@ -1033,6 +871,143 @@ public class ProductController extends HttpServlet {
         return "MainController?action=viewAllPost";
     }
 
+    private String handleUpdatePosts(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            // ===== Lấy dữ liệu từ form =====
+            String author = request.getParameter("author");
+            if (author == null || author.trim().isEmpty()) {
+                author = "Admin";
+            }
+            String title = request.getParameter("title");
+            String content_html = request.getParameter("content_html");
+
+            // publish_date
+            String publishDateStr = request.getParameter("publish_date");
+            Date publishDate = null;
+            if (publishDateStr != null && !publishDateStr.trim().isEmpty()) {
+                try {
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    publishDate = formatter.parse(publishDateStr.trim());
+                } catch (ParseException e) {
+                    publishDate = new Date();
+                }
+            } else {
+                publishDate = new Date();
+            }
+
+
+            // status
+            int status = 1;
+
+            try {
+                status = Integer.parseInt(request.getParameter("status"));
+            } catch (Exception ignore) {
+            }
+
+            // ===== Lấy post cũ để giữ ảnh nếu không upload mới =====
+            Posts oldPost = postsDAO.getById(id);
+            String imageUrl = oldPost != null ? oldPost.getImage_url() : null;
+
+            // ===== Xử lý ảnh upload =====
+            Part filePart = request.getPart("image");
+            if (filePart != null && filePart.getSize() > 0) {
+                String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                String uploadPath = request.getServletContext().getRealPath("/assets/img/posts");
+                File uploadDir = new File(uploadPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+
+                String filePath = uploadPath + File.separator + fileName;
+                filePart.write(filePath);
+                imageUrl = "assets/img/posts/" + fileName;
+            }
+
+            // ===== Tạo đối tượng mới =====
+            Posts updatePost = new Posts();
+            updatePost.setId(id);
+            updatePost.setAuthor(author);
+            updatePost.setTitle(title);
+            updatePost.setContent_html(content_html);
+            updatePost.setPublish_date(publishDate);
+            updatePost.setStatus(status);
+            updatePost.setImage_url(imageUrl);
+
+            // ===== Update vào DB =====
+            boolean success = postsDAO.updatePost(updatePost, id);
+            if (success) {
+                request.setAttribute("messageUpdatePosts", "Post updated successfully.");
+                request.setAttribute("post", postsDAO.getById(id)); // set lại để hiện ra trong form
+                return "postsUpdate.jsp"; // quay lại form edit
+            } else {
+                request.setAttribute("checkErrorUpdatePosts", "Failed to update post.");
+                return "postsUpdate.jsp";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorUpdatePosts", "Error while updating post: " + e.getMessage());
+            return "error.jsp";
+        }
+    }
+
+    private String handleGoToUpdatePosts(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            Posts post = postsDAO.getById(id);
+            if (post != null) {
+                request.setAttribute("post", post);
+                return "postsUpdate.jsp"; // trang form edit
+            } else {
+                request.setAttribute("errorMessage", "Post not found!");
+                return "error.jsp"; // hoặc quay về danh sách
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Error while loading post for edit: " + e.getMessage());
+            return "error.jsp";
+        }
+    }
+
+    private String handleDeleteImagePost(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
+            String imageIdStr = request.getParameter("image_id");
+
+            if (imageIdStr != null && !imageIdStr.isEmpty()) {
+                int imgId = Integer.parseInt(imageIdStr);
+
+                // gọi DAO để xoá ảnh (chú ý: cần có hàm deleteImageById, 
+                // đừng nhầm với deletePostById nhé)
+                boolean success = postsDAO.deletePostById(imgId);
+
+                if (success) {
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.getWriter().write("OK");
+                } else {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("Failed");
+                }
+            } else {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("Missing image ID");
+            }
+
+            return null; // Ajax nên trả JSON/text, không forward sang JSP
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("Error: " + e.getMessage());
+            } catch (IOException ignored) {
+            }
+            return null;
+        }
+    }
+
     private String handleGoToUpdatePosts(HttpServletRequest request, HttpServletResponse response) {
         int id = Integer.parseInt(request.getParameter("id"));
         PostsDAO pd = new PostsDAO();
@@ -1043,6 +1018,7 @@ public class ProductController extends HttpServlet {
         }
         return "postsUpdate.jsp";
     }
+
 
     private String handleGetProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -1076,6 +1052,7 @@ public class ProductController extends HttpServlet {
         return "productDetail.jsp";
 
     }
+
 
     private String handleGetProminentList(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -1118,5 +1095,4 @@ public class ProductController extends HttpServlet {
         }
         return "productsByCategories.jsp";
     }
-
 }

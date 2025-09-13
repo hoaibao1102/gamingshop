@@ -100,6 +100,7 @@ public class MainController extends HttpServlet {
                 || "updatePosts".equals(action)
                 || "goToUpdatePosts".equals(action)
                 || "getProduct".equals(action)
+                || "deleteImageProduct".equals(action)
                 || "getProminentList".equals(action);
     }
 
