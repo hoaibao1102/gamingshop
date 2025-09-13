@@ -21,12 +21,11 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     private static final String GET_BY_ID = "SELECT * FROM dbo.Accessories WHERE id = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Accessories WHERE name LIKE ?";
     private static final String CREATE
-            = "INSERT INTO dbo.Accessories (name, quantity, price, description, image_url, status, gift) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    
+            = "INSERT INTO dbo.Accessories (name, quantity, price, description_html, image_url, status, gift) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
     // UPDATE query
     private static final String UPDATE
             = "UPDATE dbo.Accessories SET name = ?, quantity = ?, price = ?, description_html = ?, image_url = ?, status = ?, gift = ?, updated_at = GETDATE() WHERE id = ?";
-
 
     @Override
     public boolean create(Accessories e) {
@@ -34,15 +33,25 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         PreparedStatement st = null;
         try {
             c = DBUtils.getConnection();
-            st = c.prepareStatement(CREATE);
+            st = c.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
             st.setString(1, e.getName());
-            st.setInt(2, e.getQuantity()); 
+            st.setInt(2, e.getQuantity());
             st.setDouble(3, e.getPrice());
-            st.setString(4, e.getDescription()); 
+            st.setString(4, e.getDescription());
             st.setString(5, e.getImage_url());
             st.setString(6, e.getStatus());
             st.setString(7, e.getGift());
-            return st.executeUpdate() > 0; // Cách B: không lấy id sinh tự động
+            int affectedRows = st.executeUpdate();
+
+            if (affectedRows > 0) {
+                try ( ResultSet rs = st.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        e.setId(rs.getInt(1)); // Gán ID cho object
+                    }
+                }
+                return true;
+            }
+            return false;
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
@@ -123,7 +132,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         a.setPrice(rs.getDouble("price"));
         a.setDescription(rs.getString("description_html"));
         a.setImage_url(rs.getString("image_url"));
-        
+
         // created_at
         Timestamp createdTs = rs.getTimestamp("created_at");
         if (createdTs != null) {
@@ -156,7 +165,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
             st.setString(6, e.getStatus());
             st.setString(7, e.getGift());
             st.setInt(8, e.getId()); // WHERE condition
-            
+
             return st.executeUpdate() > 0;
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -4,7 +4,6 @@
  */
 package controller;
 
-
 import dao.AccessoriesDAO;
 import dto.Accessories;
 import dao.GuaranteesDAO;
@@ -33,9 +32,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import utils.AuthUtils;
 
 /**
@@ -56,6 +53,11 @@ public class ProductController extends HttpServlet {
     private final PostsDAO postsDAO = new PostsDAO();
     private final GuaranteesDAO guaranteesDAO = new GuaranteesDAO();
     private final MemoriesDAO memoriesDAO = new MemoriesDAO();
+    // Constants cho image handling
+//    private static final String UPLOAD_DIR = "assets/img/accessories/";
+//    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+//    private static final String[] ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "gif"};
+//    private static final String[] ALLOWED_MIME_TYPES = {"image/jpeg", "image/png", "image/gif"};
 
     String INDEX_PAGE = "index.jsp";
 
@@ -93,8 +95,8 @@ public class ProductController extends HttpServlet {
                 url = handleShowEditAccessoryForm(request, response);
             } else if (action.equals("editAccessory")) {
                 url = handleAccessoryEditing(request, response);
-// } else if (action.equals("deleteAccessory")) {
-//     url = handleAccessoryDelete(request, response);
+            } else if (action.equals("deleteAccessory")) {
+                url = handleAccessoryDelete(request, response);
             } else if (action.equals("editMainProduct")) {
                 url = handleUpdateMainProduct(request, response);
             } else if (action.equals("editImageProduct")) {
@@ -828,68 +830,203 @@ public class ProductController extends HttpServlet {
     }
 
     /**
-     * Xử lý thêm accessory mới
-     */
-    private String handleAccessoryAdding(HttpServletRequest request, HttpServletResponse response) {
+ * DEBUG VERSION - Xử lý thêm accessory mới
+ */
+private String handleAccessoryAdding(HttpServletRequest request, HttpServletResponse response) {
+    System.out.println("=== DEBUG: handleAccessoryAdding START ===");
+    
+    try {
+        request.setCharacterEncoding("UTF-8");
+        System.out.println("DEBUG: Character encoding set to UTF-8");
+
+        // ===== Lấy dữ liệu từ form =====
+        String name = request.getParameter("name");
+        String quantityStr = request.getParameter("quantity");
+        String priceStr = request.getParameter("price");
+        String description = request.getParameter("description");
+        String status = request.getParameter("status");
+        String gift = request.getParameter("gift");
+
+        System.out.println("DEBUG: Form parameters received:");
+        System.out.println("  - name: [" + name + "]");
+        System.out.println("  - quantityStr: [" + quantityStr + "]");
+        System.out.println("  - priceStr: [" + priceStr + "]");
+        System.out.println("  - description: [" + description + "]");
+        System.out.println("  - status: [" + status + "]");
+        System.out.println("  - gift: [" + gift + "]");
+
+        // Validate basic info
+        if (name == null || name.trim().isEmpty()) {
+            System.out.println("DEBUG: VALIDATION FAILED - Name is null or empty");
+            request.setAttribute("checkErrorAddAccessory", "Accessory name is required.");
+            return "accessoryUpdate.jsp";
+        }
+        System.out.println("DEBUG: Name validation passed");
+
+        int quantity = 0;
+        double price = 0.0;
         try {
+            quantity = Integer.parseInt(quantityStr);
+            price = Double.parseDouble(priceStr);
+            System.out.println("DEBUG: Number parsing successful - quantity: " + quantity + ", price: " + price);
+        } catch (NumberFormatException e) {
+            System.out.println("DEBUG: NUMBER PARSING FAILED - " + e.getMessage());
+            request.setAttribute("checkErrorAddAccessory", "Invalid quantity or price format.");
+            return "accessoryUpdate.jsp";
+        }
 
-            // Lấy dữ liệu từ form
-            String name = request.getParameter("name");
-            int quantity = Integer.parseInt(request.getParameter("quantity"));
-            double price = Double.parseDouble(request.getParameter("price"));
-            String description = request.getParameter("description");
-            String status = request.getParameter("status");
-            String gift = request.getParameter("gift");
+        // ===== Tạo đối tượng Accessories và set dữ liệu =====
+        Accessories newAccessory = new Accessories();
+        newAccessory.setName(name.trim());
+        newAccessory.setQuantity(quantity);
+        newAccessory.setPrice(price);
+        newAccessory.setDescription(description != null ? description.trim() : "");
+        newAccessory.setStatus(status != null ? status : "active");
+        newAccessory.setGift(gift != null ? gift : "gift");
+        newAccessory.setCreated_at(new java.util.Date());
+        newAccessory.setUpdated_at(new java.util.Date());
 
-            // Xử lý upload ảnh
-            String imageUrl = "";
-            Part imagePart = request.getPart("imageFile");
-            if (imagePart != null && imagePart.getSize() > 0) {
-                String uploadDir = getServletContext().getRealPath("/assets/img/accessories/");
-                new File(uploadDir).mkdir();
+        System.out.println("DEBUG: Accessory object created with basic info");
 
-                String originalFileName = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
-                String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
-                String storedFileName = System.currentTimeMillis() + fileExtension;
-                String imagePath = uploadDir + File.separator + storedFileName;
+        // ===== Upload ảnh (nếu có) =====
+        Part imagePart = null;
+        try {
+            imagePart = request.getPart("imageFile");
+            System.out.println("DEBUG: Image part retrieved - " + 
+                (imagePart != null ? "Size: " + imagePart.getSize() + ", FileName: " + imagePart.getSubmittedFileName() : "NULL"));
+        } catch (Exception e) {
+            System.out.println("DEBUG: Exception getting image part: " + e.getMessage());
+        }
 
-                imagePart.write(imagePath);
-                imageUrl = "assets/img/accessories/" + storedFileName;
+        String storedImageUrl = null;
+        if (imagePart != null && imagePart.getSize() > 0 && 
+            imagePart.getSubmittedFileName() != null && 
+            !imagePart.getSubmittedFileName().trim().isEmpty()) {
+            
+            System.out.println("DEBUG: Processing image upload...");
+            
+            // Thư mục lưu ảnh
+            String uploadDirPath = request.getServletContext().getRealPath("/uploads/accessories/");
+            System.out.println("DEBUG: Upload directory path: " + uploadDirPath);
+            
+            File uploadDir = new File(uploadDirPath);
+            if (!uploadDir.exists()) {
+                boolean created = uploadDir.mkdirs();
+                System.out.println("DEBUG: Upload directory created: " + created);
+            } else {
+                System.out.println("DEBUG: Upload directory already exists");
             }
 
-            // Tạo accessory mới
-            Accessories newAccessory = new Accessories();
-            newAccessory.setName(name);
-            newAccessory.setQuantity(quantity);
-            newAccessory.setPrice(price);
-            newAccessory.setDescription(description);
-            newAccessory.setImage_url(imageUrl);
-            newAccessory.setStatus(status);
-            newAccessory.setGift(gift);
-            newAccessory.setCreated_at(new java.util.Date());
-            newAccessory.setUpdated_at(new java.util.Date());
+            // Lấy extension
+            String originalFileName = imagePart.getSubmittedFileName();
+            String fileExtension = "";
+            int dot = originalFileName.lastIndexOf('.');
+            if (dot >= 0 && dot < originalFileName.length() - 1) {
+                fileExtension = originalFileName.substring(dot);
+            }
+            System.out.println("DEBUG: File extension: [" + fileExtension + "]");
 
-            // Thêm vào database
+            // Tạo tên file tạm
+            String tempName = "tmp_" + System.currentTimeMillis() + fileExtension;
+            File tempFile = new File(uploadDir, tempName);
+            System.out.println("DEBUG: Temp file path: " + tempFile.getAbsolutePath());
+            
+            try {
+                imagePart.write(tempFile.getAbsolutePath());
+                System.out.println("DEBUG: Image written to temp file successfully");
+            } catch (Exception e) {
+                System.out.println("DEBUG: ERROR writing image to temp file: " + e.getMessage());
+                e.printStackTrace();
+            }
+
+            // Set image_url tạm thời là null để insert trước
+            newAccessory.setImage_url(null);
+            System.out.println("DEBUG: About to insert accessory without image_url");
+
+            // ===== Insert để lấy generated ID =====
             boolean success = accessoriesDAO.create(newAccessory);
+            System.out.println("DEBUG: Insert result: " + success + ", Generated ID: " + newAccessory.getId());
+            
+            if (success && newAccessory.getId() > 0) {
+                // Đổi tên file theo ID thực
+                String finalName = "acc_" + newAccessory.getId() + "_1" + fileExtension;
+                File finalFile = new File(uploadDir, finalName);
+                System.out.println("DEBUG: Final file name: " + finalName);
 
-            System.out.println("++++++++++++++++++++++dây là san pham duoc them:++++++++++++++++++++===" + newAccessory.getId() + "|" + newAccessory.getName() + "|" + newAccessory.getImage_url() + "|" + newAccessory.getPrice() + "|" + newAccessory.getDescription() + "|" + newAccessory.getQuantity() + "|" + newAccessory.getGift() + "|" + newAccessory.getStatus());
-            if (success) {
-                HttpSession session = request.getSession();
-                session.removeAttribute("cachedAccessoryList");
-                request.setAttribute("messageAddAccessory", "New accessory added successfully.");
-                return "accessoryList.jsp";
+                boolean renamed = tempFile.renameTo(finalFile);
+                System.out.println("DEBUG: File rename result: " + renamed);
+                
+                if (!renamed) {
+                    System.out.println("DEBUG: Rename failed, trying copy method...");
+                    // Copy và xóa file tạm nếu rename thất bại
+                    try (java.io.InputStream in = new java.io.FileInputStream(tempFile);
+                         java.io.OutputStream out = new java.io.FileOutputStream(finalFile)) {
+                        byte[] buf = new byte[8192];
+                        int len;
+                        while ((len = in.read(buf)) > 0) {
+                            out.write(buf, 0, len);
+                        }
+                        System.out.println("DEBUG: File copied successfully");
+                    } catch (Exception e) {
+                        System.out.println("DEBUG: ERROR copying file: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                    boolean deleted = tempFile.delete();
+                    System.out.println("DEBUG: Temp file deleted: " + deleted);
+                }
+
+                storedImageUrl = "uploads/accessories/" + finalName;
+                newAccessory.setImage_url(storedImageUrl);
+                System.out.println("DEBUG: Image URL set: " + storedImageUrl);
+
+                // Update image_url vào DB
+                boolean updateSuccess = accessoriesDAO.update(newAccessory);
+                System.out.println("DEBUG: Update image_url result: " + updateSuccess);
+
             } else {
+                // Insert thất bại -> xóa file tạm
+                System.out.println("DEBUG: Insert failed, cleaning up temp file");
+                if (tempFile.exists()) {
+                    boolean deleted = tempFile.delete();
+                    System.out.println("DEBUG: Temp file deleted: " + deleted);
+                }
                 request.setAttribute("checkErrorAddAccessory", "Failed to add accessory.");
-                request.setAttribute("accessory", newAccessory);
                 return "accessoryUpdate.jsp";
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("checkError", "Error while adding accessory: " + e.getMessage());
-            return "error.jsp";
+        } else {
+            // KHÔNG có ảnh -> insert luôn
+            System.out.println("DEBUG: No image provided, inserting accessory without image");
+            newAccessory.setImage_url(null);
+            boolean success = accessoriesDAO.create(newAccessory);
+            System.out.println("DEBUG: Insert without image result: " + success + ", ID: " + newAccessory.getId());
+            
+            if (!success) {
+                System.out.println("DEBUG: Insert failed");
+                request.setAttribute("checkErrorAddAccessory", "Failed to add accessory.");
+                return "accessoryUpdate.jsp";
+            }
         }
+
+        // ===== Success =====
+        System.out.println("DEBUG: Operation completed successfully");
+        HttpSession session = request.getSession();
+        session.removeAttribute("cachedAccessoryList");
+
+        request.setAttribute("messageAddAccessory", "New accessory added successfully.");
+        request.setAttribute("accessory", newAccessory);
+
+        System.out.println("=== DEBUG: handleAccessoryAdding END - SUCCESS ===");
+        return "accessoryUpdate.jsp";
+
+    } catch (Exception e) {
+        System.out.println("=== DEBUG: EXCEPTION in handleAccessoryAdding ===");
+        e.printStackTrace();
+        request.setAttribute("checkErrorAddAccessory", "Error while adding accessory: " + e.getMessage());
+        System.out.println("=== DEBUG: handleAccessoryAdding END - ERROR ===");
+        return "accessoryUpdate.jsp";
     }
+}
 
     /**
      * Hiển thị form edit accessory
@@ -920,68 +1057,106 @@ public class ProductController extends HttpServlet {
     }
 
     /**
-     * Xử lý cập nhật accessory
+     * Xử lý cập nhật 
      */
     private String handleAccessoryEditing(HttpServletRequest request, HttpServletResponse response) {
         try {
-            // Lấy ID của accessory cần edit
-            int accessoryId = Integer.parseInt(request.getParameter("id"));
+            request.setCharacterEncoding("UTF-8");
 
-            // Lấy accessory hiện tại từ database
+            // Lấy ID
+            int accessoryId = Integer.parseInt(request.getParameter("id"));
             Accessories existingAccessory = accessoriesDAO.getById(accessoryId);
+
             if (existingAccessory == null) {
-                request.setAttribute("checkError", "Accessory not found.");
-                return "accessoryList.jsp";
+                request.setAttribute("checkErrorEditAccessory", "Accessory not found.");
+                return "accessoryUpdate.jsp";
             }
 
-            // Cập nhật thông tin từ form
+            // ===== Lấy dữ liệu từ form =====
             String name = request.getParameter("name");
-            int quantity = Integer.parseInt(request.getParameter("quantity"));
-            double price = Double.parseDouble(request.getParameter("price"));
+            String quantityStr = request.getParameter("quantity");
+            String priceStr = request.getParameter("price");
             String description = request.getParameter("description");
             String status = request.getParameter("status");
             String gift = request.getParameter("gift");
 
-            existingAccessory.setName(name);
+            // Validate
+            if (name == null || name.trim().isEmpty()) {
+                request.setAttribute("checkErrorEditAccessory", "Accessory name is required.");
+                request.setAttribute("accessory", existingAccessory);
+                return "accessoryUpdate.jsp";
+            }
+
+            int quantity;
+            double price;
+            try {
+                quantity = Integer.parseInt(quantityStr);
+                price = Double.parseDouble(priceStr);
+            } catch (NumberFormatException e) {
+                request.setAttribute("checkErrorEditAccessory", "Invalid quantity or price format.");
+                request.setAttribute("accessory", existingAccessory);
+                return "accessoryUpdate.jsp";
+            }
+
+            // Update basic info
+            existingAccessory.setName(name.trim());
             existingAccessory.setQuantity(quantity);
             existingAccessory.setPrice(price);
-            existingAccessory.setDescription(description);
+            existingAccessory.setDescription(description != null ? description.trim() : "");
             existingAccessory.setStatus(status);
             existingAccessory.setGift(gift);
             existingAccessory.setUpdated_at(new java.util.Date());
 
-            // Xử lý upload ảnh mới (nếu có)
-            Part imagePart = request.getPart("imageFile");
-            if (imagePart != null && imagePart.getSize() > 0) {
-                // Xóa ảnh cũ nếu có
-                String oldImageUrl = existingAccessory.getImage_url();
-                if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
-                    String oldImagePath = getServletContext().getRealPath("/") + oldImageUrl;
-                    File oldImageFile = new File(oldImagePath);
-                    if (oldImageFile.exists()) {
-                        oldImageFile.delete();
-                    }
-                }
-
-                // Upload ảnh mới
-                String uploadDir = getServletContext().getRealPath("/assets/img/accessories/");
-                new File(uploadDir).mkdirs();
-
-                String originalFileName = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
-                String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
-                String storedFileName = accessoryId + "_" + System.currentTimeMillis() + fileExtension;
-                String imagePath = uploadDir + File.separator + storedFileName;
-
-                imagePart.write(imagePath);
-                existingAccessory.setImage_url("assets/img/accessories/" + storedFileName);
+            // ===== Xử lý ảnh mới (nếu có) =====
+            Part imagePart = null;
+            try {
+                imagePart = request.getPart("imageFile");
+            } catch (Exception ignore) {
             }
 
-            // Cập nhật trong database
+            String oldImageUrl = existingAccessory.getImage_url();
+
+            if (imagePart != null && imagePart.getSize() > 0
+                    && imagePart.getSubmittedFileName() != null
+                    && !imagePart.getSubmittedFileName().trim().isEmpty()) {
+
+                // Upload ảnh mới
+                String uploadDirPath = request.getServletContext().getRealPath("/uploads/accessories/");
+                File uploadDir = new File(uploadDirPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+
+                String originalFileName = imagePart.getSubmittedFileName();
+                String fileExtension = "";
+                int dot = originalFileName.lastIndexOf('.');
+                if (dot >= 0) {
+                    fileExtension = originalFileName.substring(dot);
+                }
+
+                String newFileName = "acc_" + accessoryId + "_" + System.currentTimeMillis() + fileExtension;
+                File newFile = new File(uploadDir, newFileName);
+                imagePart.write(newFile.getAbsolutePath());
+
+                existingAccessory.setImage_url("uploads/accessories/" + newFileName);
+            }
+
+            // ===== Update database =====
             boolean success = accessoriesDAO.update(existingAccessory);
 
             if (success) {
+                // Xóa ảnh cũ nếu có ảnh mới
+                if (imagePart != null && imagePart.getSize() > 0
+                        && oldImageUrl != null && !oldImageUrl.isEmpty()) {
+                    File oldFile = new File(request.getServletContext().getRealPath("/" + oldImageUrl));
+                    if (oldFile.exists()) {
+                        oldFile.delete();
+                    }
+                }
+
                 HttpSession session = request.getSession();
                 session.removeAttribute("cachedAccessoryList");
+
                 request.setAttribute("messageEditAccessory", "Accessory updated successfully.");
                 request.setAttribute("accessory", existingAccessory);
                 return "accessoryUpdate.jsp";
@@ -991,12 +1166,79 @@ public class ProductController extends HttpServlet {
                 return "accessoryUpdate.jsp";
             }
 
-        } catch (ServletException | IOException | NumberFormatException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("checkError", "Error while updating accessory: " + e.getMessage());
-            return "error.jsp";
+            request.setAttribute("checkErrorEditAccessory", "Error while updating accessory: " + e.getMessage());
+            return "accessoryUpdate.jsp";
         }
     }
+    
+    /**
+ * Xử lý xóa accessory - Soft delete bằng cách chuyển status thành "inactive"
+ */
+private String handleAccessoryDelete(HttpServletRequest request, HttpServletResponse response) {
+    try {
+        request.setCharacterEncoding("UTF-8");
+        
+        // Lấy ID từ parameter
+        String idStr = request.getParameter("id");
+        if (idStr == null || idStr.trim().isEmpty()) {
+            request.setAttribute("checkError", "Accessory ID is required.");
+            return "accessoryList.jsp"; 
+        }
+        
+        int accessoryId;
+        try {
+            accessoryId = Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            request.setAttribute("checkError", "Invalid accessory ID format.");
+            return "accessoryList.jsp";
+        }
+        
+        // Kiểm tra accessory có tồn tại không
+        Accessories existingAccessory = accessoriesDAO.getById(accessoryId);
+        if (existingAccessory == null) {
+            request.setAttribute("checkError", "Accessory not found.");
+            return "accessoryList.jsp";
+        }
+        
+        // Kiểm tra xem đã inactive chưa
+        if ("inactive".equalsIgnoreCase(existingAccessory.getStatus())) {
+            request.setAttribute("checkError", "Accessory is already inactive.");
+            return "accessoryList.jsp";
+        }
+        
+        // Soft delete: chuyển status thành "inactive"
+        existingAccessory.setStatus("inactive");
+        existingAccessory.setUpdated_at(new java.util.Date());
+        
+        // Cập nhật vào database
+        boolean success = accessoriesDAO.update(existingAccessory);
+        
+        if (success) {
+            // Xóa cache nếu có
+            HttpSession session = request.getSession();
+            session.removeAttribute("cachedAccessoryList");
+            
+            request.setAttribute("messageDeleteAccessory", 
+                "Accessory '" + existingAccessory.getName() + "' has been deactivated successfully.");
+            
+            // Có thể redirect về danh sách hoặc return view
+            return "accessoryList.jsp";
+            
+        } else {
+            request.setAttribute("checkError", 
+                "Failed to deactivate accessory. Please try again.");
+            return "accessoryList.jsp";
+        }
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+        request.setAttribute("checkError", 
+            "Error while deactivating accessory: " + e.getMessage());
+        return "accessoryList.jsp";
+    }
+}
 
     private String handleViewAllPost(HttpServletRequest request, HttpServletResponse response) {
         List<Posts> list = postsDAO.getAll();

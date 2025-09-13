@@ -102,7 +102,7 @@
                 </c:if>
 
                 <!-- Form -->
-                <form action="MainController" method="get" enctype="multipart/form-data" class="needs-validation" novalidate>
+                <form action="MainController" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                     <input type="hidden" name="action" value="${accessory != null ? 'editAccessory' : 'addAccessory'}">
                     <c:if test="${accessory != null}">
                         <input type="hidden" name="id" value="${accessory.id}">
@@ -170,8 +170,8 @@
                                     <i class="fas fa-toggle-on me-2"></i>Gift
                                 </label>
                                 <select class="form-select" id="gift" name="gift">
-                                    <option value="gift" ${accessory != null && accessory.gift == 'Phụ kiện tặng kèm' ? 'selected' : ''}>Phụ kiện tặng kèm</option>
-                                    <option value="on_Sell" ${accessory != null && accessory.gift == 'Phụ kiện bán' ? 'selected' : ''}>Phụ kiện bán</option>
+                                    <option value="Phụ kiện tặng kèm" ${accessory != null && accessory.gift == 'Phụ kiện tặng kèm' ? 'selected' : ''}>Phụ kiện tặng kèm</option>
+                                    <option value="Phụ kiện bán" ${accessory != null && accessory.gift == 'Phụ kiện bán' ? 'selected' : ''}>Phụ kiện bán</option>
                                     <option value="more" ${accessory != null && accessory.status == 'more' ? 'selected' : ''}>If u want u can add more</option>
                                 </select>
                             </div>
@@ -223,7 +223,7 @@
                                 <i class="fas ${accessory != null ? 'fa-save' : 'fa-plus'} me-2"></i>
                                 ${accessory != null ? 'Update Accessory' : 'Add Accessory'}
                             </button>
-                            <a href="ProductController?action=viewAllAccessories" class="btn btn-secondary btn-custom">
+                            <a href="MainController?action=viewAllAccessories" class="btn btn-secondary btn-custom">
                                 <i class="fas fa-times me-2"></i>Cancel
                             </a>
                         </div>

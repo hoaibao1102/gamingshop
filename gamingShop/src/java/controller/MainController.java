@@ -98,6 +98,8 @@ public class MainController extends HttpServlet {
                 || "searchAccessory".equals(action)
                 || "showAddAccessoryForm".equals(action)
                 || "addAccessory".equals(action)
+                || "editAccessory".equals(action)
+                || "deleteAccessory".equals(action)
                 || "searchPosts".equals(action)
                 || "viewAllPost".equals(action)
                 || "addPosts".equals(action)
