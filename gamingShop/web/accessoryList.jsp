@@ -401,7 +401,7 @@
                                                                         function confirmDelete(id, name) {
                                                                             document.getElementById('deleteAccessoryId').textContent = id;
                                                                             document.getElementById('deleteAccessoryName').textContent = name;
-                                                                            document.getElementById('confirmDeleteBtn').href = 'MainController?action=deleteAccessoryi&d=' + id;
+                                                                            document.getElementById('confirmDeleteBtn').href = 'MainController?action=deleteAccessory&id=' + id;
 
                                                                             const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
                                                                             deleteModal.show();

@@ -172,7 +172,7 @@
                                 <select class="form-select" id="gift" name="gift">
                                     <option value="Phụ kiện tặng kèm" ${accessory != null && accessory.gift == 'Phụ kiện tặng kèm' ? 'selected' : ''}>Phụ kiện tặng kèm</option>
                                     <option value="Phụ kiện bán" ${accessory != null && accessory.gift == 'Phụ kiện bán' ? 'selected' : ''}>Phụ kiện bán</option>
-                                    <option value="more" ${accessory != null && accessory.status == 'more' ? 'selected' : ''}>If u want u can add more</option>
+                                    
                                 </select>
                             </div>
                         </div>

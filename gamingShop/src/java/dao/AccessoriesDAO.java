@@ -20,12 +20,10 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     private static final String GET_ALL = "SELECT * FROM dbo.Accessories";
     private static final String GET_BY_ID = "SELECT * FROM dbo.Accessories WHERE id = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Accessories WHERE name LIKE ?";
-    private static final String CREATE
-            = "INSERT INTO dbo.Accessories (name, quantity, price, description_html, image_url, status, gift) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String CREATE = "INSERT INTO dbo.Accessories (name, quantity, price, description_html, image_url, status, gift) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE = "UPDATE dbo.Accessories SET name = ?, quantity = ?, price = ?, description_html = ?, image_url = ?, status = ?, gift = ?, updated_at = GETDATE() WHERE id = ?";
 
-    // UPDATE query
-    private static final String UPDATE
-            = "UPDATE dbo.Accessories SET name = ?, quantity = ?, price = ?, description_html = ?, image_url = ?, status = ?, gift = ?, updated_at = GETDATE() WHERE id = ?";
+    private static final String CHECK_EXIST_NAME = "SELECT COUNT(1) FROM dbo.Accessories WHERE name = ? AND status = 'active'";
 
     @Override
     public boolean create(Accessories e) {
@@ -174,6 +172,30 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
             close(c, st, null);
         }
     }
+
+    /**
+     * Kiểm tra tên accessory đã tồn tại chưa
+     */
+    public boolean isNameExists(String name) throws SQLException, ClassNotFoundException {
+    
+    try (Connection c = DBUtils.getConnection();
+         PreparedStatement st = c.prepareStatement(CHECK_EXIST_NAME)) {
+        
+        st.setString(1, name);
+        
+        try (ResultSet rs = st.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        }
+        
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        throw new SQLException("Error checking name existence: " + ex.getMessage(), ex);
+    }
+    
+    return false;
+}
 
     private void close(Connection c, PreparedStatement st, ResultSet rs) {
         try {
