@@ -1065,6 +1065,7 @@ public class ProductController extends HttpServlet {
             Memories memory = memoriesDAO.getById(productDetail.getMemory_id());
             String guaranteeProduct = guarantee.getGuarantee_type();
             String memoryProduct = memory.getMemory_type();
+            System.out.println(productDetail.getDescription_html());
             request.setAttribute("productDetail", productDetail);
             request.setAttribute("guaranteeProduct", guaranteeProduct);
             request.setAttribute("memoryProduct", memoryProduct);
