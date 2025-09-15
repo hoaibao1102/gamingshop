@@ -14,6 +14,7 @@ import dao.ProductImagesDAO;
 import dao.ProductsDAO;
 import dto.Guarantees;
 import dto.Memories;
+import dto.Models;
 import dto.Page;
 import dto.Posts;
 import dto.ProductFilter;
@@ -53,6 +54,7 @@ public class ProductController extends HttpServlet {
     private final PostsDAO postsDAO = new PostsDAO();
     private final GuaranteesDAO guaranteesDAO = new GuaranteesDAO();
     private final MemoriesDAO memoriesDAO = new MemoriesDAO();
+    private final ModelsDAO modelsDAO = new ModelsDAO();
 
     String INDEX_PAGE = "index.jsp";
 
@@ -90,6 +92,7 @@ public class ProductController extends HttpServlet {
                 url = handleAccessoryEditing(request, response);
             } else if (action.equals("deleteAccessory")) {
                 url = handleAccessoryDelete(request, response);
+                //========================================
             } else if (action.equals("editMainProduct")) {
                 url = handleUpdateMainProduct(request, response);
             } else if (action.equals("editImageProduct")) {
@@ -98,6 +101,7 @@ public class ProductController extends HttpServlet {
                 url = handleDeleteProduct(request, response);
             } else if (action.equals("deleteImageProduct")) {
                 url = handleDeleteImageProduct(request, response);
+                //========================================
             } else if (action.equals("viewAllPost")) {
                 url = handleViewAllPost(request, response);
             } else if (action.equals("searchPosts")) {
@@ -112,10 +116,24 @@ public class ProductController extends HttpServlet {
                 url = handleGoToUpdatePosts(request, response);
             } else if (action.equals("updatePosts")) {
                 url = handleUpdatePosts(request, response);
+                //========================================
             } else if (action.equals("getProduct")) {
                 url = handleGetProduct(request, response);
             } else if (action.equals("getProminentList")) {
                 url = handleGetProminentList(request, response);
+                //========================================
+            } else if (action.equals("viewModelList")) {
+                url = handleModelList(request, response);
+            } else if (action.equals("addModel")) {
+                url = handleModelAdding(request, response);
+            } else if (action.equals("showEditModel")) {
+                url = handleModelEditForm(request, response);
+            } else if (action.equals("editModel")) {
+                url = handleModelEditing(request, response);
+            } else if (action.equals("showAddModel")) {
+                url = handleModelAddForm(request, response);
+            } else if (action.equals("deleteModel")) {
+                url = handleModelDelete(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1517,7 +1535,6 @@ public class ProductController extends HttpServlet {
                 publishDate = new Date();
             }
 
-
             // status
             int status = 1;
 
@@ -1660,7 +1677,6 @@ public class ProductController extends HttpServlet {
 
     }
 
-
     private String handleGetProminentList(HttpServletRequest request, HttpServletResponse response) {
         try {
             request.setCharacterEncoding("UTF-8");
@@ -1684,16 +1700,15 @@ public class ProductController extends HttpServlet {
             Page<Products> pageResult = productsdao.getProminentProducts(filter);
 
             // ===== Gán ảnh cho từng sản phẩm =====
-        for (Products p : pageResult.getContent()) {
-            // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
-            Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
-            if (coverImg != null) {
-                p.setCoverImg(coverImg.getImage_url());
+            for (Products p : pageResult.getContent()) {
+                // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
+                Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
+                if (coverImg != null) {
+                    p.setCoverImg(coverImg.getImage_url());
+                }
             }
-        }
 
-
-            request.setAttribute("listProminent", pageResult.getContent()); 
+            request.setAttribute("listProminent", pageResult.getContent());
             request.setAttribute("currentFilter", filter);
 
         } catch (Exception e) {
@@ -1701,5 +1716,465 @@ public class ProductController extends HttpServlet {
             request.setAttribute("checkError", "Error loading products: " + e.getMessage());
         }
         return "productsByCategories.jsp";
+    }
+
+    // ===============================================
+    // MODELS CRUD CONTROLLER METHODS
+    // ===============================================
+    /**
+     * Xử lý thêm model mới
+     */
+    private String handleModelAdding(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("=== DEBUG: handleModelAdding START ===");
+
+        try {
+            request.setCharacterEncoding("UTF-8");
+            System.out.println("DEBUG: Character encoding set to UTF-8");
+
+            // ===== Lấy dữ liệu từ form =====
+            String modelType = request.getParameter("model_type");
+            String descriptionHtml = request.getParameter("description_html");
+            String status = request.getParameter("status");
+
+            System.out.println("DEBUG: Form parameters received:");
+            System.out.println("  - model_type: [" + modelType + "]");
+            System.out.println("  - description_html: [" + (descriptionHtml != null ? descriptionHtml.substring(0, Math.min(50, descriptionHtml.length())) + "..." : "null") + "]");
+            System.out.println("  - status: [" + status + "]");
+
+            // ===== VALIDATION SECTION =====
+            // 1. Validate model_type - required and not empty
+            if (modelType == null || modelType.trim().isEmpty()) {
+                System.out.println("DEBUG: VALIDATION FAILED - Model type is null or empty");
+                request.setAttribute("checkErrorAddModel", "Model type is required.");
+                return "modelUpdate.jsp";
+            }
+
+            // 2. Validate model_type length
+            if (modelType.trim().length() > 100) {
+                System.out.println("DEBUG: VALIDATION FAILED - Model type too long");
+                request.setAttribute("checkErrorAddModel", "Model type must be 100 characters or less.");
+                return "modelUpdate.jsp";
+            }
+
+            // 3. Check for duplicate model_type (UNIQUE constraint)
+            System.out.println("DEBUG: Checking for duplicate model type...");
+            try {
+                boolean typeExists = modelsDAO.isModelTypeExists(modelType.trim());
+                if (typeExists) {
+                    System.out.println("DEBUG: VALIDATION FAILED - Duplicate model type found: " + modelType.trim());
+                    request.setAttribute("checkErrorAddModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
+                    return "modelUpdate.jsp";
+                }
+                System.out.println("DEBUG: Model type uniqueness check passed");
+            } catch (Exception e) {
+                System.out.println("DEBUG: ERROR checking duplicate model type: " + e.getMessage());
+                e.printStackTrace();
+            }
+
+            // 4. Validate status value
+            if (status != null && !status.trim().isEmpty()) {
+                String normalizedStatus = status.trim();
+                if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {
+                    System.out.println("DEBUG: VALIDATION FAILED - Invalid status: " + status);
+                    request.setAttribute("checkErrorAddModel", "Status must be either 'active' or 'inactive'.");
+                    return "modelUpdate.jsp";
+                }
+            }
+
+            // 5. Validate description length (optional but if provided, should be reasonable)
+            if (descriptionHtml != null && descriptionHtml.trim().length() > 10000) {
+                System.out.println("DEBUG: VALIDATION FAILED - Description too long");
+                request.setAttribute("checkErrorAddModel", "Description must be 10000 characters or less.");
+                return "modelUpdate.jsp";
+            }
+
+            System.out.println("DEBUG: All validations passed successfully");
+
+            // ===== Tạo đối tượng Models và set dữ liệu =====
+            Models newModel = new Models();
+            newModel.setModel_type(modelType.trim());
+            newModel.setDescription_html(descriptionHtml != null ? descriptionHtml.trim() : "");
+            newModel.setStatus(status != null ? status.trim() : "active");
+            newModel.setCreated_at(new java.util.Date());
+            newModel.setUpdated_at(new java.util.Date());
+
+            System.out.println("DEBUG: Model object created with basic info");
+
+            // ===== Upload ảnh (nếu có) =====
+            Part imagePart = null;
+            try {
+                imagePart = request.getPart("imageFile");
+                System.out.println("DEBUG: Image part retrieved - "
+                        + (imagePart != null ? "Size: " + imagePart.getSize() + ", FileName: " + imagePart.getSubmittedFileName() : "NULL"));
+            } catch (Exception e) {
+                System.out.println("DEBUG: Exception getting image part: " + e.getMessage());
+            }
+
+            // Validate image file if provided
+            if (imagePart != null && imagePart.getSize() > 0
+                    && imagePart.getSubmittedFileName() != null
+                    && !imagePart.getSubmittedFileName().trim().isEmpty()) {
+
+                // Check file size (max 5MB)
+                long maxFileSize = 5 * 1024 * 1024;
+                if (imagePart.getSize() > maxFileSize) {
+                    System.out.println("DEBUG: VALIDATION FAILED - Image file too large: " + imagePart.getSize() + " bytes");
+                    request.setAttribute("checkErrorAddModel", "Image file size cannot exceed 5MB.");
+                    return "modelUpdate.jsp";
+                }
+
+                // Check file extension
+                String fileName = imagePart.getSubmittedFileName().toLowerCase();
+                if (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg")
+                        && !fileName.endsWith(".png") && !fileName.endsWith(".gif")
+                        && !fileName.endsWith(".bmp") && !fileName.endsWith(".webp")) {
+                    System.out.println("DEBUG: VALIDATION FAILED - Invalid image format: " + fileName);
+                    request.setAttribute("checkErrorAddModel", "Only image files (jpg, jpeg, png, gif, bmp, webp) are allowed.");
+                    return "modelUpdate.jsp";
+                }
+            }
+
+            String storedImageUrl = null;
+            if (imagePart != null && imagePart.getSize() > 0
+                    && imagePart.getSubmittedFileName() != null
+                    && !imagePart.getSubmittedFileName().trim().isEmpty()) {
+
+                System.out.println("DEBUG: Processing image upload...");
+
+                String uploadDirPath = request.getServletContext().getRealPath("/assets/models/");
+                File uploadDir = new File(uploadDirPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                    System.out.println("DEBUG: Upload directory created: " + uploadDir.mkdirs() + " - Path: " + uploadDirPath);
+                }
+                String originalFileName = imagePart.getSubmittedFileName();
+                String fileExtension = "";
+                int dot = originalFileName.lastIndexOf('.');
+                if (dot >= 0) {
+                    fileExtension = originalFileName.substring(dot);
+                }
+
+                String tempName = "tmp_" + System.currentTimeMillis() + fileExtension;
+                File tempFile = new File(uploadDir, tempName);
+
+                try {
+                    imagePart.write(tempFile.getAbsolutePath());
+                    System.out.println("DEBUG: Image written to temp file successfully");
+                } catch (Exception e) {
+                    System.out.println("DEBUG: ERROR writing image to temp file: " + e.getMessage());
+                    request.setAttribute("checkErrorAddModel", "Failed to upload image. Please try again.");
+                    return "modelUpdate.jsp";
+                }
+
+                newModel.setImage_url(null);
+                boolean success = modelsDAO.create(newModel);
+                System.out.println("MODEL ID DEBUG AFTER CREATE: " + newModel.getId() );
+                if (success && newModel.getId() > 0) {
+                    String finalName = "model_" + newModel.getId() + "_1" + fileExtension;
+                    File finalFile = new File(uploadDir, finalName);
+
+                    boolean renamed = tempFile.renameTo(finalFile);
+                    if (!renamed) {
+                        // Copy method if rename fails
+                        try ( java.io.InputStream in = new java.io.FileInputStream(tempFile);  java.io.OutputStream out = new java.io.FileOutputStream(finalFile)) {
+                            byte[] buf = new byte[8192];
+                            int len;
+                            while ((len = in.read(buf)) > 0) {
+                                out.write(buf, 0, len);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        tempFile.delete();
+                    }
+
+                    storedImageUrl = "/assets/models/" + finalName;
+                    System.out.println("-========---Image--=========--: " + storedImageUrl);
+                    newModel.setImage_url(storedImageUrl);
+                    modelsDAO.update(newModel);
+
+                } else {
+                    if (tempFile.exists()) {
+                        tempFile.delete();
+                    }
+                    request.setAttribute("checkErrorAddModel", "Failed to add model.");
+                    return "modelUpdate.jsp";
+                }
+
+            } else {
+                // No image provided
+                newModel.setImage_url(null);
+                boolean success = modelsDAO.create(newModel);
+                System.out.println("SUCCESS ARE TRUE: " + success);
+                if (!success) {
+                    request.setAttribute("checkErrorAddModel", "Failed to add model.");
+                    return "modelUpdate.jsp";
+                }
+            }
+
+            // Success
+            HttpSession session = request.getSession();
+            session.removeAttribute("cachedModelList");
+
+            request.setAttribute("messageAddModel", "New model added successfully.");
+            request.setAttribute("model", newModel);
+
+            System.out.println("=== DEBUG: handleModelAdding END - SUCCESS ===");
+            return "modelUpdate.jsp";
+
+        } catch (Exception e) {
+            System.out.println("=== DEBUG: EXCEPTION in handleModelAdding ===");
+            e.printStackTrace();
+            request.setAttribute("checkErrorAddModel", "Error while adding model: " + e.getMessage());
+            return "modelUpdate.jsp";
+        }
+    }
+
+    /**
+     * Xử lý cập nhật model
+     */
+    private String handleModelEditing(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
+            System.out.println("================START DEBUG=================");
+            // Lấy ID
+            int modelId = Integer.parseInt(request.getParameter("id"));
+            Models existingModel = modelsDAO.getById(modelId);
+            System.out.println("ID MODEL: " + existingModel.getId());
+            if (existingModel == null) {
+                request.setAttribute("checkErrorEditModel", "Model not found.");
+                return "modelUpdate.jsp";
+            }
+
+            // Lấy dữ liệu từ form
+            String modelType = request.getParameter("model_type");
+            String descriptionHtml = request.getParameter("description_html");
+            String status = request.getParameter("status");
+
+            // Validate
+            if (modelType == null || modelType.trim().isEmpty()) {
+                request.setAttribute("checkErrorEditModel", "Model type is required.");
+                request.setAttribute("model", existingModel);
+                return "modelUpdate.jsp";
+            }
+
+            if (modelType.trim().length() > 100) {
+                request.setAttribute("checkErrorEditModel", "Model type must be 100 characters or less.");
+                request.setAttribute("model", existingModel);
+                return "modelUpdate.jsp";
+            }
+
+            // Check duplicate model_type (exclude current record)
+            try {
+                boolean typeExists = modelsDAO.isModelTypeExistsExcept(modelType.trim(), modelId);
+                if (typeExists) {
+                    request.setAttribute("checkErrorEditModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
+                    request.setAttribute("model", existingModel);
+                    return "modelUpdate.jsp";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // Validate status
+            if (status != null && !status.trim().isEmpty()) {
+                String normalizedStatus = status.trim();
+                if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {
+                    request.setAttribute("checkErrorEditModel", "Status must be either 'active' or 'inactive'.");
+                    request.setAttribute("model", existingModel);
+                    return "modelUpdate.jsp";
+                }
+            }
+
+            // Update basic info
+            existingModel.setModel_type(modelType.trim());
+            existingModel.setDescription_html(descriptionHtml != null ? descriptionHtml.trim() : "");
+            existingModel.setStatus(status != null ? status.trim() : "active");
+            existingModel.setUpdated_at(new java.util.Date());
+
+            // Handle image upload
+            Part imagePart = null;
+            try {
+                imagePart = request.getPart("imageFile");
+            } catch (Exception ignore) {
+            }
+
+            String oldImageUrl = existingModel.getImage_url();
+
+            if (imagePart != null && imagePart.getSize() > 0
+                    && imagePart.getSubmittedFileName() != null
+                    && !imagePart.getSubmittedFileName().trim().isEmpty()) {
+
+                // Upload new image
+                String uploadDirPath = request.getServletContext().getRealPath("/assets/models/");
+                File uploadDir = new File(uploadDirPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+
+                String originalFileName = imagePart.getSubmittedFileName();
+                String fileExtension = "";
+                int dot = originalFileName.lastIndexOf('.');
+                if (dot >= 0) {
+                    fileExtension = originalFileName.substring(dot);
+                }
+
+                String newFileName = "model_" + modelId + "_" + System.currentTimeMillis() + fileExtension;
+                File newFile = new File(uploadDir, newFileName);
+                imagePart.write(newFile.getAbsolutePath());
+
+                existingModel.setImage_url("/assets/models/" + newFileName);
+            }
+            System.out.println("+++++++++ PASS ALL SUCCESSFULLY!! +++++++++");
+            // Update database
+            boolean success = modelsDAO.update(existingModel);
+            System.out.println("check success: " + success);
+            if (success) {
+                // Delete old image if new image uploaded
+                if (imagePart != null && imagePart.getSize() > 0
+                        && oldImageUrl != null && !oldImageUrl.isEmpty()) {
+                    File oldFile = new File(request.getServletContext().getRealPath("/" + oldImageUrl));
+                    if (oldFile.exists()) {
+                        oldFile.delete();
+                    }
+                }
+
+                HttpSession session = request.getSession();
+                session.removeAttribute("cachedModelList");
+
+                request.setAttribute("messageEditModel", "Model updated successfully.");
+                request.setAttribute("model", existingModel);
+                return "modelUpdate.jsp";
+            } else {
+                request.setAttribute("checkErrorEditModel", "Failed to update model.");
+                request.setAttribute("model", existingModel);
+                return "modelUpdate.jsp";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorEditModel", "Error while updating model: " + e.getMessage());
+            return "modelUpdate.jsp";
+        }
+    }
+
+    /**
+     * Xử lý xóa model - Soft delete bằng cách chuyển status thành "inactive"
+     */
+    private String handleModelDelete(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
+
+            String idStr = request.getParameter("id");
+            if (idStr == null || idStr.trim().isEmpty()) {
+                request.setAttribute("checkErrorDeleteModel", "Model ID is required.");
+                return "modelList.jsp";
+            }
+
+            int modelId;
+            try {
+                modelId = Integer.parseInt(idStr);
+            } catch (NumberFormatException e) {
+                request.setAttribute("checkErrorDeleteModel", "Invalid model ID format.");
+                return "modelList.jsp";
+            }
+
+            Models existingModel = modelsDAO.getById(modelId);
+            if (existingModel == null) {
+                request.setAttribute("checkErrorDeleteModel", "Model not found.");
+                return "modelList.jsp";
+            }
+
+            if ("inactive".equalsIgnoreCase(existingModel.getStatus())) {
+                request.setAttribute("checkErrorDeleteModel", "Model is already inactive.");
+                return "modelList.jsp";
+            }
+
+            // Soft delete: change status to "inactive"
+            existingModel.setStatus("inactive");
+            existingModel.setUpdated_at(new java.util.Date());
+
+            boolean success = modelsDAO.update(existingModel);
+
+            if (success) {
+                HttpSession session = request.getSession();
+                session.removeAttribute("cachedModelList");
+
+                request.setAttribute("messageDeleteModel",
+                        "Model '" + existingModel.getModel_type() + "' has been deactivated successfully.");
+
+                return "modelList.jsp";
+            } else {
+                request.setAttribute("checkErrorDeleteModel",
+                        "Failed to deactivate model. Please try again.");
+                return "modelList.jsp";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorDeleteModel",
+                    "Error while deactivating model: " + e.getMessage());
+            return "modelList.jsp";
+        }
+    }
+
+    /**
+     * Xử lý hiển thị danh sách models
+     */
+    private String handleModelList(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            HttpSession session = request.getSession();
+
+            // Check cache first
+            List<Models> modelList = (List<Models>) session.getAttribute("cachedModelList");
+
+            if (modelList == null) {
+                // Get from database
+                modelList = modelsDAO.getAll(); // Only get active models (de sau check lai trong cai modelDao)
+                session.setAttribute("cachedModelList", modelList);
+            }
+
+            request.setAttribute("modelList", modelList);
+            return "modelList.jsp";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorModelList", "Error loading model list: " + e.getMessage());
+            return "modelList.jsp";
+        }
+    }
+
+    /**
+     * Xử lý hiển thị chi tiết model để edit
+     */
+    private String handleModelEditForm(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String idStr = request.getParameter("id");
+            if (idStr == null || idStr.trim().isEmpty()) {
+                request.setAttribute("checkErrorModelDetail", "Model ID is required.");
+                return "modelUpdate.jsp";
+            }
+
+            int modelId = Integer.parseInt(idStr);
+            Models model = modelsDAO.getById(modelId);
+
+            if (model == null) {
+                request.setAttribute("checkErrorModelDetail", "Model not found.");
+                return "modelUpdate.jsp";
+            }
+
+            request.setAttribute("model", model);
+            return "modelUpdate.jsp";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorModelDetail", "Error loading model details: " + e.getMessage());
+            return "modelUpdate.jsp";
+        }
+    }
+
+    private String handleModelAddForm(HttpServletRequest request, HttpServletResponse response) {
+        request.setAttribute("model", null);
+        return "modelUpdate.jsp";
     }
 }
