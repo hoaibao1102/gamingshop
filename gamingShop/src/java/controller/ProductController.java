@@ -194,7 +194,7 @@ public class ProductController extends HttpServlet {
             // Gán hình ảnh cho từng sản phẩm
             for (Products p : pageResult.getContent()) {
                 List<Product_images> images = productImagesDAO.getByProductId(p.getId());
-                p.setImage(images);
+                p.setCoverImg(images.get(0).getImage_url());
             }
 
             request.setAttribute("pageResult", pageResult);

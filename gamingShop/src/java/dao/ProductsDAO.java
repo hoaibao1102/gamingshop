@@ -539,7 +539,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
     public Page<Products> getMayChoiGame(ProductFilter filter) {
         ModelsDAO mdao = new ModelsDAO();
         int model_id = mdao.getIdByType("Máy chơi game");
-        return getProductsByCondition(filter, "model_id", "");
+        return getProductsByCondition(filter, "model_id", String.valueOf(model_id));
     }
 
 }
