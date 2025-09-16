@@ -1,16 +1,26 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<c:set var="pg"    value="${pageResult.currentPage}" />
-<c:set var="size"  value="${pageResult.pageSize}" />
-<c:set var="tot"   value="${pageResult.totalElements}" />
-<c:set var="max"   value="${pageResult.totalPages}" />
-<c:set var="start" value="${pageResult.startItem}" />
-<c:set var="end"   value="${pageResult.endItem}" />
+<!-- ƯU TIÊN: listProductsByCategory_page (Page<?>), fallback: pageResult -->
+<c:set var="pageObj" value="${not empty listProductsByCategory_page ? listProductsByCategory_page : pageResult}" />
+
+<!-- Lấy action: ưu tiên param.action; nếu không có thì lấy attribute controller set -->
+<c:set var="actionName" value="${not empty param.action ? param.action : paginationAction}" />
+<!-- Tham số đặc thù (ví dụ lọc theo danh mục) -->
+<c:set var="categoryIdVal" value="${not empty param.categoryId ? param.categoryId : categoryId}" />
+
+<!-- Metadata phân trang -->
+<c:set var="pg"    value="${pageObj.currentPage}" />
+<c:set var="size"  value="${pageObj.pageSize}" />
+<c:set var="tot"   value="${pageObj.totalElements}" />
+<c:set var="max"   value="${pageObj.totalPages}" />
+<c:set var="start" value="${pageObj.startItem}" />
+<c:set var="end"   value="${pageObj.endItem}" />
 
 <div class="pagination-section">
-    <!-- ===== Info: luôn hiển thị ===== -->
+    <!-- ===== Info ===== -->
     <div class="pagination-info">
         <c:choose>
             <c:when test="${tot == 0}">
@@ -33,23 +43,22 @@
         </c:choose>
     </div>
 
-    <!-- ===== Nav: chỉ hiển thị khi > 1 trang ===== -->
+    <!-- ===== Nav ===== -->
     <c:if test="${max > 1}">
         <div class="pagination-nav">
             <!-- Prev -->
             <c:if test="${pg > 1}">
-                <c:url var="prevHref" value="${pageContext.request.requestURI}">
-                    <c:if test="${not empty param.action}"><c:param name="action" value="${param.action}"/></c:if>
+                <c:url var="prevHref" value="MainController">
+                    <c:param name="action" value="${actionName}"/>
                     <c:if test="${not empty param.name}"><c:param name="name" value="${param.name}"/></c:if>
                     <c:if test="${not empty param.type}"><c:param name="type" value="${param.type}"/></c:if>
                     <c:if test="${not empty param.minPrice}"><c:param name="minPrice" value="${param.minPrice}"/></c:if>
                     <c:if test="${not empty param.maxPrice}"><c:param name="maxPrice" value="${param.maxPrice}"/></c:if>
                     <c:if test="${not empty param.sortBy}"><c:param name="sortBy" value="${param.sortBy}"/></c:if>
+                    <c:if test="${not empty categoryIdVal}"><c:param name="categoryId" value="${categoryIdVal}"/></c:if>
                     <c:param name="page" value="${pg - 1}"/>
                 </c:url>
-                <a href="${prevHref}" onclick="return goToPage(${pg - 1})" class="page-btn prev-btn">
-                    <span>‹</span> Trước
-                </a>
+                <a href="${prevHref}" class="page-btn prev-btn"><span>‹</span> Trước</a>
             </c:if>
 
             <!-- Page numbers (cửa sổ ±2) -->
@@ -61,16 +70,17 @@
 
                     <!-- First -->
                 <c:if test="${from > 1}">
-                    <c:url var="firstHref" value="${pageContext.request.requestURI}">
-                        <c:if test="${not empty param.action}"><c:param name="action" value="${param.action}"/></c:if>
+                    <c:url var="firstHref" value="MainController">
+                        <c:param name="action" value="${actionName}"/>
                         <c:if test="${not empty param.name}"><c:param name="name" value="${param.name}"/></c:if>
                         <c:if test="${not empty param.type}"><c:param name="type" value="${param.type}"/></c:if>
                         <c:if test="${not empty param.minPrice}"><c:param name="minPrice" value="${param.minPrice}"/></c:if>
                         <c:if test="${not empty param.maxPrice}"><c:param name="maxPrice" value="${param.maxPrice}"/></c:if>
                         <c:if test="${not empty param.sortBy}"><c:param name="sortBy" value="${param.sortBy}"/></c:if>
+                        <c:if test="${not empty categoryIdVal}"><c:param name="categoryId" value="${categoryIdVal}"/></c:if>
                         <c:param name="page" value="1"/>
                     </c:url>
-                    <a href="${firstHref}" onclick="return goToPage(1)" class="page-btn">1</a>
+                    <a href="${firstHref}" class="page-btn">1</a>
                     <c:if test="${from > 2}">
                         <span class="page-dots">...</span>
                     </c:if>
@@ -83,16 +93,17 @@
                             <span class="page-btn current" aria-current="page">${p}</span>
                         </c:when>
                         <c:otherwise>
-                            <c:url var="pHref" value="${pageContext.request.requestURI}">
-                                <c:if test="${not empty param.action}"><c:param name="action" value="${param.action}"/></c:if>
+                            <c:url var="pHref" value="MainController">
+                                <c:param name="action" value="${actionName}"/>
                                 <c:if test="${not empty param.name}"><c:param name="name" value="${param.name}"/></c:if>
                                 <c:if test="${not empty param.type}"><c:param name="type" value="${param.type}"/></c:if>
                                 <c:if test="${not empty param.minPrice}"><c:param name="minPrice" value="${param.minPrice}"/></c:if>
                                 <c:if test="${not empty param.maxPrice}"><c:param name="maxPrice" value="${param.maxPrice}"/></c:if>
                                 <c:if test="${not empty param.sortBy}"><c:param name="sortBy" value="${param.sortBy}"/></c:if>
+                                <c:if test="${not empty categoryIdVal}"><c:param name="categoryId" value="${categoryIdVal}"/></c:if>
                                 <c:param name="page" value="${p}"/>
                             </c:url>
-                            <a href="${pHref}" onclick="return goToPage(${p})" class="page-btn">${p}</a>
+                            <a href="${pHref}" class="page-btn">${p}</a>
                         </c:otherwise>
                     </c:choose>
                 </c:forEach>
@@ -102,48 +113,47 @@
                     <c:if test="${to < max - 1}">
                         <span class="page-dots">...</span>
                     </c:if>
-                    <c:url var="lastHref" value="${pageContext.request.requestURI}">
-                        <c:if test="${not empty param.action}"><c:param name="action" value="${param.action}"/></c:if>
+                    <c:url var="lastHref" value="MainController">
+                        <c:param name="action" value="${actionName}"/>
                         <c:if test="${not empty param.name}"><c:param name="name" value="${param.name}"/></c:if>
                         <c:if test="${not empty param.type}"><c:param name="type" value="${param.type}"/></c:if>
                         <c:if test="${not empty param.minPrice}"><c:param name="minPrice" value="${param.minPrice}"/></c:if>
                         <c:if test="${not empty param.maxPrice}"><c:param name="maxPrice" value="${param.maxPrice}"/></c:if>
                         <c:if test="${not empty param.sortBy}"><c:param name="sortBy" value="${param.sortBy}"/></c:if>
+                        <c:if test="${not empty categoryIdVal}"><c:param name="categoryId" value="${categoryIdVal}"/></c:if>
                         <c:param name="page" value="${max}"/>
                     </c:url>
-                    <a href="${lastHref}" onclick="return goToPage(${max})" class="page-btn">${max}</a>
+                    <a href="${lastHref}" class="page-btn">${max}</a>
                 </c:if>
             </div>
 
             <!-- Next -->
             <c:if test="${pg < max}">
-                <c:url var="nextHref" value="${pageContext.request.requestURI}">
-                    <c:if test="${not empty param.action}"><c:param name="action" value="${param.action}"/></c:if>
+                <c:url var="nextHref" value="MainController">
+                    <c:param name="action" value="${actionName}"/>
                     <c:if test="${not empty param.name}"><c:param name="name" value="${param.name}"/></c:if>
                     <c:if test="${not empty param.type}"><c:param name="type" value="${param.type}"/></c:if>
                     <c:if test="${not empty param.minPrice}"><c:param name="minPrice" value="${param.minPrice}"/></c:if>
                     <c:if test="${not empty param.maxPrice}"><c:param name="maxPrice" value="${param.maxPrice}"/></c:if>
                     <c:if test="${not empty param.sortBy}"><c:param name="sortBy" value="${param.sortBy}"/></c:if>
+                    <c:if test="${not empty categoryIdVal}"><c:param name="categoryId" value="${categoryIdVal}"/></c:if>
                     <c:param name="page" value="${pg + 1}"/>
                 </c:url>
-                <a href="${nextHref}" onclick="return goToPage(${pg + 1})" class="page-btn next-btn">
-                    Sau <span>›</span>
-                </a>
+                <a href="${nextHref}" class="page-btn next-btn">Sau <span>›</span></a>
             </c:if>
         </div>
 
         <!-- Goto -->
         <div class="goto-page">
             <span>Đến trang:</span>
-            <input type="number" id="gotoPageInput" min="1" max="${max}"
-                   placeholder="${pg}" onkeypress="handleGotoPageEnter(event)">
+            <input type="number" id="gotoPageInput" min="1" max="${max}" placeholder="${pg}" onkeypress="handleGotoPageEnter(event)">
             <button onclick="gotoPage()" class="goto-btn">Đi</button>
         </div>
     </c:if>
 </div>
 
 <style>
-    /* giữ style nguyên như bạn, rút gọn để ngắn tin nhắn */
+    /* giữ nguyên style hiện có của bạn (rút gọn trong câu trả lời) */
     .pagination-section{
         background:linear-gradient(135deg,#fff 0%,#f8fafc 100%);
         border-radius:16px;
@@ -292,31 +302,38 @@
         .page-numbers .page-btn.current{
             display:flex
         }
-        .page-numbers .page-btn:first-child,
-        .page-numbers .page-btn:last-child{
+        .page-numbers .page-btn:first-child,.page-numbers .page-btn:last-child{
             display:flex!important
         }
     }
 </style>
 
-<script>
-    // Dùng dữ liệu thật từ backend, không hard-code
-    const MAX_PAGE = ${max};
+<!-- Base URL (không kèm page) để JS 'Đến trang' dùng -->
+<c:url var="baseHref" value="MainController">
+    <c:param name="action" value="${actionName}"/>
+    <c:if test="${not empty param.name}"><c:param name="name" value="${param.name}"/></c:if>
+    <c:if test="${not empty param.type}"><c:param name="type" value="${param.type}"/></c:if>
+    <c:if test="${not empty param.minPrice}"><c:param name="minPrice" value="${param.minPrice}"/></c:if>
+    <c:if test="${not empty param.maxPrice}"><c:param name="maxPrice" value="${param.maxPrice}"/></c:if>
+    <c:if test="${not empty param.sortBy}"><c:param name="sortBy" value="${param.sortBy}"/></c:if>
+    <c:if test="${not empty categoryIdVal}"><c:param name="categoryId" value="${categoryIdVal}"/></c:if>
+</c:url>
 
-    // Điều hướng: giữ nguyên mọi filter param hiện có
+<script>
+    const MAX_PAGE = ${max};
+    const BASE_HREF = '${fn:escapeXml(baseHref)}';
     function goToPage(n) {
         if (!n || n < 1 || n > MAX_PAGE)
-            return false;    // prevent default nếu invalid
-        const url = new URL(window.location.href);
-        url.searchParams.set('page', n);
-        window.location.assign(url.toString());
-        return false; // chặn default click của <a>
+            return false;
+        var sep = BASE_HREF.indexOf('?') === -1 ? '?' : '&';
+        window.location.assign(BASE_HREF + sep + 'page=' + n);
+        return false;
     }
     function gotoPage() {
-        const input = document.getElementById('gotoPageInput');
+        var input = document.getElementById('gotoPageInput');
         if (!input)
             return;
-        const n = parseInt(input.value, 10);
+        var n = parseInt(input.value, 10);
         if (!isNaN(n) && n >= 1 && n <= MAX_PAGE)
             goToPage(n);
         else

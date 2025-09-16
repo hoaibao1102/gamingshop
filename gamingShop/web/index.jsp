@@ -69,11 +69,24 @@
                 </div>
 
                 <!-- ====== Filter Form (sau banner) ====== -->
-                <jsp:include page="filter-form.jsp"/>
+                <c:if test="${not empty pageResult || not empty list}">
+                    <jsp:include page="filter-form.jsp"/>
+                </c:if>
+                
 
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
-                    <c:set var="products" value="${not empty pageResult ? pageResult.content : list}" />
+                    <c:choose>
+                        <c:when test="${not empty listProductsByCategory}">
+                            <c:set var="products" value="${listProductsByCategory}" />
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="products" value="${not empty pageResult ? pageResult.content : list}" />
+                        </c:otherwise>
+                    </c:choose>
+                    
+                    
+                    
 
                     <c:choose>
                         <c:when test="${not empty products}">
