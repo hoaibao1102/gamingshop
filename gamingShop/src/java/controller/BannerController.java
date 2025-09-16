@@ -6,8 +6,6 @@ package controller;
 
 import dao.BannersDAO;
 import dto.Banners;
-import dto.Posts;
-import dto.Products;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -18,10 +16,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
-import java.nio.file.Paths;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -57,6 +51,10 @@ public class BannerController extends HttpServlet {
                 url = handleUpdateBanner(request, response);
             } else if (action.equals("searchBanner")) {
                 url = handleSearchBanner(request, response);
+            } else if (action.equals("deleteBanner")) {
+                url = handleDeleteBanner(request, response);
+            } else if (action.equals("editBanners")) {
+                url = handleEditBanner(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -108,7 +106,7 @@ public class BannerController extends HttpServlet {
     private String handleGetAllBannerActive(HttpServletRequest request, HttpServletResponse response) {
         List<Banners> list = bannersDAO.getAll();
         request.setAttribute("list", list);
-        return "testBanner.jsp";
+        return "banners.jsp";
     }
 
     private String handleAddBanner(HttpServletRequest request, HttpServletResponse response) {
@@ -172,7 +170,6 @@ public class BannerController extends HttpServlet {
             }
 
             // ===== Insert DB =====
-            BannersDAO bannersDAO = new BannersDAO();
             boolean ok = bannersDAO.create(newBanner);
             if (!ok) {
                 // Nếu insert fail và đã có file ảnh → nên xoá để tránh rác
@@ -193,7 +190,11 @@ public class BannerController extends HttpServlet {
             session.removeAttribute("cachedBannersListEdit");
 
             request.setAttribute("messageAddBanner", "New banner added successfully.");
-            request.setAttribute("banner", newBanner); // để JSP show chi tiết (title, status, image_url...)
+//            request.setAttribute("banners", newBanner);
+            request.setAttribute("editBanner", newBanner);
+            // Lấy lại danh sách banners từ DB
+            List<Banners> bannersList = bannersDAO.getAll();
+            request.setAttribute("banners", bannersList);// để JSP show chi tiết (title, status, image_url...)
             return "bannersUpdate.jsp";
 
         } catch (Exception e) {
@@ -204,15 +205,167 @@ public class BannerController extends HttpServlet {
     }
 
     private String handleUpdateBanner(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            request.setCharacterEncoding("UTF-8");
+
+            int id = Integer.parseInt(request.getParameter("id"));
+            String title = request.getParameter("title");
+            String statusRaw = request.getParameter("status");
+            String status = (statusRaw != null && statusRaw.equalsIgnoreCase("active")) ? "active" : "inactive";
+
+            // Lấy banner cũ để kiểm tra ảnh cũ
+            Banners oldBanner = bannersDAO.getById(id);
+            if (oldBanner == null) {
+                request.setAttribute("checkErrorUpdateBanner", "Banner not found.");
+                return "bannersUpdate.jsp";
+            }
+
+            // Banner mới để update
+            Banners updatedBanner = new Banners();
+            updatedBanner.setId(id);
+            updatedBanner.setTitle(title);
+            updatedBanner.setStatus(status);
+            updatedBanner.setImage_url(oldBanner.getImage_url()); // mặc định giữ ảnh cũ
+
+            // Xử lý upload ảnh mới (nếu có)
+            Part imagePart = null;
+            try {
+                imagePart = request.getPart("imageFile");
+            } catch (Exception ignore) {
+            }
+
+            if (imagePart != null && imagePart.getSize() > 0) {
+                String contentType = imagePart.getContentType();
+                if (contentType == null || !contentType.toLowerCase().startsWith("image/")) {
+                    request.setAttribute("checkErrorUpdateBanner", "File tải lên không phải là ảnh hợp lệ.");
+                    return "bannersUpdate.jsp";
+                }
+
+                String uploadDirPath = request.getServletContext().getRealPath("/assets/img/banners/");
+                File uploadDir = new File(uploadDirPath);
+                if (!uploadDir.exists()) {
+                    uploadDir.mkdirs();
+                }
+
+                String originalFileName = java.nio.file.Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
+                String fileExtension = "";
+                int dot = originalFileName.lastIndexOf('.');
+                if (dot >= 0 && dot < originalFileName.length() - 1) {
+                    fileExtension = originalFileName.substring(dot);
+                }
+
+                String safeName = System.currentTimeMillis() + "_" + java.util.UUID.randomUUID().toString().replace("-", "");
+                String finalName = safeName + fileExtension;
+                File finalFile = new File(uploadDir, finalName);
+
+                imagePart.write(finalFile.getAbsolutePath());
+
+                String storedRelativeUrl = "assets/img/banners/" + finalName;
+                updatedBanner.setImage_url(storedRelativeUrl);
+
+                // Xóa ảnh cũ nếu có
+                if (oldBanner.getImage_url() != null) {
+                    try {
+                        String absOld = request.getServletContext().getRealPath("/" + oldBanner.getImage_url());
+                        new File(absOld).delete();
+                    } catch (Exception ignore) {
+                    }
+                }
+            }
+
+            boolean ok = bannersDAO.update(updatedBanner);
+            if (!ok) {
+                request.setAttribute("checkErrorUpdateBanner", "Failed to update banner.");
+                return "bannersUpdate.jsp";
+            }
+
+            request.setAttribute("messageUpdateBanner", "Banner updated successfully.");
+            List<Banners> bannersList = bannersDAO.getAll();
+            request.setAttribute("editBanner", updatedBanner);
+
+            return "bannersUpdate.jsp";
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorUpdateBanner", "Unexpected error: " + e.getMessage());
+            return "error.jsp";
+        }
     }
 
     private String handleShowAddBannerForm(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        request.setAttribute("banners", null);
+        return "bannersUpdate.jsp";
     }
 
     private String handleSearchBanner(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            request.setCharacterEncoding("UTF-8");
+            String keyword = request.getParameter("keyword");
+
+            List<Banners> list;
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                list = bannersDAO.getByName(keyword.trim());
+            } else {
+                list = bannersDAO.getAll();
+            }
+
+            if (list == null || list.isEmpty()) {
+                request.setAttribute("checkErrorSearchBanner", "No banners found.");
+            } else {
+                request.setAttribute("banners", list);
+            }
+
+            return "bannersUpdate.jsp";
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorSearchBanner", "Unexpected error: " + e.getMessage());
+            return "error.jsp";
+        }
+    }
+
+    private String handleDeleteBanner(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            if (id < 1) {
+                request.setAttribute("checkErrorDeleteBanners", "Missing banner_id.");
+                return "bannersUpdate.jsp";
+            }
+
+            boolean success = bannersDAO.deleteBannerById(id);
+
+            if (success) {
+                // Nếu có cache list sản phẩm để edit trong session thì xoá để lần sau nạp mới
+                request.getSession().removeAttribute("cachedBannerListEdit");
+                request.setAttribute("messageDeleteBanners", "Banner deleted successfully.");
+            } else {
+                request.setAttribute("checkErrorDeletePosts", "Failed to delete banner.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorDeletePosts", "Unexpected error: " + e.getMessage());
+            return "bannersUpdate.jsp";
+        }
+        return "MainController?action=getAllBannerActive";
+    }
+
+    private String handleEditBanner(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            Banners banner = bannersDAO.getById(id);
+            if (banner != null) {
+                request.setAttribute("editBanner", banner); // ✅ đặt đúng tên
+                return "bannersUpdate.jsp"; // trang form edit
+            } else {
+                request.setAttribute("errorMessage", "Banner not found!");
+                return "error.jsp";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Error while loading banner for edit: " + e.getMessage());
+            return "error.jsp";
+        }
     }
 
 }
