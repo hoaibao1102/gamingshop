@@ -432,7 +432,7 @@
 
             <hr class="divider">
 
-            <c:if test="${ empty listProminent}">
+            <c:if test="${ empty isListProminent}">
                 <!-- Danh sách sản phẩm nổi bật -->
                 <h3 class="sb-title">Sản phẩm nổi bật</h3>
                 <c:choose>

@@ -1627,17 +1627,6 @@ public class ProductController extends HttpServlet {
         }
     }
 
-    private String handleGoToUpdatePosts(HttpServletRequest request, HttpServletResponse response) {
-        int id = Integer.parseInt(request.getParameter("id"));
-        PostsDAO pd = new PostsDAO();
-        try {
-            Posts post = pd.getById(id);
-            request.setAttribute("post", post);
-        } catch (Exception e) {
-        }
-        return "postsUpdate.jsp";
-    }
-
 
     private String handleGetProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -1705,13 +1694,15 @@ public class ProductController extends HttpServlet {
         }
 
 
-            request.setAttribute("listProminent", pageResult.getContent()); 
-            request.setAttribute("currentFilter", filter);
+            request.setAttribute("listProductsByCategory_page", pageResult); 
+            request.setAttribute("listProductsByCategory", pageResult.getContent()); 
+//            đánh dấu là lấy ds sp nổi bật nên không hiện biên sidebar.jsp nữa
+            request.setAttribute("isListProminent", "true"); 
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("checkError", "Error loading products: " + e.getMessage());
         }
-        return "productsByCategories.jsp";
+        return "index.jsp";
     }
 }
