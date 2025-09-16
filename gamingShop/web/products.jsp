@@ -440,10 +440,6 @@
                                     </table>
                                 </div>
 
-                                <!-- Phân trang nếu có -->
-                                <div class="pagination-wrap">
-                                    <jsp:include page="pagination.jsp"/>
-                                </div>
                             </c:when>
                             <c:otherwise>
                                 <div class="empty-state">
@@ -458,7 +454,7 @@
             </div>
         </div>
 
-        <jsp:include page="footer.jsp"/>
+        
 
         <!-- Swiper JS (tuỳ chọn) -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
