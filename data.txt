@@ -1,0 +1,229 @@
+-- 1) models
+INSERT INTO dbo.Models (model_type, description_html, image_url,status)
+VALUES
+(N'Máy chơi game', N'Máy chơi game chính hãng', N'https://example.com/img/ps5.jpg','active'),
+(N'Thẻ game', N'Thẻ game', N'https://example.com/img/switch.jpg','active');
+
+-- 2) memories
+INSERT INTO dbo.Memories (memory_type, description_html, quantity, price, image_url,status)
+VALUES
+(N'32GB', N'THẺ NHỚ 32GB KÈM GAME CHO MÁY CHƠI GAME PSP', 10, 0, N'https://example.com/img/128gb.jpg','active'),
+(N'64GB', N'THẺ NHỚ 64GB KÈM GAME CHO MÁY CHƠI GAME PSP', 10, 0, N'https://example.com/img/128gb.jpg','active'),
+(N'128GB', N'THẺ NHỚ 128GB KÈM GAME CHO MÁY CHƠI GAME PSP', 10, 0, N'https://example.com/img/128gb.jpg','active');
+
+-- 3) guarantees
+INSERT INTO dbo.Guarantees (guarantee_type, description_html,status)
+VALUES
+(N'3 tháng', N'Bảo hành 3 tháng chính hãng','active'),
+(N'6 tháng', N'Bảo hành 6 tháng chính hãng','active');
+
+-- 4) products
+INSERT INTO dbo.Products (name, sku, price, product_type, quantity, model_id, memory_id, guarantee_id, description_html, status)
+VALUES
+(N'MÁY CHƠI GAME NINTENDO SWITCH LITE (MODCHIP) HÀNG 2ND', N'SP01', 3200000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH LITE (MODCHIP) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH LITE (MODCHIP) HÀNG 2ND', N'SP02', 3400000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH LITE (MODCHIP) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH LITE (MODCHIP) HÀNG 2ND', N'SP03', 3600000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH LITE (MODCHIP) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH V1 (MODCHIP) HÀNG 2ND', N'SP04', 2600000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH V1 (MODCHIP) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH V1 (MODCHIP) HÀNG 2ND', N'SP05', 3500000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH V1 (MODCHIP) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH V1 (MODCHIP) HÀNG 2ND', N'SP06', 3900000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH V1 (MODCHIP) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH V1 (MODCHIP) HÀNG 2ND', N'SP07', 4200000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH V1 (MODCHIP) HÀNG 2ND.</p>','active'), 
+(N'MÁY CHƠI GAME NINTENDO SWITCH V2 (MODCHIP) HÀNG 2ND', N'SP08', 3500000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH V2 (MODCHIP) HÀNG 2ND.</p>','active'), 
+(N'MÁY CHƠI GAME NINTENDO SWITCH V2 (MODCHIP) HÀNG 2ND', N'SP09', 4200000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH V2 (MODCHIP) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH V2 (MODCHIP) HÀNG 2ND', N'SP10', 4900000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH V2 (MODCHIP) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH V2 (MODCHIP) HÀNG 2ND', N'SP11', 5200000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH V2 (MODCHIP) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH OLED (MODCHIP) HÀNG 2ND', N'SP12', 5300000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH V2 (MODCHIP) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH OLED (MODCHIP) HÀNG 2ND', N'SP13', 6000000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH OLED (MODCHIP) HÀNG 2ND.</p>','active'), 
+(N'MÁY CHƠI GAME NINTENDO SWITCH OLED (MODCHIP) HÀNG 2ND', N'SP14', 6300000, 'used', 10, 1, 3, 1,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH OLED (MODCHIP) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH LITE (CHƯA MODCHIP - NGUYÊN BẢN) HÀNG 2ND', N'SP15', 2800000, 'used', 10, 1, 1, 2,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH LITE (CHƯA MODCHIP - NGUYÊN BẢN) HÀNG 2ND.</p>','active'), 
+(N'MÁY CHƠI GAME NINTENDO SWITCH LITE (CHƯA MODCHIP - NGUYÊN BẢN) HÀNG 2ND', N'SP16', 3400000, 'used', 10, 1, 1, 2,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH LITE (CHƯA MODCHIP - NGUYÊN BẢN) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH V1 (CHƯA MODCHIP - NGUYÊN BẢN) HÀNG 2ND', N'SP17', 3800000, 'used', 10, 1, 1, 2,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH V1 (CHƯA MODCHIP - NGUYÊN BẢN) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH V2 (CHƯA MODCHIP - NGUYÊN BẢN) HÀNG 2ND', N'SP18', 4600000, 'used', 10, 1, 1, 2,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH V2 (CHƯA MODCHIP - NGUYÊN BẢN) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME NINTENDO SWITCH OLED (CHƯA MODCHIP - NGUYÊN BẢN) HÀNG 2ND', N'SP19', 5800000, 'used', 10, 1, 2, 2,
+ N'<p>MÁY CHƠI GAME NINTENDO SWITCH OLED (CHƯA MODCHIP - NGUYÊN BẢN) HÀNG 2ND.</p>','active'),
+(N'MÁY CHƠI GAME PS VITA 1000', N'SP20', 1900000, 'new', 10, 1, 2, NULL,
+ N'<p>MÁY CHƠI GAME PS VITA 1000.</p>','active'),
+(N'MÁY CHƠI GAME PS VITA 2000', N'SP21', 2500000, 'new', 10, 1, 2, NULL,
+ N'<p>MÁY CHƠI GAME PS VITA 2000.</p>','active'),
+(N'MÁY CHƠI GAME PSP 1000', N'SP22', 1000000, 'new', 10, 1, 2, NULL,
+ N'<p>MÁY CHƠI GAME PSP 1000.</p>','active'),
+(N'MÁY CHƠI GAME PSP 2000', N'SP23', 1200000, 'new', 10, 1, 2, NULL,
+ N'<p>MÁY CHƠI GAME PSP 2000.</p>','active'),
+(N'MÁY CHƠI GAME PSP 3000', N'SP24', 1400000, 'new', 10, 1, 2, NULL,
+ N'<p>MÁY CHƠI GAME PSP 3000.</p>','active'),
+(N'THẺ GAME ABC…XZY 2ND', N'SP25', 850000, 'new', 10, 1, NULL, NULL,
+ N'<p>THẺ GAME ABC…XZY 2ND.</p>','active');
+ 
+-- 5) services
+INSERT INTO dbo.Services (service_type, description_html, price, status)
+VALUES
+(N'DỊCH VỤ HĂC/MOD CHIP CHO MÁY CHƠI GAME NINTENDO SWITCH V1/V2', N'DỊCH VỤ HẮC ÁM/MOD CHIP CHƯA BAO GỒM THẺ NHỚ', 500000, 'active'),
+(N'DỊCH VỤ HĂC/MOD CHIP CHO MÁY CHƠI GAME NINTENDO SWITCH OLED', N'DỊCH VỤ HẮC ÁM/MOD CHIP CHƯA BAO GỒM THẺ NHỚ', 900000, 'active'),
+(N'DỊCH VỤ SỮA CHỮA MÁY CHƠI GAME NINTENDO SWITCH', N'TÙY TỪNG BỆNH', 200000, 'active'),
+(N'DỊCH VỤ TẢI GAME', N'TÙY TỪNG DUNG LƯỢNG', 200000, 'active'),
+(N'HOST TẢI GAME', N'TÙY THỜI GIAN', 50000, 'active'),
+(N'DỊCH VỤ HĂC/MOD CHIP CHO MÁY CHƠI GAME NINTENDO SWITCH LITE', N'DỊCH VỤ HẮC ÁM/MOD CHIP CHƯA BAO GỒM THẺ NHỚ', 500000, 'active');
+
+-- 6) Product_images
+INSERT INTO dbo.Product_images (product_id, image_url, caption, sort_order)
+VALUES
+-- Product 1
+(1, N'assets/img/products/1_1.jpg', N'Product 1', 1),
+(1, N'assets/img/products/1_2.jpg', N'Product 1', 2),
+(1, N'assets/img/products/1_3.jpg', N'Product 1', 3),
+(1, N'assets/img/products/1_4.jpg', N'Product 1', 4),
+
+-- Product 2
+(2, N'assets/img/products/2_1.jpg', N'Product 2', 1),
+(2, N'assets/img/products/2_2.jpg', N'Product 2', 2),
+(2, N'assets/img/products/2_3.jpg', N'Product 2', 3),
+(2, N'assets/img/products/2_4.jpg', N'Product 2', 4),
+
+-- Product 3
+(3, N'assets/img/products/3_1.jpg', N'Product 3', 1),
+(3, N'assets/img/products/3_2.jpg', N'Product 3', 2),
+(3, N'assets/img/products/3_3.jpg', N'Product 3', 3),
+(3, N'assets/img/products/3_4.jpg', N'Product 3', 4),
+
+-- Product 4
+(4, N'assets/img/products/4_1.jpg', N'Product 4', 1),
+(4, N'assets/img/products/4_2.jpg', N'Product 4', 2),
+(4, N'assets/img/products/4_3.jpg', N'Product 4', 3),
+(4, N'assets/img/products/4_4.jpg', N'Product 4', 4),
+
+-- Product 5
+(5, N'assets/img/products/5_1.jpg', N'Product 5', 1),
+(5, N'assets/img/products/5_2.jpg', N'Product 5', 2),
+(5, N'assets/img/products/5_3.jpg', N'Product 5', 3),
+(5, N'assets/img/products/5_4.jpg', N'Product 5', 4),
+
+-- Product 6
+(6, N'assets/img/products/6_1.jpg', N'Product 6', 1),
+(6, N'assets/img/products/6_2.jpg', N'Product 6', 2),
+(6, N'assets/img/products/6_3.jpg', N'Product 6', 3),
+(6, N'assets/img/products/6_4.jpg', N'Product 6', 4),
+
+-- Product 7
+(7, N'assets/img/products/7_1.jpg', N'Product 7', 1),
+(7, N'assets/img/products/7_2.jpg', N'Product 7', 2),
+(7, N'assets/img/products/7_3.jpg', N'Product 7', 3),
+(7, N'assets/img/products/7_4.jpg', N'Product 7', 4),
+
+-- Product 8
+(8, N'assets/img/products/8_1.jpg', N'Product 8', 1),
+(8, N'assets/img/products/8_2.jpg', N'Product 8', 2),
+(8, N'assets/img/products/8_3.jpg', N'Product 8', 3),
+(8, N'assets/img/products/8_4.jpg', N'Product 8', 4),
+
+-- Product 9
+(9, N'assets/img/products/9_1.jpg', N'Product 9', 1),
+(9, N'assets/img/products/9_2.jpg', N'Product 9', 2),
+(9, N'assets/img/products/9_3.jpg', N'Product 9', 3),
+(9, N'assets/img/products/9_4.jpg', N'Product 9', 4),
+
+-- Product 10
+(10, N'assets/img/products/10_1.jpg', N'Product 10', 1),
+(10, N'assets/img/products/10_2.jpg', N'Product 10', 2),
+(10, N'assets/img/products/10_3.jpg', N'Product 10', 3),
+(10, N'assets/img/products/10_4.jpg', N'Product 10', 4),
+
+-- Product 11
+(11, N'assets/img/products/11_1.jpg', N'Product 11', 1),
+(11, N'assets/img/products/11_2.jpg', N'Product 11', 2),
+(11, N'assets/img/products/11_3.jpg', N'Product 11', 3),
+(11, N'assets/img/products/11_4.jpg', N'Product 11', 4),
+
+-- Product 12
+(12, N'assets/img/products/12_1.jpg', N'Product 12', 1),
+(12, N'assets/img/products/12_2.jpg', N'Product 12', 2),
+(12, N'assets/img/products/12_3.jpg', N'Product 12', 3),
+(12, N'assets/img/products/12_4.jpg', N'Product 12', 4),
+
+-- Product 13
+(13, N'assets/img/products/13_1.jpg', N'Product 13', 1),
+(13, N'assets/img/products/13_2.jpg', N'Product 13', 2),
+(13, N'assets/img/products/13_3.jpg', N'Product 13', 3),
+(13, N'assets/img/products/13_4.jpg', N'Product 13', 4),
+
+-- Product 14
+(14, N'assets/img/products/14_1.jpg', N'Product 14', 1),
+(14, N'assets/img/products/14_2.jpg', N'Product 14', 2),
+(14, N'assets/img/products/14_3.jpg', N'Product 14', 3),
+(14, N'assets/img/products/14_4.jpg', N'Product 14', 4),
+
+-- Product 15
+(15, N'assets/img/products/15_1.jpg', N'Product 15', 1),
+(15, N'assets/img/products/15_2.jpg', N'Product 15', 2),
+(15, N'assets/img/products/15_3.jpg', N'Product 15', 3),
+(15, N'assets/img/products/15_4.jpg', N'Product 15', 4),
+
+-- Product 16
+(16, N'assets/img/products/16_1.jpg', N'Product 16', 1),
+(16, N'assets/img/products/16_2.jpg', N'Product 16', 2),
+(16, N'assets/img/products/16_3.jpg', N'Product 16', 3),
+(16, N'assets/img/products/16_4.jpg', N'Product 16', 4),
+
+-- Product 17
+(17, N'assets/img/products/17_1.jpg', N'Product 17', 1),
+(17, N'assets/img/products/17_2.jpg', N'Product 17', 2),
+(17, N'assets/img/products/17_3.jpg', N'Product 17', 3),
+(17, N'assets/img/products/17_4.jpg', N'Product 17', 4),
+
+-- Product 18
+(18, N'assets/img/products/18_1.jpg', N'Product 18', 1),
+(18, N'assets/img/products/18_2.jpg', N'Product 18', 2),
+(18, N'assets/img/products/18_3.jpg', N'Product 18', 3),
+(18, N'assets/img/products/18_4.jpg', N'Product 18', 4),
+
+-- Product 19
+(19, N'assets/img/products/19_1.jpg', N'Product 19', 1),
+(19, N'assets/img/products/19_2.jpg', N'Product 19', 2),
+(19, N'assets/img/products/19_3.jpg', N'Product 19', 3),
+(19, N'assets/img/products/19_4.jpg', N'Product 19', 4),
+
+-- Product 20
+(20, N'assets/img/products/20_1.jpg', N'Product 20', 1),
+(20, N'assets/img/products/20_2.jpg', N'Product 20', 2),
+(20, N'assets/img/products/20_3.jpg', N'Product 20', 3),
+(20, N'assets/img/products/20_4.jpg', N'Product 20', 4),
+
+-- Product 21
+(21, N'assets/img/products/21_1.jpg', N'Product 21', 1),
+(21, N'assets/img/products/21_2.jpg', N'Product 21', 2),
+(21, N'assets/img/products/21_3.jpg', N'Product 21', 3),
+(21, N'assets/img/products/21_4.jpg', N'Product 21', 4),
+
+-- Product 22
+(22, N'assets/img/products/22_1.jpg', N'Product 22', 1),
+(22, N'assets/img/products/22_2.jpg', N'Product 22', 2),
+(22, N'assets/img/products/22_3.jpg', N'Product 22', 3),
+(22, N'assets/img/products/22_4.jpg', N'Product 22', 4),
+
+-- Product 23
+(23, N'assets/img/products/23_1.jpg', N'Product 23', 1),
+(23, N'assets/img/products/23_2.jpg', N'Product 23', 2),
+(23, N'assets/img/products/23_3.jpg', N'Product 23', 3),
+(23, N'assets/img/products/23_4.jpg', N'Product 23', 4),
+
+-- Product 24
+(24, N'assets/img/products/24_1.jpg', N'Product 24', 1),
+(24, N'assets/img/products/24_2.jpg', N'Product 24', 2),
+(24, N'assets/img/products/24_3.jpg', N'Product 24', 3),
+(24, N'assets/img/products/24_4.jpg', N'Product 24', 4);

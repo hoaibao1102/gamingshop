@@ -124,7 +124,7 @@
 
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Memory</label>
-                        <select name="memory_id" class="form-select" required>
+                        <select name="memory_id" class="form-select">
                             <%
                                 if (memoryTypes != null) {
                                     for (Memories mem : memoryTypes) {
@@ -141,7 +141,7 @@
 
                     <div class="col-md-4 mb-3">
                         <label class="form-label">Guarantee</label>
-                        <select name="guarantee_id" class="form-select" required>
+                        <select name="guarantee_id" class="form-select">
                             <%
                                 if (guaranteeTypes != null) {
                                     for (Guarantees g : guaranteeTypes) {
