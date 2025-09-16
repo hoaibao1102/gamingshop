@@ -196,7 +196,6 @@ public class ProductController extends HttpServlet {
                 List<Product_images> images = productImagesDAO.getByProductId(p.getId());
                 p.setCoverImg(images.get(0).getImage_url());
             }
-
             request.setAttribute("pageResult", pageResult);
             request.setAttribute("currentFilter", filter);
 
@@ -1517,7 +1516,6 @@ public class ProductController extends HttpServlet {
                 publishDate = new Date();
             }
 
-
             // status
             int status = 1;
 
@@ -1629,37 +1627,74 @@ public class ProductController extends HttpServlet {
 
     private String handleGetProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
-            request.setCharacterEncoding("UTF-8");
-            // Lấy productId từ tham số form (hidden input "product_id")
-            int productId = Integer.parseInt(request.getParameter("idProduct"));
+            request.setCharacterEncoding(java.nio.charset.StandardCharsets.UTF_8.name());
 
-            if (productId < 1) {
-                request.setAttribute("checkErrorDeleteProduct", "không có san pham phu hop");
+            // 1) Lấy & validate id (Java 8: không dùng isBlank)
+            final String rawId = request.getParameter("idProduct");
+            if (rawId == null || rawId.trim().isEmpty()) {
+                request.setAttribute("checkErrorDeleteProduct", "Thiếu tham số idProduct");
                 return "productDetail.jsp";
             }
 
-            List<Product_images> imgList = new ArrayList<>();
-            imgList = productImagesDAO.getByAllProductId(productId);
-            Products productDetail = productsdao.getById(productId);
-            productDetail.setImage(imgList);
-            Guarantees guarantee = guaranteesDAO.getById(productDetail.getGuarantee_id());
-            Memories memory = memoriesDAO.getById(productDetail.getMemory_id());
-            String guaranteeProduct = guarantee.getGuarantee_type();
-            String memoryProduct = memory.getMemory_type();
-            System.out.println(productDetail.getDescription_html());
-            request.setAttribute("productDetail", productDetail);
+            final int productId;
+            try {
+                productId = Integer.parseInt(rawId.trim());
+            } catch (NumberFormatException nfe) {
+                request.setAttribute("checkErrorDeleteProduct", "idProduct không hợp lệ");
+                return "productDetail.jsp";
+            }
+            if (productId < 1) {
+                request.setAttribute("checkErrorDeleteProduct", "Không có sản phẩm phù hợp");
+                return "productDetail.jsp";
+            }
+
+            // 2) Lấy product + images
+            final Products product = productsdao.getById(productId);
+            if (product == null) {
+                request.setAttribute("checkErrorDeleteProduct", "Không tìm thấy sản phẩm");
+                return "productDetail.jsp";
+            }
+
+            final java.util.List<Product_images> images
+                    = productImagesDAO.getByAllProductId(productId) != null
+                    ? productImagesDAO.getByAllProductId(productId)
+                    : java.util.Collections.<Product_images>emptyList();
+            product.setImage(images);
+
+            // 3) Lấy text bảo hành / bộ nhớ (an toàn null)
+            String guaranteeProduct = "Không có";
+            // Nếu field là Integer, check != null; nếu là int primitive, đổi sang > 0
+            Integer guaranteeId = product.getGuarantee_id();
+            if (guaranteeId != null && guaranteeId > 0) {
+                Guarantees g = guaranteesDAO.getById(guaranteeId);
+                if (g != null && g.getGuarantee_type() != null) {
+                    guaranteeProduct = g.getGuarantee_type();
+                }
+            }
+
+            String memoryProduct = "Không có";
+            Integer memoryId = product.getMemory_id();
+            if (memoryId != null && memoryId > 0) {
+                Memories m = memoriesDAO.getById(memoryId);
+                if (m != null && m.getMemory_type() != null) {
+                    memoryProduct = m.getMemory_type();
+                }
+            }
+
+            // 4) Gán attribute ra view
+            request.setAttribute("productDetail", product);
             request.setAttribute("guaranteeProduct", guaranteeProduct);
             request.setAttribute("memoryProduct", memoryProduct);
+            request.setAttribute("checkErrorDeleteProduct", null);
+
+            return "productDetail.jsp";
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // nên thay bằng logger
             request.setAttribute("checkErrorDeleteProduct", "Unexpected error: " + e.getMessage());
             return "productDetail.jsp";
         }
-        return "productDetail.jsp";
-
     }
-
 
     private String handleGetProminentList(HttpServletRequest request, HttpServletResponse response) {
         try {
@@ -1684,19 +1719,18 @@ public class ProductController extends HttpServlet {
             Page<Products> pageResult = productsdao.getProminentProducts(filter);
 
             // ===== Gán ảnh cho từng sản phẩm =====
-        for (Products p : pageResult.getContent()) {
-            // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
-            Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
-            if (coverImg != null) {
-                p.setCoverImg(coverImg.getImage_url());
+            for (Products p : pageResult.getContent()) {
+                // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
+                Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
+                if (coverImg != null) {
+                    p.setCoverImg(coverImg.getImage_url());
+                }
             }
-        }
 
-
-            request.setAttribute("listProductsByCategory_page", pageResult); 
-            request.setAttribute("listProductsByCategory", pageResult.getContent()); 
+            request.setAttribute("listProductsByCategory_page", pageResult);
+            request.setAttribute("listProductsByCategory", pageResult.getContent());
 //            đánh dấu là lấy ds sp nổi bật nên không hiện biên sidebar.jsp nữa
-            request.setAttribute("isListProminent", "true"); 
+            request.setAttribute("isListProminent", "true");
 
         } catch (Exception e) {
             e.printStackTrace();
