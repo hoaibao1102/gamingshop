@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -217,32 +218,37 @@ public class ProductsDAO implements IDAO<Products, Integer> {
             close(c, st, rs);
         }
 
+        System.out.println(totalCount);
+        System.out.println(filter.getPageSize());
         return new Page<>(products, filter.getPage(), filter.getPageSize(), totalCount);
     }
 
     public Page<Products> getProminentProducts(ProductFilter filter) {
-        return getProductsByCondition(filter, "status", "prominent");
+        Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
+        where.put("status", "prominent");
+        return getProductsByConditions(filter, where);
     }
 
-    public Page<Products> getProductsByCondition(ProductFilter filter, String field, String value) {
+    public Page<Products> getProductsByConditions(ProductFilter filter,
+            Map<String, String> equalsConditions) {
         Connection c = null;
         PreparedStatement st = null;
         ResultSet rs = null;
         List<Products> products = new ArrayList<>();
         int totalCount = 0;
 
-        // ===== Clamp phân trang (JDK8 OK) =====
+        // ===== Clamp phân trang =====
         int page = (filter != null && filter.getPage() > 0) ? filter.getPage() : 1;
         int pageSize = (filter != null && filter.getPageSize() > 0) ? filter.getPageSize() : 12;
         pageSize = Math.min(Math.max(pageSize, 1), 100);
         int offset = (page - 1) * pageSize;
 
-        // ===== Whitelist & kiểu dữ liệu (JDK8 style) =====
-        final Set<String> ALLOWED_FILTER_FIELDS = new HashSet<String>(Arrays.asList(
+        // ===== Whitelist & kiểu dữ liệu =====
+        final Set<String> ALLOWED_FILTER_FIELDS = new HashSet<>(Arrays.asList(
                 "status", "product_type", "model_id", "memory_id",
                 "guarantee_id", "name", "sku", "price", "quantity"
         ));
-        final Map<String, String> FIELD_TYPES = new HashMap<String, String>();
+        final Map<String, String> FIELD_TYPES = new HashMap<>();
         {
             FIELD_TYPES.put("status", "string");
             FIELD_TYPES.put("product_type", "string");
@@ -260,22 +266,31 @@ public class ProductsDAO implements IDAO<Products, Integer> {
 
             StringBuilder queryBuilder = new StringBuilder("SELECT * FROM dbo.Products WHERE 1=1");
             StringBuilder countQueryBuilder = new StringBuilder("SELECT COUNT(*) FROM dbo.Products WHERE 1=1");
-            List<Object> params = new ArrayList<Object>();
+            List<Object> params = new ArrayList<>();
 
-            // giữ nguyên logic filter cũ
+            // điều kiện có sẵn trong ProductFilter
             addFilterConditions(queryBuilder, countQueryBuilder, filter, params);
 
-            // ===== field = ? (có whitelist + ép kiểu) =====
-            if (field != null && field.trim().length() > 0 && value != null && value.trim().length() > 0) {
-                if (!ALLOWED_FILTER_FIELDS.contains(field)) {
-                    throw new IllegalArgumentException("Invalid filter field: " + field);
+            // ===== N điều kiện equals từ Map =====
+            if (equalsConditions != null && !equalsConditions.isEmpty()) {
+                // DÙNG LinkedHashMap khi gọi hàm để giữ thứ tự tham số ổn định
+                for (Map.Entry<String, String> e : equalsConditions.entrySet()) {
+                    String field = e.getKey();
+                    String value = e.getValue();
+                    if (field == null || value == null || field.trim().isEmpty() || value.trim().isEmpty()) {
+                        continue;
+                    }
+                    if (!ALLOWED_FILTER_FIELDS.contains(field)) {
+                        throw new IllegalArgumentException("Invalid filter field: " + field);
+                    }
+                    queryBuilder.append(" AND ").append(field).append(" = ?");
+                    countQueryBuilder.append(" AND ").append(field).append(" = ?");
+                    String type = FIELD_TYPES.getOrDefault(field, "string");
+                    params.add(castParam(value, type));
                 }
-                queryBuilder.append(" AND ").append(field).append(" = ?");
-                countQueryBuilder.append(" AND ").append(field).append(" = ?");
-                params.add(castParam(value, FIELD_TYPES.get(field) != null ? FIELD_TYPES.get(field) : "string"));
             }
 
-            // ORDER BY (hàm cũ của bạn đã có mặc định)
+            // ORDER BY mặc định (hàm cũ của bạn)
             addOrderBy(queryBuilder, (filter != null) ? filter.getSortBy() : null);
 
             // phân trang
@@ -306,8 +321,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         } finally {
             close(c, st, rs);
         }
-
-        return new Page<Products>(products, page, pageSize, totalCount);
+        return new Page<>(products, page, pageSize, totalCount);
     }
 
     // ===== [NEW] Ép kiểu param theo loại cột để tránh convert ngầm & tận dụng index =====
@@ -536,10 +550,25 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         }
     }
 
-    public Page<Products> getMayChoiGame(ProductFilter filter) {
+    public Page<Products> getMayChoiGame(ProductFilter filter, String condition) {
         ModelsDAO mdao = new ModelsDAO();
         int model_id = mdao.getIdByType("Máy chơi game");
-        return getProductsByCondition(filter, "model_id", "");
+        if (condition.equals("all")) {
+            Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
+            where.put("model_id", String.valueOf(model_id));
+            return getProductsByConditions(filter, where);
+        } else if (condition.equals("new")) {
+            Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
+            where.put("model_id", String.valueOf(model_id));
+            where.put("product_type", "new");
+            return getProductsByConditions(filter, where);
+        } else if (condition.equals("likenew")) {
+            Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
+            where.put("model_id", String.valueOf(model_id));
+            where.put("product_type", "used");
+            return getProductsByConditions(filter, where);
+        }
+        return null;
     }
 
 }

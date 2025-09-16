@@ -116,6 +116,10 @@ public class ProductController extends HttpServlet {
                 url = handleGetProduct(request, response);
             } else if (action.equals("getProminentList")) {
                 url = handleGetProminentList(request, response);
+            } else if (action.equals("listMayChoiGame")) {
+                url = handleListMayChoiGame(request, response);
+            }else if (action.equals("listTheGame")) {
+                url = handleListTheGame(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1728,11 +1732,11 @@ public class ProductController extends HttpServlet {
                 Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
                 if (coverImg != null) {
                     p.setCoverImg(coverImg.getImage_url());
-                }
+
+                }else p.setCoverImg("");
             }
 
-            request.setAttribute("listProductsByCategory_page", pageResult);
-            request.setAttribute("listProductsByCategory", pageResult.getContent());
+            request.setAttribute("listProductsByCategory", pageResult);
 //            đánh dấu là lấy ds sp nổi bật nên không hiện biên sidebar.jsp nữa
             request.setAttribute("isListProminent", "true");
 
@@ -1743,9 +1747,72 @@ public class ProductController extends HttpServlet {
         return "index.jsp";
     }
 
-//    private String handleShowViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
-//        List<Products> list = productsdao.getAll();
-//        request.setAttribute("products", list);
-//        return "products.jsp";
-//    }
+    
+    private String handleListMayChoiGame(HttpServletRequest request, HttpServletResponse response){
+        String condition = request.getParameter("condition");
+        if (condition == null) {
+            return handleListMayChoiGameWithCondition(request, response, "all");
+        }else if (condition.equals("new")){
+            return handleListMayChoiGameWithCondition(request, response, "new");
+        }else if (condition.equals("likenew")){
+            return handleListMayChoiGameWithCondition(request, response, "likenew");
+        }
+        return "";
+    }
+
+    private String handleListMayChoiGameWithCondition(HttpServletRequest request, HttpServletResponse response, String condition) {
+        
+        //truong hop lay may choi game khong chia moi hay cu
+        
+            try {
+                request.setCharacterEncoding("UTF-8");
+                // Tạo filter mặc định
+                ProductFilter filter = new ProductFilter();
+
+                // Lấy tham số page nếu có
+                String pageParam = request.getParameter("page");
+                if (pageParam != null && !pageParam.isEmpty()) {
+                    try {
+                        int page = Integer.parseInt(pageParam);
+                        if (page > 0) {
+                            filter.setPage(page);
+                        }
+                    } catch (NumberFormatException e) {
+                        // Ignore, use default page
+                    }
+                }
+
+                // Lấy dữ liệu với phân trang
+                Page<Products> pageResult = productsdao.getMayChoiGame(filter, condition);
+                 // ===== Gán ảnh cho từng sản phẩm =====
+                for (Products p : pageResult.getContent()) {
+                    System.out.println(p.getId());
+                }
+
+
+                // ===== Gán ảnh cho từng sản phẩm =====
+                for (Products p : pageResult.getContent()) {
+                    // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
+                    Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
+                    if (coverImg != null) {
+                        p.setCoverImg(coverImg.getImage_url());
+                    }else p.setCoverImg("");
+                }
+
+                request.setAttribute("listProductsByCategory", pageResult);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                request.setAttribute("checkError", "Error loading products: " + e.getMessage());
+            }
+
+        
+            
+        return INDEX_PAGE;
+    }
+
+    private String handleListTheGame(HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 }
