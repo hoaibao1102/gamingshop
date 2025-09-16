@@ -111,7 +111,8 @@ public class MainController extends HttpServlet {
                 || "deleteImageProduct".equals(action)
                 || "getProminentList".equals(action)
                 || "listMayChoiGame".equals(action)
-                || "listTheGame".equals(action);
+                || "listTheGame".equals(action)
+                || "viewAllProducts".equals(action);
     }
 
     private boolean isBannersAction(String action) {

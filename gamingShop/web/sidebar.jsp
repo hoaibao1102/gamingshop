@@ -395,7 +395,7 @@
         <aside class="sidebar">
             <!-- Logo -->
             <div class="logo-card">
-                <img class="logo" src="https://via.placeholder.com/220x220.png?text=LOGO" alt="Logo cửa hàng">
+                <img class="logo" src="assets/img/logo/logo.png" alt="Logo cửa hàng">
             </div>
 
             <!-- Menu -->
@@ -414,8 +414,8 @@
                         <input type="hidden" name="action" value="quanLyDanhMuc">
                         <input class="nav-item" type="submit" value="🗂️ Quản lý danh mục">
                     </form>
-                    <form action="MainController" method="get" class="nav-form">
-                        <input type="hidden" name="action" value="quanLySanPham">
+                    <form action="MainController" method="post" class="search-form" autocomplete="off">
+                        <input type="hidden" name="action" value="searchProduct"/>
                         <input class="nav-item" type="submit" value="📦 Quản lý sản phẩm">
                     </form>
                     <form action="MainController" method="get" class="nav-form">

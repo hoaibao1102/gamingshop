@@ -203,9 +203,7 @@ public class ProductController extends HttpServlet {
                 } else {
                     p.setCoverImg("");
                 }
-
             }
-
             request.setAttribute("pageResult", pageResult);
             request.setAttribute("currentFilter", filter);
 
@@ -245,7 +243,7 @@ public class ProductController extends HttpServlet {
         request.setAttribute("keyword", keyword);
         request.setAttribute("list", list);
         request.setAttribute("checkErrorSearch", checkError);
-        return "welcome.jsp";
+        return "products.jsp";
     }
 
     /**
@@ -534,7 +532,7 @@ public class ProductController extends HttpServlet {
             try {
                 quantity = Integer.parseInt(request.getParameter("quantity"));
             } catch (NumberFormatException e) {
-                request.setAttribute("checkErrorUpdateProductMain", "Quantity must be a valid number.");
+//                request.setAttribute("checkErrorUpdateProductMain", "Quantity must be a valid number.");
                 request.setAttribute("product", productsdao.getById(product_id));
 
                 // Thêm: load ảnh khi có lỗi để tránh mất ảnh trên giao diện
@@ -746,7 +744,7 @@ public class ProductController extends HttpServlet {
 
             if (productId < 1) {
                 request.setAttribute("checkErrorDeleteProduct", "Missing product_id.");
-                return "welcome.jsp";
+                return "MainController?action=searchProduct";
             }
 
             boolean success = productsdao.deleteProductById(productId);
@@ -762,9 +760,9 @@ public class ProductController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("checkErrorDeleteProduct", "Unexpected error: " + e.getMessage());
-            return "welcome.jsp";
+            return "MainController?action=searchProduct";
         }
-        return "MainController?action=prepareHome";
+        return "MainController?action=searchProduct";
     }
 
     /**
@@ -1637,35 +1635,73 @@ public class ProductController extends HttpServlet {
 
     private String handleGetProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
-            request.setCharacterEncoding("UTF-8");
-            // Lấy productId từ tham số form (hidden input "product_id")
-            int productId = Integer.parseInt(request.getParameter("idProduct"));
+            request.setCharacterEncoding(java.nio.charset.StandardCharsets.UTF_8.name());
 
-            if (productId < 1) {
-                request.setAttribute("checkErrorDeleteProduct", "không có san pham phu hop");
+            // 1) Lấy & validate id (Java 8: không dùng isBlank)
+            final String rawId = request.getParameter("idProduct");
+            if (rawId == null || rawId.trim().isEmpty()) {
+                request.setAttribute("checkErrorDeleteProduct", "Thiếu tham số idProduct");
                 return "productDetail.jsp";
             }
 
-            List<Product_images> imgList = new ArrayList<>();
-            imgList = productImagesDAO.getByAllProductId(productId);
-            Products productDetail = productsdao.getById(productId);
-            productDetail.setImage(imgList);
-            Guarantees guarantee = guaranteesDAO.getById(productDetail.getGuarantee_id());
-            Memories memory = memoriesDAO.getById(productDetail.getMemory_id());
-            String guaranteeProduct = guarantee.getGuarantee_type();
-            String memoryProduct = memory.getMemory_type();
-            System.out.println(productDetail.getDescription_html());
-            request.setAttribute("productDetail", productDetail);
+            final int productId;
+            try {
+                productId = Integer.parseInt(rawId.trim());
+            } catch (NumberFormatException nfe) {
+                request.setAttribute("checkErrorDeleteProduct", "idProduct không hợp lệ");
+                return "productDetail.jsp";
+            }
+            if (productId < 1) {
+                request.setAttribute("checkErrorDeleteProduct", "Không có sản phẩm phù hợp");
+                return "productDetail.jsp";
+            }
+
+            // 2) Lấy product + images
+            final Products product = productsdao.getById(productId);
+            if (product == null) {
+                request.setAttribute("checkErrorDeleteProduct", "Không tìm thấy sản phẩm");
+                return "productDetail.jsp";
+            }
+
+            final java.util.List<Product_images> images
+                    = productImagesDAO.getByAllProductId(productId) != null
+                    ? productImagesDAO.getByAllProductId(productId)
+                    : java.util.Collections.<Product_images>emptyList();
+            product.setImage(images);
+
+            // 3) Lấy text bảo hành / bộ nhớ (an toàn null)
+            String guaranteeProduct = "Không có";
+            // Nếu field là Integer, check != null; nếu là int primitive, đổi sang > 0
+            Integer guaranteeId = product.getGuarantee_id();
+            if (guaranteeId != null && guaranteeId > 0) {
+                Guarantees g = guaranteesDAO.getById(guaranteeId);
+                if (g != null && g.getGuarantee_type() != null) {
+                    guaranteeProduct = g.getGuarantee_type();
+                }
+            }
+
+            String memoryProduct = "Không có";
+            Integer memoryId = product.getMemory_id();
+            if (memoryId != null && memoryId > 0) {
+                Memories m = memoriesDAO.getById(memoryId);
+                if (m != null && m.getMemory_type() != null) {
+                    memoryProduct = m.getMemory_type();
+                }
+            }
+
+            // 4) Gán attribute ra view
+            request.setAttribute("productDetail", product);
             request.setAttribute("guaranteeProduct", guaranteeProduct);
             request.setAttribute("memoryProduct", memoryProduct);
+            request.setAttribute("checkErrorDeleteProduct", null);
+
+            return "productDetail.jsp";
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // nên thay bằng logger
             request.setAttribute("checkErrorDeleteProduct", "Unexpected error: " + e.getMessage());
             return "productDetail.jsp";
         }
-        return "productDetail.jsp";
-
     }
 
     private String handleGetProminentList(HttpServletRequest request, HttpServletResponse response) {
@@ -1696,6 +1732,7 @@ public class ProductController extends HttpServlet {
                 Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
                 if (coverImg != null) {
                     p.setCoverImg(coverImg.getImage_url());
+
                 }else p.setCoverImg("");
             }
 
@@ -1709,7 +1746,7 @@ public class ProductController extends HttpServlet {
         }
         return "index.jsp";
     }
-    
+
     
     private String handleListMayChoiGame(HttpServletRequest request, HttpServletResponse response){
         String condition = request.getParameter("condition");
@@ -1777,4 +1814,5 @@ public class ProductController extends HttpServlet {
     private String handleListTheGame(HttpServletRequest request, HttpServletResponse response) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
+
 }
