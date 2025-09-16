@@ -12,6 +12,7 @@ import dao.ModelsDAO;
 import dao.PostsDAO;
 import dao.ProductImagesDAO;
 import dao.ProductsDAO;
+import dao.ServicesDAO;
 import dto.Guarantees;
 import dto.Memories;
 import dto.Models;
@@ -20,6 +21,7 @@ import dto.Posts;
 import dto.ProductFilter;
 import dto.Product_images;
 import dto.Products;
+import dto.Services;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -55,7 +57,8 @@ public class ProductController extends HttpServlet {
     private final GuaranteesDAO guaranteesDAO = new GuaranteesDAO();
     private final MemoriesDAO memoriesDAO = new MemoriesDAO();
     private final ModelsDAO modelsDAO = new ModelsDAO();
-
+    private final ServicesDAO servicesDAO = new ServicesDAO();
+   
     String INDEX_PAGE = "index.jsp";
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -121,7 +124,7 @@ public class ProductController extends HttpServlet {
                 url = handleGetProduct(request, response);
             } else if (action.equals("getProminentList")) {
                 url = handleGetProminentList(request, response);
-                //========================================
+                //===============MODEL==================
             } else if (action.equals("viewModelList")) {
                 url = handleModelList(request, response);
             } else if (action.equals("addModel")) {
@@ -134,6 +137,19 @@ public class ProductController extends HttpServlet {
                 url = handleModelAddForm(request, response);
             } else if (action.equals("deleteModel")) {
                 url = handleModelDelete(request, response);
+                //==============SERVICES===============
+            } else if (action.equals("viewServiceList")) {
+                url = handleServiceList(request, response);
+            } else if (action.equals("addService")) {
+                url = handleServiceAdding(request, response);
+            } else if (action.equals("showEditService")) {
+                url = handleServiceEditForm(request, response);
+            } else if (action.equals("editService")) {
+                url = handleServiceEditing(request, response);
+            } else if (action.equals("showAddService")) {
+                url = handleServiceAddForm(request, response);
+            } else if (action.equals("deleteService")) {
+                url = handleServiceDelete(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -782,7 +798,7 @@ public class ProductController extends HttpServlet {
     private String handleViewAllAccessories(HttpServletRequest request, HttpServletResponse response) {
         try {
             // Lấy tất cả accessories từ database
-            List<Accessories> accessories = accessoriesDAO.getAll();
+            List<Accessories> accessories = accessoriesDAO.getAllActive();
 
             // Set vào request để JSP hiển thị
             request.setAttribute("accessories", accessories);
@@ -829,7 +845,7 @@ public class ProductController extends HttpServlet {
                 }
             } else {
                 // Nếu không có từ khóa, hiển thị tất cả accessories
-                accessories = accessoriesDAO.getAll();
+                accessories = accessoriesDAO.getAllActive();
 
                 if (accessories == null) {
                     accessories = new ArrayList<>();
@@ -879,8 +895,6 @@ public class ProductController extends HttpServlet {
      * DEBUG VERSION - Xử lý thêm accessory mới
      */
     private String handleAccessoryAdding(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("=== DEBUG: handleAccessoryAdding START ===");
-
         try {
             request.setCharacterEncoding("UTF-8");
 
@@ -906,19 +920,16 @@ public class ProductController extends HttpServlet {
             }
 
             // 3. NEW: Check for duplicate name (UNIQUE constraint validation)
-            try {
-
-                if (accessoriesDAO.isNameExists(name)) {
-                    request.setAttribute("checkErrorAddAccessory", "Accessory name '" + name.trim() + "' already exists. Please choose a different name.");
-                    return "accessoryUpdate.jsp";
-                }
-                System.out.println("DEBUG: Name uniqueness check passed");
-            } catch (Exception e) {
-                System.out.println("DEBUG: ERROR checking duplicate name: " + e.getMessage());
-                // If we can't check, continue but log the error
-                e.printStackTrace();
-            }
-            System.out.println("DEBUG: Name validation passed");
+//            try {
+//
+//                if (accessoriesDAO.isNameExists(name)) {
+//                    request.setAttribute("checkErrorAddAccessory", "Accessory name '" + name.trim() + "' already exists. Please choose a different name.");
+//                    return "accessoryUpdate.jsp";
+//                }
+//            } catch (Exception e) {
+//                // If we can't check, continue but log the error
+//                e.printStackTrace();
+//            }
 
             // 4. Validate quantity - required, numeric, and non-negative
             if (quantityStr == null || quantityStr.trim().isEmpty()) {
@@ -956,7 +967,6 @@ public class ProductController extends HttpServlet {
 
             try {
                 price = Double.parseDouble(priceStr.trim());
-                System.out.println("DEBUG: Price parsed successfully: " + price);
 
                 // 7. Validate price range
                 if (price < 0) {
@@ -975,8 +985,6 @@ public class ProductController extends HttpServlet {
                 request.setAttribute("checkErrorAddAccessory", "Invalid price format. Please enter a valid decimal number.");
                 return "accessoryUpdate.jsp";
             }
-
-            System.out.println("DEBUG: Number parsing and validation successful - quantity: " + quantity + ", price: " + price);
 
             // 8. NEW: Validate status value
             if (status != null && !status.trim().isEmpty()) {
@@ -1002,8 +1010,6 @@ public class ProductController extends HttpServlet {
                 return "accessoryUpdate.jsp";
             }
 
-            System.out.println("DEBUG: All validations passed successfully");
-
             // ===== Tạo đối tượng Accessories và set dữ liệu =====
             Accessories newAccessory = new Accessories();
             newAccessory.setName(name.trim());
@@ -1014,8 +1020,6 @@ public class ProductController extends HttpServlet {
             newAccessory.setGift(gift != null ? gift.trim() : "Phụ kiện tặng kèm");
             newAccessory.setCreated_at(new java.util.Date());
             newAccessory.setUpdated_at(new java.util.Date());
-
-            System.out.println("DEBUG: Accessory object created with basic info");
 
             // ===== Upload ảnh (nếu có) =====
             Part imagePart = null;
@@ -1035,7 +1039,6 @@ public class ProductController extends HttpServlet {
                 // Check file size (e.g., max 5MB)
                 long maxFileSize = 5 * 1024 * 1024; // 5MB in bytes
                 if (imagePart.getSize() > maxFileSize) {
-                    System.out.println("DEBUG: VALIDATION FAILED - Image file too large: " + imagePart.getSize() + " bytes");
                     request.setAttribute("checkErrorAddAccessory", "Image file size cannot exceed 5MB.");
                     return "accessoryUpdate.jsp";
                 }
@@ -1045,12 +1048,9 @@ public class ProductController extends HttpServlet {
                 if (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg")
                         && !fileName.endsWith(".png") && !fileName.endsWith(".gif")
                         && !fileName.endsWith(".bmp") && !fileName.endsWith(".webp")) {
-                    System.out.println("DEBUG: VALIDATION FAILED - Invalid image format: " + fileName);
                     request.setAttribute("checkErrorAddAccessory", "Only image files (jpg, jpeg, png, gif, bmp, webp) are allowed.");
                     return "accessoryUpdate.jsp";
                 }
-
-                System.out.println("DEBUG: Image file validation passed");
             }
 
             String storedImageUrl = null;
@@ -1058,18 +1058,12 @@ public class ProductController extends HttpServlet {
                     && imagePart.getSubmittedFileName() != null
                     && !imagePart.getSubmittedFileName().trim().isEmpty()) {
 
-                System.out.println("DEBUG: Processing image upload...");
-
                 // Thư mục lưu ảnh
                 String uploadDirPath = request.getServletContext().getRealPath("/assets/accessories/");
-                System.out.println("DEBUG: Upload directory path: " + uploadDirPath);
 
                 File uploadDir = new File(uploadDirPath);
                 if (!uploadDir.exists()) {
-                    boolean created = uploadDir.mkdirs();
-                    System.out.println("DEBUG: Upload directory created: " + created);
-                } else {
-                    System.out.println("DEBUG: Upload directory already exists");
+                    uploadDir.mkdirs();
                 }
 
                 // Lấy extension
@@ -1079,18 +1073,14 @@ public class ProductController extends HttpServlet {
                 if (dot >= 0 && dot < originalFileName.length() - 1) {
                     fileExtension = originalFileName.substring(dot);
                 }
-                System.out.println("DEBUG: File extension: [" + fileExtension + "]");
 
                 // Tạo tên file tạm
                 String tempName = "tmp_" + System.currentTimeMillis() + fileExtension;
                 File tempFile = new File(uploadDir, tempName);
-                System.out.println("DEBUG: Temp file path: " + tempFile.getAbsolutePath());
 
                 try {
                     imagePart.write(tempFile.getAbsolutePath());
-                    System.out.println("DEBUG: Image written to temp file successfully");
                 } catch (Exception e) {
-                    System.out.println("DEBUG: ERROR writing image to temp file: " + e.getMessage());
                     e.printStackTrace();
                     request.setAttribute("checkErrorAddAccessory", "Failed to upload image. Please try again.");
                     return "accessoryUpdate.jsp";
@@ -1098,7 +1088,6 @@ public class ProductController extends HttpServlet {
 
                 // Set image_url tạm thời là null để insert trước
                 newAccessory.setImage_url(null);
-                System.out.println("DEBUG: About to insert accessory without image_url");
 
                 // ===== Insert để lấy generated ID =====
                 boolean success = accessoriesDAO.create(newAccessory);
@@ -1127,12 +1116,12 @@ public class ProductController extends HttpServlet {
                     newAccessory.setImage_url(storedImageUrl);
 
                     // Update image_url vào DB
-                    boolean updateSuccess = accessoriesDAO.update(newAccessory);
+                    accessoriesDAO.update(newAccessory);
 
                 } else {
                     // Insert thất bại -> xóa file tạm
                     if (tempFile.exists()) {
-                        boolean deleted = tempFile.delete();
+                        tempFile.delete();
                     }
                     request.setAttribute("checkErrorAddAccessory", "Failed to add accessory.");
                     return "accessoryUpdate.jsp";
@@ -1158,10 +1147,8 @@ public class ProductController extends HttpServlet {
             return handleViewAllAccessories(request, response);
 
         } catch (Exception e) {
-            System.out.println("=== DEBUG: EXCEPTION in handleAccessoryAdding ===");
             e.printStackTrace();
             request.setAttribute("checkErrorAddAccessory", "Error while adding accessory: " + e.getMessage());
-            System.out.println("=== DEBUG: handleAccessoryAdding END - ERROR ===");
             return "accessoryUpdate.jsp";
         }
     }
@@ -1725,57 +1712,43 @@ public class ProductController extends HttpServlet {
      * Xử lý thêm model mới
      */
     private String handleModelAdding(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("=== DEBUG: handleModelAdding START ===");
 
         try {
             request.setCharacterEncoding("UTF-8");
-            System.out.println("DEBUG: Character encoding set to UTF-8");
 
             // ===== Lấy dữ liệu từ form =====
             String modelType = request.getParameter("model_type");
             String descriptionHtml = request.getParameter("description_html");
             String status = request.getParameter("status");
 
-            System.out.println("DEBUG: Form parameters received:");
-            System.out.println("  - model_type: [" + modelType + "]");
-            System.out.println("  - description_html: [" + (descriptionHtml != null ? descriptionHtml.substring(0, Math.min(50, descriptionHtml.length())) + "..." : "null") + "]");
-            System.out.println("  - status: [" + status + "]");
-
             // ===== VALIDATION SECTION =====
             // 1. Validate model_type - required and not empty
             if (modelType == null || modelType.trim().isEmpty()) {
-                System.out.println("DEBUG: VALIDATION FAILED - Model type is null or empty");
                 request.setAttribute("checkErrorAddModel", "Model type is required.");
                 return "modelUpdate.jsp";
             }
 
             // 2. Validate model_type length
             if (modelType.trim().length() > 100) {
-                System.out.println("DEBUG: VALIDATION FAILED - Model type too long");
                 request.setAttribute("checkErrorAddModel", "Model type must be 100 characters or less.");
                 return "modelUpdate.jsp";
             }
 
             // 3. Check for duplicate model_type (UNIQUE constraint)
-            System.out.println("DEBUG: Checking for duplicate model type...");
-            try {
-                boolean typeExists = modelsDAO.isModelTypeExists(modelType.trim());
-                if (typeExists) {
-                    System.out.println("DEBUG: VALIDATION FAILED - Duplicate model type found: " + modelType.trim());
-                    request.setAttribute("checkErrorAddModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
-                    return "modelUpdate.jsp";
-                }
-                System.out.println("DEBUG: Model type uniqueness check passed");
-            } catch (Exception e) {
-                System.out.println("DEBUG: ERROR checking duplicate model type: " + e.getMessage());
-                e.printStackTrace();
-            }
+//            try {
+//                boolean typeExists = modelsDAO.isModelTypeExists(modelType.trim());
+//                if (typeExists) {
+//                    request.setAttribute("checkErrorAddModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
+//                    return "modelUpdate.jsp";
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
 
             // 4. Validate status value
             if (status != null && !status.trim().isEmpty()) {
                 String normalizedStatus = status.trim();
                 if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {
-                    System.out.println("DEBUG: VALIDATION FAILED - Invalid status: " + status);
                     request.setAttribute("checkErrorAddModel", "Status must be either 'active' or 'inactive'.");
                     return "modelUpdate.jsp";
                 }
@@ -1783,12 +1756,9 @@ public class ProductController extends HttpServlet {
 
             // 5. Validate description length (optional but if provided, should be reasonable)
             if (descriptionHtml != null && descriptionHtml.trim().length() > 10000) {
-                System.out.println("DEBUG: VALIDATION FAILED - Description too long");
                 request.setAttribute("checkErrorAddModel", "Description must be 10000 characters or less.");
                 return "modelUpdate.jsp";
             }
-
-            System.out.println("DEBUG: All validations passed successfully");
 
             // ===== Tạo đối tượng Models và set dữ liệu =====
             Models newModel = new Models();
@@ -1798,16 +1768,12 @@ public class ProductController extends HttpServlet {
             newModel.setCreated_at(new java.util.Date());
             newModel.setUpdated_at(new java.util.Date());
 
-            System.out.println("DEBUG: Model object created with basic info");
-
             // ===== Upload ảnh (nếu có) =====
             Part imagePart = null;
             try {
                 imagePart = request.getPart("imageFile");
-                System.out.println("DEBUG: Image part retrieved - "
-                        + (imagePart != null ? "Size: " + imagePart.getSize() + ", FileName: " + imagePart.getSubmittedFileName() : "NULL"));
             } catch (Exception e) {
-                System.out.println("DEBUG: Exception getting image part: " + e.getMessage());
+                e.getMessage();
             }
 
             // Validate image file if provided
@@ -1818,7 +1784,6 @@ public class ProductController extends HttpServlet {
                 // Check file size (max 5MB)
                 long maxFileSize = 5 * 1024 * 1024;
                 if (imagePart.getSize() > maxFileSize) {
-                    System.out.println("DEBUG: VALIDATION FAILED - Image file too large: " + imagePart.getSize() + " bytes");
                     request.setAttribute("checkErrorAddModel", "Image file size cannot exceed 5MB.");
                     return "modelUpdate.jsp";
                 }
@@ -1828,7 +1793,6 @@ public class ProductController extends HttpServlet {
                 if (!fileName.endsWith(".jpg") && !fileName.endsWith(".jpeg")
                         && !fileName.endsWith(".png") && !fileName.endsWith(".gif")
                         && !fileName.endsWith(".bmp") && !fileName.endsWith(".webp")) {
-                    System.out.println("DEBUG: VALIDATION FAILED - Invalid image format: " + fileName);
                     request.setAttribute("checkErrorAddModel", "Only image files (jpg, jpeg, png, gif, bmp, webp) are allowed.");
                     return "modelUpdate.jsp";
                 }
@@ -1839,37 +1803,36 @@ public class ProductController extends HttpServlet {
                     && imagePart.getSubmittedFileName() != null
                     && !imagePart.getSubmittedFileName().trim().isEmpty()) {
 
-                System.out.println("DEBUG: Processing image upload...");
-
                 String uploadDirPath = request.getServletContext().getRealPath("/assets/models/");
                 File uploadDir = new File(uploadDirPath);
                 if (!uploadDir.exists()) {
                     uploadDir.mkdirs();
-                    System.out.println("DEBUG: Upload directory created: " + uploadDir.mkdirs() + " - Path: " + uploadDirPath);
                 }
+                
+                //take extention
                 String originalFileName = imagePart.getSubmittedFileName();
                 String fileExtension = "";
                 int dot = originalFileName.lastIndexOf('.');
                 if (dot >= 0) {
                     fileExtension = originalFileName.substring(dot);
                 }
-
+                
+                // create temporary file
                 String tempName = "tmp_" + System.currentTimeMillis() + fileExtension;
                 File tempFile = new File(uploadDir, tempName);
 
                 try {
                     imagePart.write(tempFile.getAbsolutePath());
-                    System.out.println("DEBUG: Image written to temp file successfully");
                 } catch (Exception e) {
-                    System.out.println("DEBUG: ERROR writing image to temp file: " + e.getMessage());
+                    e.getMessage();
                     request.setAttribute("checkErrorAddModel", "Failed to upload image. Please try again.");
                     return "modelUpdate.jsp";
                 }
-
+                // Set image_url tạm thời là null để insert trước
                 newModel.setImage_url(null);
-                boolean success = modelsDAO.create(newModel);
-                System.out.println("MODEL ID DEBUG AFTER CREATE: " + newModel.getId() );
-                if (success && newModel.getId() > 0) {
+                
+                // ===== Insert để lấy generated ID =====
+                if (modelsDAO.create(newModel) && newModel.getId() > 0) {
                     String finalName = "model_" + newModel.getId() + "_1" + fileExtension;
                     File finalFile = new File(uploadDir, finalName);
 
@@ -1888,8 +1851,7 @@ public class ProductController extends HttpServlet {
                         tempFile.delete();
                     }
 
-                    storedImageUrl = "/assets/models/" + finalName;
-                    System.out.println("-========---Image--=========--: " + storedImageUrl);
+                    storedImageUrl = "assets/models/" + finalName;
                     newModel.setImage_url(storedImageUrl);
                     modelsDAO.update(newModel);
 
@@ -1905,7 +1867,7 @@ public class ProductController extends HttpServlet {
                 // No image provided
                 newModel.setImage_url(null);
                 boolean success = modelsDAO.create(newModel);
-                System.out.println("SUCCESS ARE TRUE: " + success);
+                
                 if (!success) {
                     request.setAttribute("checkErrorAddModel", "Failed to add model.");
                     return "modelUpdate.jsp";
@@ -1918,12 +1880,9 @@ public class ProductController extends HttpServlet {
 
             request.setAttribute("messageAddModel", "New model added successfully.");
             request.setAttribute("model", newModel);
-
-            System.out.println("=== DEBUG: handleModelAdding END - SUCCESS ===");
             return "modelUpdate.jsp";
 
         } catch (Exception e) {
-            System.out.println("=== DEBUG: EXCEPTION in handleModelAdding ===");
             e.printStackTrace();
             request.setAttribute("checkErrorAddModel", "Error while adding model: " + e.getMessage());
             return "modelUpdate.jsp";
@@ -1936,11 +1895,9 @@ public class ProductController extends HttpServlet {
     private String handleModelEditing(HttpServletRequest request, HttpServletResponse response) {
         try {
             request.setCharacterEncoding("UTF-8");
-            System.out.println("================START DEBUG=================");
             // Lấy ID
             int modelId = Integer.parseInt(request.getParameter("id"));
             Models existingModel = modelsDAO.getById(modelId);
-            System.out.println("ID MODEL: " + existingModel.getId());
             if (existingModel == null) {
                 request.setAttribute("checkErrorEditModel", "Model not found.");
                 return "modelUpdate.jsp";
@@ -1965,16 +1922,16 @@ public class ProductController extends HttpServlet {
             }
 
             // Check duplicate model_type (exclude current record)
-            try {
-                boolean typeExists = modelsDAO.isModelTypeExistsExcept(modelType.trim(), modelId);
-                if (typeExists) {
-                    request.setAttribute("checkErrorEditModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
-                    request.setAttribute("model", existingModel);
-                    return "modelUpdate.jsp";
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            try {
+//                boolean typeExists = modelsDAO.isModelTypeExistsExcept(modelType.trim(), modelId);
+//                if (typeExists) {
+//                    request.setAttribute("checkErrorEditModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
+//                    request.setAttribute("model", existingModel);
+//                    return "modelUpdate.jsp";
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
 
             // Validate status
             if (status != null && !status.trim().isEmpty()) {
@@ -2023,12 +1980,10 @@ public class ProductController extends HttpServlet {
                 File newFile = new File(uploadDir, newFileName);
                 imagePart.write(newFile.getAbsolutePath());
 
-                existingModel.setImage_url("/assets/models/" + newFileName);
+                existingModel.setImage_url("assets/models/" + newFileName);
             }
-            System.out.println("+++++++++ PASS ALL SUCCESSFULLY!! +++++++++");
             // Update database
             boolean success = modelsDAO.update(existingModel);
-            System.out.println("check success: " + success);
             if (success) {
                 // Delete old image if new image uploaded
                 if (imagePart != null && imagePart.getSize() > 0
@@ -2044,7 +1999,7 @@ public class ProductController extends HttpServlet {
 
                 request.setAttribute("messageEditModel", "Model updated successfully.");
                 request.setAttribute("model", existingModel);
-                return "modelUpdate.jsp";
+                return handleModelEditForm(request, response);
             } else {
                 request.setAttribute("checkErrorEditModel", "Failed to update model.");
                 request.setAttribute("model", existingModel);
@@ -2094,16 +2049,14 @@ public class ProductController extends HttpServlet {
             existingModel.setStatus("inactive");
             existingModel.setUpdated_at(new java.util.Date());
 
-            boolean success = modelsDAO.update(existingModel);
-
-            if (success) {
+            if (modelsDAO.update(existingModel)) {
                 HttpSession session = request.getSession();
                 session.removeAttribute("cachedModelList");
 
                 request.setAttribute("messageDeleteModel",
                         "Model '" + existingModel.getModel_type() + "' has been deactivated successfully.");
 
-                return "modelList.jsp";
+                return handleModelList(request, response);
             } else {
                 request.setAttribute("checkErrorDeleteModel",
                         "Failed to deactivate model. Please try again.");
@@ -2130,7 +2083,7 @@ public class ProductController extends HttpServlet {
 
             if (modelList == null) {
                 // Get from database
-                modelList = modelsDAO.getAll(); // Only get active models (de sau check lai trong cai modelDao)
+                modelList = modelsDAO.getAllActive(); // Only get active models (de sau check lai trong cai modelDao)
                 session.setAttribute("cachedModelList", modelList);
             }
 
@@ -2177,4 +2130,355 @@ public class ProductController extends HttpServlet {
         request.setAttribute("model", null);
         return "modelUpdate.jsp";
     }
+    
+// ===============================================
+// SERVICES CRUD CONTROLLER METHODS
+// ===============================================
+
+/**
+ * Xử lý thêm service mới
+ */
+private String handleServiceAdding(HttpServletRequest request, HttpServletResponse response) {
+
+    try {
+        request.setCharacterEncoding("UTF-8");
+
+        // ===== Lấy dữ liệu từ form =====
+        String serviceType = request.getParameter("service_type");
+        String descriptionHtml = request.getParameter("description_html");
+        String priceStr = request.getParameter("price");
+        String status = request.getParameter("status");
+
+        // ===== VALIDATION SECTION =====
+        // 1. Validate service_type - required and not empty
+        if (serviceType == null || serviceType.trim().isEmpty()) {
+            request.setAttribute("checkErrorAddService", "Service type is required.");
+            return "serviceUpdate.jsp";
+        }
+
+        // 2. Validate service_type length
+        if (serviceType.trim().length() > 100) {
+            request.setAttribute("checkErrorAddService", "Service type must be 100 characters or less.");
+            return "serviceUpdate.jsp";
+        }
+
+        // 3. Check for duplicate service_type (UNIQUE constraint)
+//        try {
+//            boolean typeExists = servicesDAO.isServiceTypeExists(serviceType.trim());
+//            if (typeExists) {
+//                request.setAttribute("checkErrorAddService", "Service type '" + serviceType.trim() + "' already exists. Please choose a different service type.");
+//                return "serviceUpdate.jsp";
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+        // 4. Validate price
+        double price = 0.0;
+        if (priceStr == null || priceStr.trim().isEmpty()) {
+            request.setAttribute("checkErrorAddService", "Price is required.");
+            return "serviceUpdate.jsp";
+        }
+        
+        try {
+            price = Double.parseDouble(priceStr.trim());
+            if (price < 0) {
+                request.setAttribute("checkErrorAddService", "Price cannot be negative.");
+                return "serviceUpdate.jsp";
+            }
+            if (price > 999999999.99) {
+                request.setAttribute("checkErrorAddService", "Price is too large.");
+                return "serviceUpdate.jsp";
+            }
+        } catch (NumberFormatException e) {
+            request.setAttribute("checkErrorAddService", "Invalid price format. Please enter a valid number.");
+            return "serviceUpdate.jsp";
+        }
+
+        // 5. Validate status value
+        if (status != null && !status.trim().isEmpty()) {
+            String normalizedStatus = status.trim();
+            if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {
+                request.setAttribute("checkErrorAddService", "Status must be either 'active' or 'inactive'.");
+                return "serviceUpdate.jsp";
+            }
+        }
+
+        // 6. Validate description length (optional but if provided, should be reasonable)
+        if (descriptionHtml != null && descriptionHtml.trim().length() > 10000) {
+            request.setAttribute("checkErrorAddService", "Description must be 10000 characters or less.");
+            return "serviceUpdate.jsp";
+        }
+
+        // ===== Tạo đối tượng Services và set dữ liệu =====
+        Services newService = new Services();
+        newService.setService_type(serviceType.trim());
+        newService.setDescription_html(descriptionHtml != null ? descriptionHtml.trim() : "");
+        newService.setPrice(price);
+        newService.setStatus(status != null ? status.trim() : "active");
+        newService.setCreated_at(new java.util.Date());
+        newService.setUpdated_at(new java.util.Date());
+
+        // ===== Insert vào database =====
+        boolean success = servicesDAO.create(newService);
+        
+        if (!success) {
+            request.setAttribute("checkErrorAddService", "Failed to add service.");
+            return "serviceUpdate.jsp";
+        }
+
+        // Success
+        HttpSession session = request.getSession();
+        session.removeAttribute("cachedServiceList");
+
+        request.setAttribute("messageAddService", "New service added successfully.");
+        request.setAttribute("service", newService);
+        return "serviceUpdate.jsp";
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        request.setAttribute("checkErrorAddService", "Error while adding service: " + e.getMessage());
+        return "serviceUpdate.jsp";
+    }
+}
+
+/**
+ * Xử lý cập nhật service
+ */
+private String handleServiceEditing(HttpServletRequest request, HttpServletResponse response) {
+    try {
+        request.setCharacterEncoding("UTF-8");
+        
+        // Lấy ID
+        int serviceId = Integer.parseInt(request.getParameter("id"));
+        Services existingService = servicesDAO.getById(serviceId);
+        if (existingService == null) {
+            request.setAttribute("checkErrorEditService", "Service not found.");
+            return "serviceUpdate.jsp";
+        }
+
+        // Lấy dữ liệu từ form
+        String serviceType = request.getParameter("service_type");
+        String descriptionHtml = request.getParameter("description_html");
+        String priceStr = request.getParameter("price");
+        String status = request.getParameter("status");
+
+        // Validate service_type
+        if (serviceType == null || serviceType.trim().isEmpty()) {
+            request.setAttribute("checkErrorEditService", "Service type is required.");
+            request.setAttribute("service", existingService);
+            return "serviceUpdate.jsp";
+        }
+
+        if (serviceType.trim().length() > 100) {
+            request.setAttribute("checkErrorEditService", "Service type must be 100 characters or less.");
+            request.setAttribute("service", existingService);
+            return "serviceUpdate.jsp";
+        }
+
+        // Check duplicate service_type (exclude current record)
+//        try {
+//            boolean typeExists = servicesDAO.isServiceTypeExistsExcept(serviceType.trim(), serviceId);
+//            if (typeExists) {
+//                request.setAttribute("checkErrorEditService", "Service type '" + serviceType.trim() + "' already exists. Please choose a different service type.");
+//                request.setAttribute("service", existingService);
+//                return "serviceUpdate.jsp";
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+        // Validate price
+        double price = 0.0;
+        if (priceStr == null || priceStr.trim().isEmpty()) {
+            request.setAttribute("checkErrorEditService", "Price is required.");
+            request.setAttribute("service", existingService);
+            return "serviceUpdate.jsp";
+        }
+        
+        try {
+            price = Double.parseDouble(priceStr.trim());
+            if (price < 0) {
+                request.setAttribute("checkErrorEditService", "Price cannot be negative.");
+                request.setAttribute("service", existingService);
+                return "serviceUpdate.jsp";
+            }
+            if (price > 999999999.99) {
+                request.setAttribute("checkErrorEditService", "Price is too large.");
+                request.setAttribute("service", existingService);
+                return "serviceUpdate.jsp";
+            }
+        } catch (NumberFormatException e) {
+            request.setAttribute("checkErrorEditService", "Invalid price format. Please enter a valid number.");
+            request.setAttribute("service", existingService);
+            return "serviceUpdate.jsp";
+        }
+
+        // Validate status
+        if (status != null && !status.trim().isEmpty()) {
+            String normalizedStatus = status.trim();
+            if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {
+                request.setAttribute("checkErrorEditService", "Status must be either 'active' or 'inactive'.");
+                request.setAttribute("service", existingService);
+                return "serviceUpdate.jsp";
+            }
+        }
+
+        // Validate description length
+        if (descriptionHtml != null && descriptionHtml.trim().length() > 10000) {
+            request.setAttribute("checkErrorEditService", "Description must be 10000 characters or less.");
+            request.setAttribute("service", existingService);
+            return "serviceUpdate.jsp";
+        }
+
+        // Update basic info
+        existingService.setService_type(serviceType.trim());
+        existingService.setDescription_html(descriptionHtml != null ? descriptionHtml.trim() : "");
+        existingService.setPrice(price);
+        existingService.setStatus(status != null ? status.trim() : "active");
+        existingService.setUpdated_at(new java.util.Date());
+
+        // Update database
+        boolean success = servicesDAO.update(existingService);
+        if (success) {
+            HttpSession session = request.getSession();
+            session.removeAttribute("cachedServiceList");
+
+            request.setAttribute("messageEditService", "Service updated successfully.");
+            request.setAttribute("service", existingService);
+            return handleServiceEditForm(request, response);
+        } else {
+            request.setAttribute("checkErrorEditService", "Failed to update service.");
+            request.setAttribute("service", existingService);
+            return "serviceUpdate.jsp";
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        request.setAttribute("checkErrorEditService", "Error while updating service: " + e.getMessage());
+        return "serviceUpdate.jsp";
+    }
+}
+
+/**
+ * Xử lý xóa service - Soft delete bằng cách chuyển status thành "inactive"
+ */
+private String handleServiceDelete(HttpServletRequest request, HttpServletResponse response) {
+    try {
+        request.setCharacterEncoding("UTF-8");
+
+        String idStr = request.getParameter("id");
+        if (idStr == null || idStr.trim().isEmpty()) {
+            request.setAttribute("checkErrorDeleteService", "Service ID is required.");
+            return "serviceList.jsp";
+        }
+
+        int serviceId;
+        try {
+            serviceId = Integer.parseInt(idStr);
+        } catch (NumberFormatException e) {
+            request.setAttribute("checkErrorDeleteService", "Invalid service ID format.");
+            return "serviceList.jsp";
+        }
+
+        Services existingService = servicesDAO.getById(serviceId);
+        if (existingService == null) {
+            request.setAttribute("checkErrorDeleteService", "Service not found.");
+            return "serviceList.jsp";
+        }
+
+        if ("inactive".equalsIgnoreCase(existingService.getStatus())) {
+            request.setAttribute("checkErrorDeleteService", "Service is already inactive.");
+            return "serviceList.jsp";
+        }
+
+        // Soft delete: change status to "inactive"
+        existingService.setStatus("inactive");
+        existingService.setUpdated_at(new java.util.Date());
+
+        if (servicesDAO.update(existingService)) {
+            HttpSession session = request.getSession();
+            session.removeAttribute("cachedServiceList");
+
+            request.setAttribute("messageDeleteService",
+                    "Service '" + existingService.getService_type() + "' has been deactivated successfully.");
+
+            return handleServiceList(request, response);
+        } else {
+            request.setAttribute("checkErrorDeleteService",
+                    "Failed to deactivate service. Please try again.");
+            return "serviceList.jsp";
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        request.setAttribute("checkErrorDeleteService",
+                "Error while deactivating service: " + e.getMessage());
+        return handleServiceList(request, response);
+    }
+}
+
+/**
+ * Xử lý hiển thị danh sách services
+ */
+private String handleServiceList(HttpServletRequest request, HttpServletResponse response) {
+    try {
+        HttpSession session = request.getSession();
+
+        // Check cache first
+        List<Services> serviceList = (List<Services>) session.getAttribute("cachedServiceList");
+
+        if (serviceList == null) {
+            // Get from database
+            serviceList = servicesDAO.getAllActive(); // Only get active services
+            session.setAttribute("cachedServiceList", serviceList);
+        }
+
+        request.setAttribute("serviceList", serviceList);
+        return "serviceList.jsp";
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        request.setAttribute("checkErrorServiceList", "Error loading service list: " + e.getMessage());
+        return "serviceList.jsp";
+    }
+}
+
+/**
+ * Xử lý hiển thị chi tiết service để edit
+ */
+private String handleServiceEditForm(HttpServletRequest request, HttpServletResponse response) {
+    try {
+        String idStr = request.getParameter("id");
+        if (idStr == null || idStr.trim().isEmpty()) {
+            request.setAttribute("checkErrorServiceDetail", "Service ID is required.");
+            return "serviceUpdate.jsp";
+        }
+
+        int serviceId = Integer.parseInt(idStr);
+        Services service = servicesDAO.getById(serviceId);
+
+        if (service == null) {
+            request.setAttribute("checkErrorServiceDetail", "Service not found.");
+            return "serviceUpdate.jsp";
+        }
+
+        request.setAttribute("service", service);
+        return "serviceUpdate.jsp";
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        request.setAttribute("checkErrorServiceDetail", "Error loading service details: " + e.getMessage());
+        return "serviceUpdate.jsp";
+    }
+}
+
+/**
+ * Xử lý hiển thị form thêm service mới
+ */
+private String handleServiceAddForm(HttpServletRequest request, HttpServletResponse response) {
+    request.setAttribute("service", null);
+    return "serviceUpdate.jsp";
+}
+    
 }

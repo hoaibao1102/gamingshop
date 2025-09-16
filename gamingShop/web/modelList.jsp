@@ -31,7 +31,7 @@
     <h1>Models Management</h1>
     
     <!-- Add New Button -->
-    <a href="MainController?action=addModel" class="btn btn-add">Add New Model</a>
+    <a href="MainController?action=showAddModel" class="btn btn-add">Add New Model</a>
     
     <!-- Messages -->
     <c:if test="${not empty checkErrorModelList}">

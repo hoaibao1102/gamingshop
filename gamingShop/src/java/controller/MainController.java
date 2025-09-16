@@ -114,6 +114,12 @@ public class MainController extends HttpServlet {
                 || "showEditModel".equals(action)
                 || "editModel".equals(action)
                 || "deleteModel".equals(action)
+                || "viewServiceList".equals(action)
+                || "addService".equals(action)
+                || "showAddService".equals(action)
+                || "showEditService".equals(action)
+                || "editService".equals(action)
+                || "deleteService".equals(action)
                 ;
         
     }
