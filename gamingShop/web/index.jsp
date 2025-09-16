@@ -85,9 +85,6 @@
                         </c:otherwise>
                     </c:choose>
 
-
-
-
                     <c:choose>
                         <c:when test="${not empty products}">
                             <!-- Product Grid -->
