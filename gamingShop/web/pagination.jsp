@@ -7,7 +7,7 @@
 <c:set var="pageObj" value="${not empty listProductsByCategory_page ? listProductsByCategory_page : pageResult}" />
 
 <!-- Lấy action: ưu tiên param.action; nếu không có thì lấy attribute controller set -->
-<c:set var="actionName" value="${not empty param.action ? param.action : paginationAction}" />
+<c:set var="actionName" value="${not empty param.action and param.action ne 'login' and param.action ne 'logout' ? param.action : paginationAction}" />
 <!-- Tham số đặc thù (ví dụ lọc theo danh mục) -->
 <c:set var="categoryIdVal" value="${not empty param.categoryId ? param.categoryId : categoryId}" />
 
