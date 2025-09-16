@@ -23,6 +23,7 @@ public class UserController extends HttpServlet {
     private static final String LOGIN_PAGE = "login.jsp";
     private static final String INDEX_PAGE = "index.jsp";
     ProductsDAO productsdao = new ProductsDAO();
+    private final ProductImagesDAO productImagesDAO = new ProductImagesDAO();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -87,7 +88,6 @@ public class UserController extends HttpServlet {
         HttpSession session = request.getSession();
         String userName = request.getParameter("strUserName");
         String password = request.getParameter("strPassword");
-        
 
         AccountsDAO accountsDAO = new AccountsDAO();
 
@@ -107,19 +107,19 @@ public class UserController extends HttpServlet {
         if (session != null) {
             session.invalidate();
             handleViewAllProducts_sidebar(request, response);
-            
+
         }
-        return handleViewAllProducts(request, response) ;
+        return handleViewAllProducts(request, response);
     }
-    
-     public  void handleViewAllProducts_sidebar( HttpServletRequest request, HttpServletResponse response) {
+
+    public void handleViewAllProducts_sidebar(HttpServletRequest request, HttpServletResponse response) {
         List<Products> list = productsdao.getAll();
         request.setAttribute("list", list);
     }
 
     public String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
-       ProductImagesDAO productImagesDAO = new ProductImagesDAO();
         try {
+            request.setCharacterEncoding("UTF-8");
             // Tạo filter mặc định
             ProductFilter filter = new ProductFilter();
 
@@ -142,9 +142,8 @@ public class UserController extends HttpServlet {
             // Gán hình ảnh cho từng sản phẩm
             for (Products p : pageResult.getContent()) {
                 List<Product_images> images = productImagesDAO.getByProductId(p.getId());
-                p.setImage(images);
+                p.setCoverImg(images.get(0).getImage_url());
             }
-
             request.setAttribute("pageResult", pageResult);
             request.setAttribute("currentFilter", filter);
 

@@ -51,17 +51,17 @@
                 min-height:100vh;
                 width:100vw;
             }
-            .sidebar{
-                flex:3;
-                background: linear-gradient(135deg,#2c3e50 0%,#34495e 100%);
-                color:#fff;
-                border-radius:20px;
-                padding:24px;
-                box-shadow:var(--card-shadow);
-                position: sticky;
-                top:20px;
-                height: fit-content;
-            }
+                .sidebar{
+                    flex:3;
+                    background: linear-gradient(135deg,#2c3e50 0%,#34495e 100%);
+                    color:#fff;
+                    border-radius:20px;
+                    padding:24px;
+                    box-shadow:var(--card-shadow);
+                    position: sticky;
+                    top:20px;
+                    height: fit-content;
+                }
             .Main_content{
                 flex:7;
                 background:#fff;
