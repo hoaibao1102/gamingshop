@@ -118,6 +118,8 @@ public class ProductController extends HttpServlet {
                 url = handleGetProminentList(request, response);
             } else if (action.equals("listMayChoiGame")) {
                 url = handleListMayChoiGame(request, response);
+            }else if (action.equals("listTheGame")) {
+                url = handleListTheGame(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1770,5 +1772,9 @@ public class ProductController extends HttpServlet {
         
             
         return INDEX_PAGE;
+    }
+
+    private String handleListTheGame(HttpServletRequest request, HttpServletResponse response) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
