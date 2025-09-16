@@ -19,12 +19,11 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
 
     private static final String GET_ALL = "SELECT * FROM dbo.Accessories";
     private static final String GET_BY_ID = "SELECT * FROM dbo.Accessories WHERE id = ?";
-    private static final String GET_BY_NAME = "SELECT * FROM dbo.Accessories WHERE name LIKE ?";
+    private static final String GET_BY_NAME = "SELECT * FROM dbo.Accessories WHERE name LIKE ? AND status = 'active'";
     private static final String CREATE = "INSERT INTO dbo.Accessories (name, quantity, price, description_html, image_url, status, gift) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE = "UPDATE dbo.Accessories SET name = ?, quantity = ?, price = ?, description_html = ?, image_url = ?, status = ?, gift = ?, updated_at = GETDATE() WHERE id = ?";
-
     private static final String CHECK_EXIST_NAME = "SELECT COUNT(1) FROM dbo.Accessories WHERE name = ? AND status = 'active'";
-
+    private static final String GET_ALL_ACTIVE = "SELECT * FROM dbo.Accessories WHERE status = 'active'";
     @Override
     public boolean create(Accessories e) {
         Connection c = null;
@@ -196,6 +195,31 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     
     return false;
 }
+    
+    /**
+     * Lấy danh sách tất cả các models có status = 'active'
+     *
+     * @return danh sách các Models đang hoạt động
+     */
+    public List<Accessories> getAllActive() {
+        List<Accessories> list = new ArrayList<>();
+        Connection c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            c = DBUtils.getConnection();
+            ps = c.prepareStatement(GET_ALL_ACTIVE);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(map(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(c, ps, rs);
+        }
+        return list;
+    }
 
     private void close(Connection c, PreparedStatement st, ResultSet rs) {
         try {
