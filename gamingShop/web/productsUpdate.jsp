@@ -1,408 +1,674 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="dto.Products, java.util.List, dto.Product_images, dto.Models, dto.Memories, dto.Guarantees" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<fmt:setLocale value="vi_VN" />
+
 <!DOCTYPE html>
-<html>
+<html lang="vi">
     <head>
-        <title>Product Management</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+        <meta charset="UTF-8">
+        <title>Gaming Shop — Quản lý sản phẩm</title>
+
+        <!-- Swiper CSS (nếu cần dùng cho UI khác) -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
+        <!-- App CSS (đồng bộ tông với trang chủ) -->
+        <link rel="stylesheet" href="assets/css/maincss.css"/>
+
         <style>
-            .img-preview {
-                max-height: 150px;
-                display: none;
-                margin-top: 8px;
+            /* Các tiện ích nhỏ phù hợp với maincss.css */
+            .page-title {
+                font-weight: 700;
+                letter-spacing: .2px;
+            }
+            .wrapper {
+                display: grid;
+                grid-template-columns: 260px 1fr;
+                min-height: 100vh;
+            }
+            .sidebar {
+                background: #111827;
+            }
+            .Main_content {
+                background: #f5f7fb;
+            }
+
+            .section {
+                background: #fff;
+                border: 1px solid #e5e7eb;
+                border-radius: 14px;
+            }
+            .section .section-hd {
+                padding: 14px 16px;
+                border-bottom: 1px solid #e5e7eb;
+                font-weight: 600;
+                background:#f9fafb;
+            }
+            .section .section-bd {
+                padding: 16px;
+            }
+
+            .grid {
+                display: grid;
+                gap: 12px;
+            }
+            .grid-2 {
+                grid-template-columns: repeat(2, minmax(0,1fr));
+            }
+            .grid-3 {
+                grid-template-columns: repeat(3, minmax(0,1fr));
+            }
+            .grid-4 {
+                grid-template-columns: repeat(4, minmax(0,1fr));
+            }
+
+            .field {
+                display:flex;
+                flex-direction:column;
+                gap:6px;
+            }
+            .label {
+                font-weight:600;
+            }
+            .required::after {
+                content:" *";
+                color:#dc2626;
+            }
+            .hint {
+                font-size:.875rem;
+                color:#6b7280;
+            }
+            .input, .select, .textarea, .file {
+                border:1px solid #d1d5db;
+                border-radius:10px;
+                padding:10px 12px;
+                background:#fff;
+                outline:none;
+            }
+            .textarea {
+                min-height: 160px;
+            }
+
+            .tabs {
+                display:flex;
+                gap:8px;
+                margin-bottom:16px;
+            }
+            .tab-btn {
+                padding:10px 12px;
+                border-radius:10px;
+                border:1px solid #e5e7eb;
+                background:#fff;
+                cursor:pointer;
+                font-weight:600;
+            }
+            .tab-btn.active {
+                background:#111827;
+                color:#fff;
+                border-color:#111827;
+            }
+
+            .actions {
+                position: sticky;
+                bottom: 0;
+                background:#fff;
+                border-top:1px solid #e5e7eb;
+                padding:12px;
+                display:flex;
+                justify-content:flex-end;
+                gap:8px;
+            }
+            .btn {
+                border:1px solid transparent;
+                padding:10px 14px;
+                border-radius:10px;
+                cursor:pointer;
+                font-weight:600;
+            }
+            .btn.primary {
+                background:#1d4ed8;
+                color:#fde68a;
+            }
+            .btn.ghost {
+                background:#fff;
+                border-color:#6b7280;
+                color:#374151;
+            }
+            .btn.ghost:hover {
+                background:#ef4444;
+                border-color:#ef4444;
+                color:#fff;
+            }
+            .btn.warn {
+                background:#f59e0b;
+                color:#111827;
+            }
+            .btn.danger {
+                background:#ef4444;
+                color:#fff;
+            }
+
+            .badge-soft {
+                background:#eef2ff;
+                color:#3b5bdb;
+                padding:4px 10px;
+                border-radius:999px;
+                font-size:.85rem;
+            }
+
+            .toast-stack {
+                position:fixed;
+                top:12px;
+                right:12px;
+                display:flex;
+                flex-direction:column;
+                gap:8px;
+                z-index:1080;
+            }
+            .toast {
+                padding:12px 14px;
+                border-radius:12px;
+                box-shadow:0 6px 20px rgba(0,0,0,.08);
+                display:flex;
+                align-items:center;
+                gap:10px;
+            }
+            .toast.success {
+                background:#ecfdf5;
+                color:#065f46;
+                border:1px solid #a7f3d0;
+            }
+            .toast.error {
+                background:#fef2f2;
+                color:#991b1b;
+                border:1px solid #fecaca;
+            }
+
+            .img-slot {
+                min-height:200px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                background:#f3f4f6;
+                border:1px dashed #d1d5db;
+                border-radius:12px;
+            }
+            .thumb {
+                max-width: 200px;
+                height: auto;
+                border-radius: 10px;
+            }
+
+            /* Pills cho điều hướng nhỏ */
+            .breadcrumbs {
+                display:flex;
+                gap:8px;
+                font-size:.95rem;
+                color:#6b7280;
+                margin-bottom:8px;
+            }
+            .breadcrumbs a {
+                color:inherit;
+                text-decoration:none;
+            }
+            .breadcrumbs .sep {
+                color:#9ca3af;
+            }
+
+            .btn.danger {
+                background-color: #fff;   /* nền trắng */
+                color: #000;              /* chữ đen */
+                border: 1px solid #dc3545; /* viền đỏ cho rõ nút */
+                transition: all 0.3s ease; /* hiệu ứng mượt */
+            }
+
+            .btn.danger:hover {
+                background-color: #dc3545; /* nền đỏ */
+                color: #fff;               /* chữ trắng */
+            }
+            @media (max-width: 1024px) {
+                .grid-3 {
+                    grid-template-columns: 1fr;
+                }
+                .grid-4 {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+            @media (max-width: 640px) {
+                .grid-2, .grid-4 {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            /* ==== Make image slots equal-sized & aligned ==== */
+            #tab-images .field {
+                background:#fff;
+                border:1px solid #e5e7eb;
+                border-radius:12px;
+                padding:12px;
+                display:flex;
+                flex-direction:column;
+                gap:10px;
+                height:100%;
+            }
+            .grid-4 {
+                align-items: stretch;
+            }
+            #tab-images .thumb {
+                width:100%;
+                aspect-ratio: 4 / 3;
+                object-fit: cover;
+                border-radius:10px;
+            }
+            #tab-images .img-slot {
+                width:100%;
+                aspect-ratio: 4 / 3;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                background:#f3f4f6;
+                border:1px dashed #d1d5db;
+                border-radius:12px;
+            }
+            #tab-images .btn {
+                width:100%;
+            }
+            #tab-images .file {
+                width:100%;
             }
         </style>
     </head>
-    <body class="bg-light">
-        <%
-            // Khai báo mess và checkError
-            Products product = (Products) request.getAttribute("product");
-            String messageAddProduct = (String) request.getAttribute("messageAddProduct");
-            String checkErrorAddProduct = (String) request.getAttribute("checkErrorAddProduct");
-            String messageEditProduct = (String) request.getAttribute("messageEditProduct");
-            String checkErrorEditProduct = (String) request.getAttribute("checkErrorEditProduct");
-            String messageUpdateProductMain = (String) request.getAttribute("messageUpdateProductMain");
-            String checkErrorUpdateProductMain = (String) request.getAttribute("checkErrorUpdateProductMain");
-            String messageUpdateProductImage = (String) request.getAttribute("messageUpdateProductImage");
-            String checkErrorUpdateProductImage = (String) request.getAttribute("checkErrorUpdateProductImage");
-            String messageDeleteImg = (String) request.getAttribute("messageDeleteImg");
-            String checkErrorDeleteImg = (String) request.getAttribute("checkErrorDeleteImg");
-            
-            // Khai bào list Images
-            List<Product_images> productImages = (List<Product_images>) request.getAttribute("productImages");
-            boolean justAdded = (messageAddProduct != null);
-            
-            // Khai báo các list liên quan tới products để lấy type thay vì id
-            List<Models> modelTypes = (List<Models>) request.getAttribute("modelTypes");
-            List<Memories> memoryTypes = (List<Memories>) request.getAttribute("memoryTypes");
-            List<Guarantees> guaranteeTypes = (List<Guarantees>) request.getAttribute("guaranteeTypes");
-        %>
-        <div class="container mt-5">
-            <h2 class="mb-4"><%= (product != null) ? "Edit Product" : "Add New Product" %></h2>
+    <body>
+        <!-- ======= Toast thông báo ======= -->
+        <div class="toast-stack">
+            <c:if test="${not empty messageAddProduct}">
+                <div class="toast success">${messageAddProduct}</div>
+            </c:if>
+            <c:if test="${not empty messageEditProduct}">
+                <div class="toast success">${messageEditProduct}</div>
+            </c:if>
+            <c:if test="${not empty messageUpdateProductMain}">
+                <div class="toast success">${messageUpdateProductMain}</div>
+            </c:if>
+            <c:if test="${not empty messageUpdateProductImage}">
+                <div class="toast success">${messageUpdateProductImage}</div>
+            </c:if>
+            <c:if test="${not empty messageDeleteImg}">
+                <div class="toast success">${messageDeleteImg}</div>
+            </c:if>
 
-            <!-- In thông báo -->
-            <% if (messageAddProduct != null) { %>
-            <div class="alert alert-success"><%= messageAddProduct %></div>
-            <% } else if (checkErrorAddProduct != null) { %>
-            <div class="alert alert-danger"><%= checkErrorAddProduct %></div>
-            <% } else if (checkErrorEditProduct != null) { %>
-            <div class="alert alert-danger"><%= checkErrorEditProduct %></div>
-            <% } else if (messageEditProduct != null) { %>
-            <div class="alert alert-success"><%= messageEditProduct %></div>
-            <% } else if (messageUpdateProductMain != null) { %>
-            <div class="alert alert-success"><%= messageUpdateProductMain %></div>
-            <% } else if (checkErrorUpdateProductMain != null) { %>
-            <div class="alert alert-danger"><%= checkErrorUpdateProductMain %></div>
-            <% } else if (messageUpdateProductImage != null) { %>
-            <div class="alert alert-success"><%= messageUpdateProductImage %></div>
-            <% } else if (checkErrorUpdateProductImage != null) { %>
-            <div class="alert alert-danger"><%= checkErrorUpdateProductImage %></div>
-            <% } else if (messageDeleteImg != null) { %>
-            <div class="alert alert-success"><%= messageDeleteImg %></div>
-            <% } else if (checkErrorDeleteImg != null) { %>
-            <div class="alert alert-danger"><%= checkErrorDeleteImg %></div>
-            <% } %>
-
-            <!-- Form -->
-            <form action="MainController" method="post" enctype="multipart/form-data">
-                <!-- Nếu có product thì update, nếu không thì add -->
-                <input type="hidden" name="action" value="<%= (product != null) ? "editMainProduct" : "addProduct" %>"/>
-                <% if (product != null) { %>
-                <input type="hidden" name="product_id" value="<%= product.getId() %>"/>
-                <% } %>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Product Name</label>
-                        <input type="text" name="name" class="form-control"
-                               value="<%= (product != null) ? product.getName() : "" %>" required/>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">SKU</label>
-                        <input type="text" name="sku" class="form-control"
-                               value="<%= (product != null) ? product.getSku() : "" %>" required/>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Price</label>
-                        <input type="number" step="0.01" name="price" class="form-control"
-                               value="<%= (product != null) ? product.getPrice() : "" %>" required/>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Quantity</label>
-                        <input type="number" name="quantity" class="form-control"
-                               value="<%= (product != null) ? product.getQuantity() : "" %>" required/>
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Product Type</label>
-                        <select name="product_type" class="form-select" required>
-                            <option value="new" <%= (product != null && "new".equals(product.getProduct_type())) ? "selected" : "" %>>New</option>
-                            <option value="used" <%= (product != null && "old".equals(product.getProduct_type())) ? "selected" : "" %>>Used</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Model</label>
-                        <select name="model_id" class="form-select" required>
-                            <%
-                                if (modelTypes != null) {
-                                    for (Models m : modelTypes) {
-                                        String selected = (product != null && m.getId() == product.getModel_id()) ? "selected" : "";
-                            %>
-                            <option value="<%= m.getId() %>" <%= selected %>><%= m.getModel_type() %></option>
-                            <%
-                                    }
-                                }
-                            %>
-                        </select>
-                    </div>
-
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Memory</label>
-                        <select name="memory_id" class="form-select">
-                            <%
-                                if (memoryTypes != null) {
-                                    for (Memories mem : memoryTypes) {
-                                        String selected = (product != null && mem.getId() == product.getMemory_id()) ? "selected" : "";
-                            %>
-                            <option value="<%= mem.getId() %>" <%= selected %>><%= mem.getMemory_type() %></option>
-                            <%
-                                    }
-                                }
-                            %>
-                        </select>
-                    </div>    
-
-
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">Guarantee</label>
-                        <select name="guarantee_id" class="form-select">
-                            <%
-                                if (guaranteeTypes != null) {
-                                    for (Guarantees g : guaranteeTypes) {
-                                        String selected = (product != null && g.getId() == product.getGuarantee_id()) ? "selected" : "";
-                            %>
-                            <option value="<%= g.getId() %>" <%= selected %>><%= g.getGuarantee_type() %></option>
-                            <%
-                                    }
-                                }
-                            %>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Specification (HTML)</label>
-                    <textarea id="editor" name="spec_html" class="form-control" rows="5"><%= (product != null) ? product.getDescription_html() : "" %></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Status</label>
-                    <select name="status" class="form-select">
-                        <option value="active" <%= (product != null && "active".equals(product.getStatus())) ? "selected" : "" %>>Active</option>
-                        <option value="inactive" <%= (product != null && "inactive".equals(product.getStatus())) ? "selected" : "" %>>Inactive</option>
-                        <option value="prominent" <%= (product != null && "prominent".equals(product.getStatus())) ? "selected" : "" %>>Prominent</option>
-                    </select>
-                </div>
-
-                <!-- Upload nhiều ảnh -->
-                <div class="mb-3">
-                    <% if (product == null) { %>
-                    <!-- Add mode: cho upload tối đa 4 ảnh -->
-                    <label class="form-label">Upload Images (max 4)</label>
-                    <div class="row g-2">
-                        <div class="col-md-3">
-                            <input type="file" name="imageFile1" id="imageFile1" class="form-control" accept="image/*"/>
-                            <img id="preview1" class="img-preview" alt="Preview 1">
-                        </div>
-                        <div class="col-md-3">
-                            <input type="file" name="imageFile2" id="imageFile2" class="form-control" accept="image/*"/>
-                            <img id="preview2" class="img-preview" alt="Preview 2">
-                        </div>
-                        <div class="col-md-3">
-                            <input type="file" name="imageFile3" id="imageFile3" class="form-control" accept="image/*"/>
-                            <img id="preview3" class="img-preview" alt="Preview 3">
-                        </div>
-                        <div class="col-md-3">
-                            <input type="file" name="imageFile4" id="imageFile4" class="form-control" accept="image/*"/>
-                            <img id="preview4" class="img-preview" alt="Preview 4">
-                        </div>
-                    </div>
-                    <% } else if (justAdded) { %>
-                    <!-- Vừa Add xong: hiển thị ảnh vừa upload -->
-                    <% if (productImages != null && !productImages.isEmpty()) { %>
-                    <div class="mt-3">
-                        <p>Current Images:</p>
-                        <div class="d-flex flex-wrap gap-2">
-                            <% for (Product_images img : productImages) { %>
-                            <img src="<%= request.getContextPath() %>/<%= img.getImage_url() %>"
-                                 class="img-thumbnail" style="max-width:150px;"/>
-                            <% } %>
-                        </div>
-                    </div>
-                    <% } else { %>
-                    <p class="text-muted">No images available for this product.</p>
-                    <% } %>
-                    <% } %>
-                </div>
-
-                <button type="submit" class="btn btn-primary">
-                    <%= (product != null) ? "Update Product" : "Add Product" %>
-                </button>
-                <a href="welcome.jsp" class="btn btn-secondary">Back to List</a>
-            </form>
+            <c:if test="${not empty checkErrorAddProduct}">
+                <div class="toast error">${checkErrorAddProduct}</div>
+            </c:if>
+            <c:if test="${not empty checkErrorEditProduct}">
+                <div class="toast error">${checkErrorEditProduct}</div>
+            </c:if>
+            <c:if test="${not empty checkErrorUpdateProductMain}">
+                <div class="toast error">${checkErrorUpdateProductMain}</div>
+            </c:if>
+            <c:if test="${not empty checkErrorUpdateProductImage}">
+                <div class="toast error">${checkErrorUpdateProductImage}</div>
+            </c:if>
+            <c:if test="${not empty checkErrorDeleteImg}">
+                <div class="toast error">${checkErrorDeleteImg}</div>
+            </c:if>
         </div>
 
-        <%-- Hiển thị + cập nhật 4 slot ảnh bằng 1 form --%>
-        <% if (product != null && !justAdded) { %>
-        <div class="mt-5">
-            <h2 class="mb-4">Manage Product Images (Update all)</h2>
-            <%
-                // Chuẩn hóa 4 slot theo sort_order 1..4
-                Product_images[] slots = new Product_images[4];
-                if (productImages != null) {
-                    for (Product_images im : productImages) {
-                        int so = im.getSort_order();
-                        if (so >= 1 && so <= 4) slots[so - 1] = im;
-                    }
-                }
-            %>
-            <form action="MainController" method="post" enctype="multipart/form-data" class="border rounded p-3">
-                <input type="hidden" name="action" value="editImageProduct"/>
-                <input type="hidden" name="product_id" value="<%= product.getId() %>"/>
-                <input type="hidden" name="deleteImgId" id="deleteImgId" />
+        <div class="wrapper">
+            <!-- Sidebar (dùng lại từ trang chủ) -->
+            <div class="sidebar">
+                <jsp:include page="sidebar.jsp"/>
+            </div>
 
-                <div class="row">
-                    <% for (int i = 0; i < 4; i++) {
-                           int slot = i + 1;
-                           Product_images slotImg = slots[i];
-                    %>
-                    <div class="col-md-3 mb-4 text-center">
-                        <% if (slotImg != null) { %>
-                        <!-- Ảnh cũ -->
-                        <img src="<%= request.getContextPath() %>/<%= slotImg.getImage_url() %>"
-                             class="img-thumbnail mb-2" style="max-width:200px; height:auto;"
-                             id="preview<%= slot %>_old"/>
-                        <div class="text-muted mb-2">Slot <%= slot %> (Giữ nguyên nếu không chọn ảnh mới)</div>
+            <div class="Main_content">
+                <!-- Header (dùng lại từ trang chủ) -->
+                <jsp:include page="header.jsp"/>
 
-                        <!-- Nút xoá ảnh -->
-                        <button type="button" class="btn btn-sm btn-danger mb-2"
-                                onclick="deleteImage('<%= slotImg.getId() %>', '<%= product.getId() %>')">
-                            Xoá ảnh
-                        </button>
+                <div class="container">
+                    <!-- Breadcrumbs -->
+                    <div class="breadcrumbs">
+                        <a href="dashboard.jsp">Dashboard</a>
+                        <span class="sep">/</span>
+                        <a href="products.jsp">Sản phẩm</a>
+                        <span class="sep">/</span>
+                        <span><c:choose><c:when test="${not empty product}">Chỉnh sửa</c:when><c:otherwise>Thêm mới</c:otherwise></c:choose></span>
+                            </div>
 
-                        <% } else { %>
-                        <!-- Placeholder -->
-                        <div class="mb-2" style="height:200px; display:flex; align-items:center; justify-content:center; background:#f8f9fa;">
-                            <span class="text-muted">No Image (Slot <%= slot %>)</span>
-                        </div>
-                        <img id="preview<%= slot %>_old" style="display:none;"/>
-                        <% } %>
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:12px; flex-wrap:wrap;">
+                                <h2 class="page-title" style="margin:0;">
+                            <c:choose>
+                                <c:when test="${not empty product}">Chỉnh sửa sản phẩm</c:when>
+                                <c:otherwise>Thêm sản phẩm mới</c:otherwise>
+                            </c:choose>
+                            <span class="badge-soft" style="margin-left:8px;">Product Management</span>
+                        </h2>
 
-                        <!-- Input + preview ảnh mới -->
-                        <input type="file" id="imageFile<%= slot %>" name="imageFile<%= slot %>" accept="image/*"
-                               class="form-control form-control-sm"/>
-                        <img id="preview<%= slot %>" class="img-thumbnail mt-2" style="max-width:200px; display:none;"/>
+                        <form action="MainController" method="post" autocomplete="off">
+                            <input type="hidden" name="action" value="searchProduct"/>
+                            <button class="btn ghost" type="submit">Quay lại danh sách</button>
+                        </form>
                     </div>
-                    <% } %>
+
+                    <!-- Tabs -->
+                    <div class="tabs" role="tablist">
+                        <button class="tab-btn active" data-tab-target="#tab-main" aria-selected="true">Thông tin chính</button>
+                        <c:if test="${not empty product}">
+                            <button class="tab-btn" data-tab-target="#tab-images" aria-selected="false">Ảnh sản phẩm</button>
+                        </c:if>
+                    </div>
+
+                    <div class="tab-panels">
+                        <!-- ===== TAB: MAIN ===== -->
+                        <section id="tab-main" class="section" role="tabpanel" aria-labelledby="main-tab">
+                            <div class="section-hd">Thông tin sản phẩm</div>
+                            <div class="section-bd">
+                                <form id="mainForm" action="MainController" method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="action" value="${not empty product ? 'editMainProduct' : 'addProduct'}"/>
+                                    <c:if test="${not empty product}">
+                                        <input type="hidden" name="product_id" value="${product.id}"/>
+                                    </c:if>
+
+                                    <div class="grid grid-2">
+                                        <div class="field">
+                                            <label class="label required">Tên sản phẩm</label>
+                                            <input class="input" type="text" name="name" value="${not empty product ? product.name : ''}" required>
+                                            <div class="hint">Tên hiển thị cho khách hàng.</div>
+                                        </div>
+
+                                        <div class="field">
+                                            <label class="label required">SKU</label>
+                                            <input class="input" type="text" name="sku" value="${not empty product ? product.sku : ''}" required>
+                                        </div>
+
+                                        <div class="field">
+                                            <label class="label required">Giá bán</label>
+                                            <div style="display:flex; gap:8px; align-items:center;">
+                                                <input class="input" type="number" step="0.01" min="0" name="price" value="${not empty product ? product.price : ''}" required style="flex:1;">
+                                                <span style="color:#6b7280; font-weight:600;">VND</span>
+                                            </div>
+                                            <div class="hint">Nhập số, hệ thống sẽ format khi hiển thị.</div>
+                                        </div>
+
+                                        <div class="field">
+                                            <label class="label required">Số lượng</label>
+                                            <input class="input" type="number" min="0" name="quantity" value="${not empty product ? product.quantity : ''}" required>
+                                        </div>
+
+                                        <div class="field">
+                                            <label class="label required">Loại hàng</label>
+                                            <select class="select" name="product_type" required>
+                                                <option value="new" ${not empty product && product.product_type == 'new' ? 'selected' : ''}>Hàng mới</option>
+                                                <option value="used" ${not empty product && (product.product_type == 'used' || product.product_type == 'old') ? 'selected' : ''}>Hàng đã qua sử dụng</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="field">
+                                            <label class="label required">Model</label>
+                                            <select class="select" name="model_id" required>
+                                                <c:forEach var="m" items="${modelTypes}">
+                                                    <option value="${m.id}" ${not empty product && m.id == product.model_id ? 'selected' : ''}>${m.model_type}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+
+                                        <div class="field">
+                                            <label class="label">Bộ nhớ</label>
+                                            <select class="select" name="memory_id">
+                                                <c:forEach var="mem" items="${memoryTypes}">
+                                                    <option value="${mem.id}" ${not empty product && mem.id == product.memory_id ? 'selected' : ''}>${mem.memory_type}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+
+                                        <div class="field">
+                                            <label class="label">Bảo hành</label>
+                                            <select class="select" name="guarantee_id">
+                                                <c:forEach var="g" items="${guaranteeTypes}">
+                                                    <option value="${g.id}" ${not empty product && g.id == product.guarantee_id ? 'selected' : ''}>${g.guarantee_type}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+
+                                        <div class="field" style="grid-column:1 / -1;">
+                                            <label class="label">Thông số / Mô tả (HTML)</label>
+                                            <textarea id="editor" name="spec_html" class="textarea">${not empty product ? product.description_html : ''}</textarea>
+                                            <div class="hint">Bạn có thể chèn ảnh/video trực tiếp (TinyMCE).</div>
+                                        </div>
+
+                                        <div class="field">
+                                            <label class="label required">Trạng thái</label>
+                                            <select class="select" name="status">
+                                                <option value="active" ${not empty product && product.status == 'active' ? 'selected' : ''}>Active</option>
+                                                <option value="inactive" ${not empty product && product.status == 'inactive' ? 'selected' : ''}>Inactive</option>
+                                                <option value="prominent" ${not empty product && product.status == 'prominent' ? 'selected' : ''}>Prominent</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Ảnh khi thêm mới -->
+                                    <div class="section" style="margin-top:12px;">
+                                        <div class="section-hd">${empty product ? 'Ảnh sản phẩm' : ''}</div>
+                                        <div class="section-bd">
+                                            <c:choose>
+                                                <c:when test="${empty product}">
+                                                    <p class="hint">Tối đa 4 ảnh. Ảnh đầu tiên sẽ làm ảnh bìa.</p>
+                                                    <div class="grid grid-4">
+                                                        <div class="field">
+                                                            <label class="label">Ảnh 1</label>
+                                                            <input class="file" type="file" name="imageFile1" id="imageFile1" accept="image/*"/>
+                                                            <img id="preview1" class="thumb" style="display:none; margin-top:8px;" alt="Preview 1"/>
+                                                        </div>
+                                                        <div class="field">
+                                                            <label class="label">Ảnh 2</label>
+                                                            <input class="file" type="file" name="imageFile2" id="imageFile2" accept="image/*"/>
+                                                            <img id="preview2" class="thumb" style="display:none; margin-top:8px;" alt="Preview 2"/>
+                                                        </div>
+                                                        <div class="field">
+                                                            <label class="label">Ảnh 3</label>
+                                                            <input class="file" type="file" name="imageFile3" id="imageFile3" accept="image/*"/>
+                                                            <img id="preview3" class="thumb" style="display:none; margin-top:8px;" alt="Preview 3"/>
+                                                        </div>
+                                                        <div class="field">
+                                                            <label class="label">Ảnh 4</label>
+                                                            <input class="file" type="file" name="imageFile4" id="imageFile4" accept="image/*"/>
+                                                            <img id="preview4" class="thumb" style="display:none; margin-top:8px;" alt="Preview 4"/>
+                                                        </div>
+                                                    </div>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:choose>
+                                                        <c:when test="${empty productImages}">
+                                                            <p class="hint">Ảnh hiện tại:</p>
+                                                            <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+                                                                <c:forEach var="img" items="${productImages}">
+                                                                    <img class="thumb" src="${pageContext.request.contextPath}/${img.image_url}" alt="${product.name}"/>
+                                                                </c:forEach>
+                                                            </div>
+                                                        </c:when>
+                                                        <c:when test="${empty productImages}">
+                                                            <p class="hint">Sản phẩm chưa có ảnh.</p>
+                                                        </c:when>
+                                                    </c:choose>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+                                    </div>
+
+                                    <div class="actions">
+                                        <button class="btn primary" type="submit">
+                                            <c:choose><c:when test="${not empty product}">Cập nhật sản phẩm</c:when><c:otherwise>Thêm sản phẩm</c:otherwise></c:choose>
+                                                </button>
+                                                <a class="btn ghost" href="MainController?action=searchProduct">Hủy</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </section>
+
+                                <!-- ===== TAB: IMAGES ===== -->
+                        <c:if test="${not empty product}">
+                            <section id="tab-images" class="section" role="tabpanel" aria-labelledby="images-tab" hidden>
+                                <div class="section-hd">Quản lý ảnh (4 slot — cập nhật đồng loạt)</div>
+                                <div class="section-bd">
+                                    <form id="imagesForm" action="MainController" method="post" enctype="multipart/form-data" class="p-2">
+                                        <input type="hidden" name="action" value="editImageProduct"/>
+                                        <input type="hidden" name="product_id" value="${product.id}"/>
+                                        <input type="hidden" name="deleteImgId" id="deleteImgId"/>
+
+                                        <div class="grid grid-4">
+                                            <c:forEach var="slot" begin="1" end="4">
+                                                <div class="field" style="text-align:center;">
+                                                    <div class="hint">Slot ${slot}</div>
+
+                                                    <!-- Tìm ảnh phù hợp slot -->
+                                                    <c:set var="slotImg" value=""/>
+                                                    <c:forEach var="im" items="${productImages}">
+                                                        <c:if test="${im.sort_order == slot}">
+                                                            <c:set var="slotImg" value="${im}"/>
+                                                        </c:if>
+                                                    </c:forEach>
+
+                                                    <c:choose>
+                                                        <c:when test="${not empty slotImg}">
+                                                            <img id="preview${slot}_old" class="thumb" style="margin-bottom:8px;" src="${pageContext.request.contextPath}/${slotImg.image_url}" alt="Slot ${slot}"/>
+                                                            <div style="display:grid; gap:8px; margin-bottom:8px;">
+                                                                <button class="btn danger" type="button" onclick="deleteImage('${slotImg.id}', '${product.id}')">Xóa ảnh</button>
+                                                            </div>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <div class="img-slot" style="margin-bottom:8px;">
+                                                                <span class="hint">Chưa có ảnh</span>
+                                                            </div>
+                                                            <img id="preview${slot}_old" class="thumb" style="display:none;"/>
+                                                        </c:otherwise>
+                                                    </c:choose>
+
+                                                    <input class="file" type="file" id="imageFile${slot}" name="imageFile${slot}" accept="image/*"/>
+                                                    <img id="preview${slot}" class="thumb" style="display:none; margin-top:8px;"/>
+                                                </div>
+                                            </c:forEach>
+                                        </div>
+
+                                        <div style="text-align:center; margin-top:16px;">
+                                            <button class="btn warn" type="submit" 
+                                                    style="width:auto; padding:8px 20px; font-size:14px; border-radius:8px;">
+                                                Cập nhật ảnh
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </section>
+                        </c:if>
+                    </div>
                 </div>
 
-                <div class="text-center">
-                    <button type="submit" class="btn btn-warning">Update Images</button>
-                </div>
-            </form>
+                <jsp:include page="footer.jsp"/>
+            </div>
         </div>
-        <% } %>
 
-        <script>
-            // Bind preview cho từng input
-            function bindPreview(inputId, imgId) {
-                const input = document.getElementById(inputId);
-                const img = document.getElementById(imgId);
-                let lastURL = null;
-
-                if (!input || !img)
-                    return;
-
-                input.addEventListener('change', function () {
-                    const file = this.files && this.files[0];
-                    if (lastURL) {
-                        URL.revokeObjectURL(lastURL);
-                        lastURL = null;
-                    }
-                    if (file) {
-                        const url = URL.createObjectURL(file);
-                        lastURL = url;
-                        img.src = url;
-                        img.style.display = 'block';
-                    } else {
-                        img.removeAttribute('src');
-                        img.style.display = 'none';
-                    }
-                });
-
-                // Khi rời trang/refresh, thu hồi URL
-                window.addEventListener('beforeunload', function () {
-                    if (lastURL)
-                        URL.revokeObjectURL(lastURL);
-                });
-            }
-
-            bindPreview('imageFile1', 'preview1');
-            bindPreview('imageFile2', 'preview2');
-            bindPreview('imageFile3', 'preview3');
-            bindPreview('imageFile4', 'preview4');
-
-            // Reset form -> ẩn tất cả preview
-            const form = document.querySelector('form');
-            if (form) {
-                form.addEventListener('reset', function () {
-                    setTimeout(() => {
-                        ['preview1', 'preview2', 'preview3', 'preview4'].forEach(id => {
-                            const img = document.getElementById(id);
-                            if (img) {
-                                img.removeAttribute('src');
-                                img.style.display = 'none';
-                            }
-                        });
-                    }, 0);
-                });
-            }
-
-            function deleteImage(imgId, productId) {
-                if (!confirm("Bạn có chắc muốn xoá ảnh này không?"))
-                    return;
-
-                fetch("MainController?action=deleteImageProduct", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                    body: "deleteImgId=" + imgId + "&product_id=" + productId
-                })
-                        .then(res => res.text())
-                        .then(data => {
-                            console.log(data);
-                            location.reload(); // reload lại trang sau khi xoá
-                        })
-                        .catch(err => console.error(err));
-            }
-        </script>
+        <!-- Swiper JS (nếu dùng nơi khác) -->
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
         <!-- TinyMCE -->
         <script src="https://cdn.tiny.cloud/1/9q1kybnxbgq2f5l3c8palpboawfgsnqsdd53b7gk5ny3dh19/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
         <script>
-            tinymce.init({
-                selector: '#editor',
-                height: 400,
-                plugins: 'image link lists table code media',
-                toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | ' +
-                        'bullist numlist | link image media | table | code',
-                menubar: 'file edit view insert format tools table help',
+                                                                    // Tabs logic (thuần JS, không phụ thuộc Bootstrap)
+                                                                    const tabButtons = document.querySelectorAll('.tab-btn');
+                                                                    const panels = document.querySelectorAll('[role="tabpanel"]');
+                                                                    tabButtons.forEach(btn => {
+                                                                        btn.addEventListener('click', () => {
+                                                                            tabButtons.forEach(b => b.classList.remove('active'));
+                                                                            btn.classList.add('active');
+                                                                            const target = btn.getAttribute('data-tab-target');
+                                                                            panels.forEach(p => {
+                                                                                if ('#' + p.id === target) {
+                                                                                    p.hidden = false;
+                                                                                } else {
+                                                                                    p.hidden = true;
+                                                                                }
+                                                                            });
+                                                                        });
+                                                                    });
 
-                automatic_uploads: true,
+                                                                    // Preview hình ảnh cho input file
+                                                                    function bindPreview(inputId, imgId) {
+                                                                        const input = document.getElementById(inputId);
+                                                                        const img = document.getElementById(imgId);
+                                                                        let lastURL = null;
+                                                                        if (!input || !img)
+                                                                            return;
+                                                                        input.addEventListener('change', function () {
+                                                                            const file = this.files && this.files[0];
+                                                                            if (lastURL) {
+                                                                                URL.revokeObjectURL(lastURL);
+                                                                                lastURL = null;
+                                                                            }
+                                                                            if (file) {
+                                                                                const url = URL.createObjectURL(file);
+                                                                                lastURL = url;
+                                                                                img.src = url;
+                                                                                img.style.display = 'inline-block';
+                                                                            } else {
+                                                                                img.removeAttribute('src');
+                                                                                img.style.display = 'none';
+                                                                            }
+                                                                        });
+                                                                        window.addEventListener('beforeunload', function () {
+                                                                            if (lastURL)
+                                                                                URL.revokeObjectURL(lastURL);
+                                                                        });
+                                                                    }
+                                                                    ['1', '2', '3', '4'].forEach(n => {
+                                                                        bindPreview('imageFile' + n, 'preview' + n);
+                                                                        // vùng tab ảnh và vùng thêm mới dùng cùng id preview (theo số), vẫn ổn vì không đồng thời hiển thị
+                                                                        bindPreview('imageFile' + n, 'preview' + n);
+                                                                    });
 
-                // Cho phép nhiều loại file picker
-                file_picker_types: 'file image media',
+                                                                    // Xóa ảnh qua controller
+                                                                    function deleteImage(imgId, productId) {
+                                                                        if (!confirm('Bạn có chắc muốn xoá ảnh này không?'))
+                                                                            return;
+                                                                        fetch('MainController?action=deleteImageProduct', {
+                                                                            method: 'POST',
+                                                                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                                                            body: 'deleteImgId=' + encodeURIComponent(imgId) + '&product_id=' + encodeURIComponent(productId)
+                                                                        })
+                                                                                .then(res => res.text())
+                                                                                .then(() => location.reload())
+                                                                                .catch(err => console.error(err));
+                                                                    }
 
-                // Callback xử lý upload
-                file_picker_callback: function (callback, value, meta) {
-                    let input = document.createElement('input');
-                    input.setAttribute('type', 'file');
-
-                    if (meta.filetype === 'image') {
-                        input.setAttribute('accept', 'image/*');
-                    } else if (meta.filetype === 'media') {
-                        input.setAttribute('accept', 'video/mp4');
-                    }
-
-                    input.onchange = function () {
-                        let file = this.files[0];
-                        let formData = new FormData();
-                        formData.append("file", file);
-
-                        // Upload ảnh hoặc video
-                        let uploadUrl = '<%= request.getContextPath() %>/UploadImageController';
-                        if (meta.filetype === 'media') {
-                            uploadUrl = '<%= request.getContextPath() %>/UploadVideoController';
-                        }
-
-                        fetch(uploadUrl, {
-                            method: 'POST',
-                            body: formData
-                        })
-                                .then(response => response.json())
-                                .then(json => {
-                                    callback(json.location);
-                                });
-                    };
-
-                    input.click();
-                }
-            });
+                                                                    // TinyMCE init
+                                                                    tinymce.init({
+                                                                        selector: '#editor',
+                                                                        height: 420,
+                                                                        plugins: 'image link lists table code media autoresize',
+                                                                        toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media | table | code',
+                                                                        menubar: 'file edit view insert format tools table help',
+                                                                        automatic_uploads: true,
+                                                                        file_picker_types: 'file image media',
+                                                                        file_picker_callback: function (callback, value, meta) {
+                                                                            let input = document.createElement('input');
+                                                                            input.type = 'file';
+                                                                            if (meta.filetype === 'image')
+                                                                                input.accept = 'image/*';
+                                                                            else if (meta.filetype === 'media')
+                                                                                input.accept = 'video/mp4';
+                                                                            input.onchange = function () {
+                                                                                let file = this.files[0];
+                                                                                let formData = new FormData();
+                                                                                formData.append('file', file);
+                                                                                let uploadUrl = '${pageContext.request.contextPath}/UploadImageController';
+                                                                                if (meta.filetype === 'media')
+                                                                                    uploadUrl = '${pageContext.request.contextPath}/UploadVideoController';
+                                                                                fetch(uploadUrl, {method: 'POST', body: formData})
+                                                                                        .then(response => response.json())
+                                                                                        .then(json => callback(json.location));
+                                                                            };
+                                                                            input.click();
+                                                                        }
+                                                                    });
         </script>
     </body>
 </html>
