@@ -173,23 +173,5 @@ public class ModelsDAO implements IDAO<Models, Integer> {
         }
     }
 
-    int getIdByType(String type) {
-        Connection c = null;
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        try {
-            c = DBUtils.getConnection();
-            st = c.prepareStatement(GET_BY_NAME);
-            st.setString(1, type);
-            rs = st.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("id");
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            close(c, st, rs);
-        }
-        return 0;
-    }
+   
 }

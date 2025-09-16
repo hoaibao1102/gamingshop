@@ -4,7 +4,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <!-- ƯU TIÊN: listProductsByCategory_page (Page<?>), fallback: pageResult -->
-<c:set var="pageObj" value="${not empty listProductsByCategory_page ? listProductsByCategory_page : pageResult}" />
+<c:set var="pageObj" value="${not empty listProductsByCategory ? listProductsByCategory : pageResult}" />
 
 <!-- Lấy action: ưu tiên param.action; nếu không có thì lấy attribute controller set -->
 <c:set var="actionName" value="${not empty param.action ? param.action : paginationAction}" />

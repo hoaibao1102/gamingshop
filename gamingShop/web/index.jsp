@@ -78,7 +78,7 @@
                 <div class="container">
                     <c:choose>
                         <c:when test="${not empty listProductsByCategory}">
-                            <c:set var="products" value="${listProductsByCategory}" />
+                            <c:set var="products" value="${listProductsByCategory.content}" />
                         </c:when>
                         <c:otherwise>
                             <c:set var="products" value="${not empty pageResult ? pageResult.content : list}" />
@@ -132,7 +132,7 @@
                             <div class="empty-state">
                                 <h3>Không tìm thấy sản phẩm</h3>
                                 <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí tìm kiếm của bạn.</p>
-                                <button onclick="resetFilter()" class="btn-filter">
+                                <button class="sb-title" onclick="resetFilter()" class="btn-filter">
                                     Xem tất cả sản phẩm
                                 </button>
                             </div>

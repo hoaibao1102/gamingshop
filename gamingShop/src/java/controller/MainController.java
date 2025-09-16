@@ -109,7 +109,9 @@ public class MainController extends HttpServlet {
                 || "goToUpdatePosts".equals(action)
                 || "getProduct".equals(action)
                 || "deleteImageProduct".equals(action)
-                || "getProminentList".equals(action);
+                || "getProminentList".equals(action)
+                || "listMayChoiGame".equals(action)
+                || "listTheGame".equals(action);
     }
 
     private boolean isBannersAction(String action) {
