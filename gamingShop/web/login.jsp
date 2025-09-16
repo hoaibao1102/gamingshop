@@ -182,9 +182,9 @@
     </head>
     <body>
         <%
-            // Kiểm tra nếu đã login thì redirect sang welcome.jsp
+            // Kiểm tra nếu đã login thì redirect sang products.jsp
             if (session.getAttribute("user") != null) {
-                response.sendRedirect("welcome.jsp");
+                response.sendRedirect("products.jsp");
                 return;
             }
 

@@ -1,6 +1,6 @@
 
 <%-- 
-    Document   : welcome
+    Document   : products
     Created on : Sep 2, 2025, 12:36:54 PM
     Author     : ADMIN
 --%>
@@ -35,6 +35,7 @@
             String checkErrorDeletePosts = (String) request.getAttribute("checkErrorDeletePosts");
             List<Posts> list = (List<Posts>) request.getAttribute("list");
         %>
+        <%@ include file="header.jsp" %>
         <div class="container">
             <div class="content">
                 <div class="search-section">
@@ -108,5 +109,6 @@
                 <% } %>
             </div>
         </div>
+            <%@ include file="footer.jsp" %>
     </body>
 </html>

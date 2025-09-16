@@ -194,7 +194,11 @@ public class ProductController extends HttpServlet {
             // Gán hình ảnh cho từng sản phẩm
             for (Products p : pageResult.getContent()) {
                 List<Product_images> images = productImagesDAO.getByProductId(p.getId());
-                p.setCoverImg(images.get(0).getImage_url());
+                if (images.size() > 0) {
+                    p.setCoverImg(images.get(0).getImage_url());
+                } else {
+                    p.setCoverImg("");
+                }
             }
 
             request.setAttribute("pageResult", pageResult);
@@ -236,7 +240,7 @@ public class ProductController extends HttpServlet {
         request.setAttribute("keyword", keyword);
         request.setAttribute("list", list);
         request.setAttribute("checkErrorSearch", checkError);
-        return "welcome.jsp";
+        return "products.jsp";
     }
 
     /**
@@ -525,7 +529,7 @@ public class ProductController extends HttpServlet {
             try {
                 quantity = Integer.parseInt(request.getParameter("quantity"));
             } catch (NumberFormatException e) {
-                request.setAttribute("checkErrorUpdateProductMain", "Quantity must be a valid number.");
+//                request.setAttribute("checkErrorUpdateProductMain", "Quantity must be a valid number.");
                 request.setAttribute("product", productsdao.getById(product_id));
 
                 // Thêm: load ảnh khi có lỗi để tránh mất ảnh trên giao diện
@@ -737,7 +741,7 @@ public class ProductController extends HttpServlet {
 
             if (productId < 1) {
                 request.setAttribute("checkErrorDeleteProduct", "Missing product_id.");
-                return "welcome.jsp";
+                return "MainController?action=searchProduct";
             }
 
             boolean success = productsdao.deleteProductById(productId);
@@ -753,9 +757,9 @@ public class ProductController extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("checkErrorDeleteProduct", "Unexpected error: " + e.getMessage());
-            return "welcome.jsp";
+            return "MainController?action=searchProduct";
         }
-        return "MainController?action=prepareHome";
+        return "MainController?action=searchProduct";
     }
 
     /**
@@ -1517,7 +1521,6 @@ public class ProductController extends HttpServlet {
                 publishDate = new Date();
             }
 
-
             // status
             int status = 1;
 
@@ -1660,7 +1663,6 @@ public class ProductController extends HttpServlet {
 
     }
 
-
     private String handleGetProminentList(HttpServletRequest request, HttpServletResponse response) {
         try {
             request.setCharacterEncoding("UTF-8");
@@ -1684,19 +1686,18 @@ public class ProductController extends HttpServlet {
             Page<Products> pageResult = productsdao.getProminentProducts(filter);
 
             // ===== Gán ảnh cho từng sản phẩm =====
-        for (Products p : pageResult.getContent()) {
-            // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
-            Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
-            if (coverImg != null) {
-                p.setCoverImg(coverImg.getImage_url());
+            for (Products p : pageResult.getContent()) {
+                // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
+                Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
+                if (coverImg != null) {
+                    p.setCoverImg(coverImg.getImage_url());
+                }
             }
-        }
 
-
-            request.setAttribute("listProductsByCategory_page", pageResult); 
-            request.setAttribute("listProductsByCategory", pageResult.getContent()); 
+            request.setAttribute("listProductsByCategory_page", pageResult);
+            request.setAttribute("listProductsByCategory", pageResult.getContent());
 //            đánh dấu là lấy ds sp nổi bật nên không hiện biên sidebar.jsp nữa
-            request.setAttribute("isListProminent", "true"); 
+            request.setAttribute("isListProminent", "true");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1704,4 +1705,10 @@ public class ProductController extends HttpServlet {
         }
         return "index.jsp";
     }
+
+//    private String handleShowViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
+//        List<Products> list = productsdao.getAll();
+//        request.setAttribute("products", list);
+//        return "products.jsp";
+//    }
 }
