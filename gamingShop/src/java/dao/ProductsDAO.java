@@ -11,7 +11,12 @@ import utils.DBUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -23,7 +28,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
     private static final String GET_BY_ID = "SELECT * FROM dbo.Products WHERE id = ?";
     private static final String GET_BY_STATUS = "SELECT * FROM dbo.Products WHERE status = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Products WHERE name LIKE ?";
-    
+
     private static final String CREATE
             = "INSERT INTO dbo.Products (name, sku, price, product_type, model_id, memory_id, guarantee_id, quantity, description_html, status) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -156,7 +161,6 @@ public class ProductsDAO implements IDAO<Products, Integer> {
     /**
      * Lấy danh sách sản phẩm có phân trang và lọc
      */
-    
     public Page<Products> getProductsWithFilter(ProductFilter filter) {
         Connection c = null;
         PreparedStatement st = null;
@@ -215,69 +219,124 @@ public class ProductsDAO implements IDAO<Products, Integer> {
 
         return new Page<>(products, filter.getPage(), filter.getPageSize(), totalCount);
     }
-    
-    
-    public Page<Products> getProminentProducts(ProductFilter filter){
+
+    public Page<Products> getProminentProducts(ProductFilter filter) {
         return getProductsByCondition(filter, "status", "prominent");
     }
-    
-    public Page<Products> getProductsByCondition(ProductFilter filter,String field, String value) {
-    Connection c = null;
-    PreparedStatement st = null;
-    ResultSet rs = null;
-    List<Products> products = new ArrayList<>();
-    int totalCount = 0;
 
-    try {
-        c = DBUtils.getConnection();
+    public Page<Products> getProductsByCondition(ProductFilter filter, String field, String value) {
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Products> products = new ArrayList<>();
+        int totalCount = 0;
 
-        StringBuilder queryBuilder = new StringBuilder("SELECT * FROM dbo.Products WHERE 1=1");
-        StringBuilder countQueryBuilder = new StringBuilder("SELECT COUNT(*) FROM dbo.Products WHERE 1=1");
-        List<Object> params = new ArrayList<>();
+        // ===== Clamp phân trang (JDK8 OK) =====
+        int page = (filter != null && filter.getPage() > 0) ? filter.getPage() : 1;
+        int pageSize = (filter != null && filter.getPageSize() > 0) ? filter.getPageSize() : 12;
+        pageSize = Math.min(Math.max(pageSize, 1), 100);
+        int offset = (page - 1) * pageSize;
 
-        // điều kiện từ ProductFilter
-        addFilterConditions(queryBuilder, countQueryBuilder, filter, params);
-
-        // điều kiện thêm vào
-        if (value != null && !value.isEmpty()) {
-            queryBuilder.append(" AND " + field + " = ?");
-            countQueryBuilder.append(" AND " + field + " = ?");
-            params.add(value);
+        // ===== Whitelist & kiểu dữ liệu (JDK8 style) =====
+        final Set<String> ALLOWED_FILTER_FIELDS = new HashSet<String>(Arrays.asList(
+                "status", "product_type", "model_id", "memory_id",
+                "guarantee_id", "name", "sku", "price", "quantity"
+        ));
+        final Map<String, String> FIELD_TYPES = new HashMap<String, String>();
+        {
+            FIELD_TYPES.put("status", "string");
+            FIELD_TYPES.put("product_type", "string");
+            FIELD_TYPES.put("model_id", "int");
+            FIELD_TYPES.put("memory_id", "int");
+            FIELD_TYPES.put("guarantee_id", "int");
+            FIELD_TYPES.put("name", "string");
+            FIELD_TYPES.put("sku", "string");
+            FIELD_TYPES.put("price", "decimal");
+            FIELD_TYPES.put("quantity", "int");
         }
 
-        // ORDER BY
-        addOrderBy(queryBuilder, filter.getSortBy());
+        try {
+            c = DBUtils.getConnection();
 
-        // phân trang
-        int offset = (filter.getPage() - 1) * filter.getPageSize();
-        queryBuilder.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+            StringBuilder queryBuilder = new StringBuilder("SELECT * FROM dbo.Products WHERE 1=1");
+            StringBuilder countQueryBuilder = new StringBuilder("SELECT COUNT(*) FROM dbo.Products WHERE 1=1");
+            List<Object> params = new ArrayList<Object>();
 
-        // Đếm tổng
-        st = c.prepareStatement(countQueryBuilder.toString());
-        setParameters(st, params);
-        rs = st.executeQuery();
-        if (rs.next()) totalCount = rs.getInt(1);
-        rs.close(); st.close();
+            // giữ nguyên logic filter cũ
+            addFilterConditions(queryBuilder, countQueryBuilder, filter, params);
 
-        // Lấy data
-        st = c.prepareStatement(queryBuilder.toString());
-        setParameters(st, params);
-        st.setInt(params.size() + 1, offset);
-        st.setInt(params.size() + 2, filter.getPageSize());
+            // ===== field = ? (có whitelist + ép kiểu) =====
+            if (field != null && field.trim().length() > 0 && value != null && value.trim().length() > 0) {
+                if (!ALLOWED_FILTER_FIELDS.contains(field)) {
+                    throw new IllegalArgumentException("Invalid filter field: " + field);
+                }
+                queryBuilder.append(" AND ").append(field).append(" = ?");
+                countQueryBuilder.append(" AND ").append(field).append(" = ?");
+                params.add(castParam(value, FIELD_TYPES.get(field) != null ? FIELD_TYPES.get(field) : "string"));
+            }
 
-        rs = st.executeQuery();
-        while (rs.next()) {
-            products.add(map(rs));
+            // ORDER BY (hàm cũ của bạn đã có mặc định)
+            addOrderBy(queryBuilder, (filter != null) ? filter.getSortBy() : null);
+
+            // phân trang
+            queryBuilder.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+            // Đếm tổng
+            st = c.prepareStatement(countQueryBuilder.toString());
+            setParameters(st, params);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                totalCount = rs.getInt(1);
+            }
+            rs.close();
+            st.close();
+
+            // Lấy data
+            st = c.prepareStatement(queryBuilder.toString());
+            setParameters(st, params);
+            st.setInt(params.size() + 1, offset);
+            st.setInt(params.size() + 2, pageSize);
+
+            rs = st.executeQuery();
+            while (rs.next()) {
+                products.add(map(rs));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(c, st, rs);
         }
 
-    } catch (Exception ex) {
-        ex.printStackTrace();
-    } finally {
-        close(c, st, rs);
+        return new Page<Products>(products, page, pageSize, totalCount);
     }
 
-    return new Page<>(products, filter.getPage(), filter.getPageSize(), totalCount);
-}
+    // ===== [NEW] Ép kiểu param theo loại cột để tránh convert ngầm & tận dụng index =====
+    private Object castParam(String raw, String kind) {
+        if (raw == null) {
+            return null;
+        }
+        String v = raw.trim();
+        try {
+            switch (kind) {
+                case "int":
+                    return Integer.valueOf(v);
+                case "long":
+                    return Long.valueOf(v);
+                case "decimal":
+                    return new java.math.BigDecimal(v);
+                case "bool":
+                    return Boolean.valueOf(v);
+                case "datetime":
+                    return java.sql.Timestamp.valueOf(v); // điều chỉnh theo format bạn dùng
+                default:
+                    return v; // string / nvarchar
+            }
+        } catch (Exception e) {
+            // Nếu parse thất bại, trả về chuỗi thô để không vỡ query (hoặc bạn có thể ném lỗi tùy ý)
+            return v;
+        }
+    }
+
     private void addFilterConditions(StringBuilder queryBuilder, StringBuilder countQueryBuilder,
             ProductFilter filter, List<Object> params) {
         String conditions = "";
@@ -475,6 +534,12 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         } finally {
             close(c, st, null);
         }
+    }
+
+    public Page<Products> getMayChoiGame(ProductFilter filter) {
+        ModelsDAO mdao = new ModelsDAO();
+        int model_id = mdao.getIdByType("Máy chơi game");
+        return getProductsByCondition(filter, "model_id", "");
     }
 
 }

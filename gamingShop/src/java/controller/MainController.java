@@ -32,6 +32,8 @@ public class MainController extends HttpServlet {
                 url = "/UserController";
             } else if (isProductAction(action)) {
                 url = "/ProductController";
+            } else if (isBannersAction(action)) {
+                url = "/BannerController";
             }
 
         } catch (Exception e) {
@@ -122,6 +124,16 @@ public class MainController extends HttpServlet {
                 || "deleteService".equals(action)
                 ;
         
+    }
+
+    private boolean isBannersAction(String action) {
+        return "getAllBannerActive".equals(action)
+                || "addBanner".equals(action)
+                || "showAddBannerForm".equals(action)
+                || "deleteBanner".equals(action)
+                || "updateBanner".equals(action)
+                || "searchBanner".equals(action)
+                || "editBanners".equals(action);
     }
 
 }

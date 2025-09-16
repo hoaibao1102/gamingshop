@@ -408,7 +408,7 @@
                       } else {
                     %>
                     <form action="MainController" method="get" style="margin:0">
-                        <input type="hidden" name="action" value="showLogin"/>
+                        <input type="hidden" name="action" value="login"/>
                         <button class="btn primary" type="submit">Đăng nhập</button>
                     </form>
                     <%
@@ -543,7 +543,7 @@
                       } else {
                     %>
                     <form action="MainController" method="get" style="margin:0">
-                        <input type="hidden" name="action" value="showLogin"/>
+                        <input type="hidden" name="action" value="login"/>
                         <button class="btn primary" type="submit" title="Đăng nhập">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>

@@ -25,7 +25,29 @@ public class ModelsDAO implements IDAO<Models, Integer> {
     private static final String GET_ALL_ACTIVE = "SELECT * FROM dbo.Models WHERE status = 'active'";
     private static final String CHECK_MODEL_TYPE_EXISTS_EXCEPT = "SELECT COUNT(*) FROM dbo.Models WHERE model_type = ? AND id != ?";
     private static final String UPDATE = "UPDATE dbo.Models SET model_type = ?, description_html = ?, image_url = ?, status = ?, updated_at = GETDATE() WHERE id = ?";
+    
+    private static final String GET_ID_BY_NAME = "SELECT * FROM dbo.Models WHERE model_type = ?";
 
+    public int getIdByType(String model_type) {
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(GET_ID_BY_NAME);
+            st.setString(1, model_type);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(c, st, rs);
+        }
+        return 0;
+    }
+    
     @Override
     public boolean create(Models e) {
         Connection c = null;

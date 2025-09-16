@@ -190,4 +190,21 @@ public class BannersDAO implements IDAO<Banners, Integer> {
         } catch (Exception ignore) {
         }
     }
+
+    public boolean deleteBannerById(int id) {
+        Connection c = null;
+        PreparedStatement st = null;
+        String sql = "UPDATE Banners SET status = 'inactive', updated_at = GETDATE() WHERE id = ?";
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(sql);
+            st.setInt(1, id);
+            return st.executeUpdate() > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        } finally {
+            close(c, st, null);
+        }
+    }
 }

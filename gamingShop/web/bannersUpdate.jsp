@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Quản lý Banners (scriptlet)</title>
+        <title>Quản lý Banners</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
         <style>
             body {
@@ -47,8 +47,13 @@
         <%
             String ctx = request.getContextPath();
             String messageAddBanner = (String) request.getAttribute("messageAddBanner");
+            String messageUpdateBanner = (String) request.getAttribute("messageUpdateBanner");
             String checkErrorAddBanner = (String) request.getAttribute("checkErrorAddBanner");
-            String checkError = (String) request.getAttribute("checkError");
+            String checkErrorUpdateBanner = (String) request.getAttribute("checkErrorUpdateBanner");
+
+            // Banner đang edit (nếu có)
+            Banners editBanner = (Banners) request.getAttribute("editBanner");
+
             @SuppressWarnings("unchecked")
             List<Banners> banners = (List<Banners>) request.getAttribute("banners");
         %>
@@ -56,47 +61,73 @@
         <div class="container py-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h1 class="h3 m-0">Quản lý Banners</h1>
-                <a class="btn btn-outline-secondary btn-sm" href="BannersController?action=getAllBannerActive">Tải lại</a>
             </div>
 
-            <% if (messageAddBanner != null && !messageAddBanner.isEmpty()) { %>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <%= messageAddBanner %>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <% if (messageAddBanner != null) { %>
+            <div class="alert alert-success alert-dismissible fade show"><%= messageAddBanner %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             <% } %>
-            <% if (checkErrorAddBanner != null && !checkErrorAddBanner.isEmpty()) { %>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <%= checkErrorAddBanner %>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <% if (messageUpdateBanner != null) { %>
+            <div class="alert alert-success alert-dismissible fade show"><%= messageUpdateBanner %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             <% } %>
-            <% if (checkError != null && !checkError.isEmpty()) { %>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <%= checkError %>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <% if (checkErrorAddBanner != null) { %>
+            <div class="alert alert-danger alert-dismissible fade show"><%= checkErrorAddBanner %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <% } %>
+            <% if (checkErrorUpdateBanner != null) { %>
+            <div class="alert alert-danger alert-dismissible fade show"><%= checkErrorUpdateBanner %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             <% } %>
 
             <div class="row g-4">
-                <!-- Form thêm mới -->
+                <!-- Form thêm/cập nhật -->
                 <div class="col-lg-5">
                     <div class="card">
                         <div class="card-header bg-white">
-                            <strong>Thêm banner</strong>
+                            <strong><%= (editBanner != null ? "Cập nhật banner" : "Thêm banner") %></strong>
                         </div>
                         <div class="card-body">
-                            <form method="post" action="BannersController?action=addBanner" enctype="multipart/form-data" id="bannerForm">
+                            <form method="post"
+                                  action="BannerController?action=<%= (editBanner != null ? "updateBanner" : "addBanner") %>"
+                                  enctype="multipart/form-data"
+                                  id="bannerForm">
+
+                                <% if (editBanner != null) { %>
+                                <input type="hidden" name="id" value="<%= editBanner.getId() %>" />
+                                <% } %>
+
                                 <div class="mb-3">
                                     <label class="form-label required" for="title">Tiêu đề</label>
-                                    <input type="text" class="form-control" id="title" name="title" placeholder="Nhập tiêu đề" required />
+                                    <input type="text" class="form-control" id="title" name="title"
+                                           value="<%= (editBanner != null 
+                                                       ? editBanner.getTitle() 
+                                                       : (request.getParameter("title") != null 
+                                                            ? request.getParameter("title") 
+                                                            : "")) %>"
+                                           placeholder="Nhập tiêu đề" required />
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label required" for="status">Trạng thái</label>
                                     <select class="form-select" id="status" name="status" required>
-                                        <option value="active">active</option>
-                                        <option value="inactive" selected>inactive</option>
+                                        <option value="active"
+                                                <%= (editBanner != null && "active".equals(editBanner.getStatus())) 
+                                                    || (editBanner == null && "active".equals(request.getParameter("status"))) 
+                                                    ? "selected" : "" %>>
+                                            active
+                                        </option>
+
+                                        <option value="inactive"
+                                                <%= (editBanner != null && "inactive".equals(editBanner.getStatus())) 
+                                                    || (editBanner == null && "inactive".equals(request.getParameter("status"))) 
+                                                    ? "selected" : "" %>>
+                                            inactive
+                                        </option>
                                     </select>
                                 </div>
 
@@ -107,93 +138,22 @@
                                 </div>
 
                                 <div class="mb-3">
+                                    <% if (editBanner != null && editBanner.getImage_url() != null) { %>
+                                    <img src="<%= ctx + "/" + editBanner.getImage_url() %>" class="preview" id="preview" alt="Preview" />
+                                    <% } else { %>
                                     <img id="preview" class="preview d-none" alt="Preview" />
+                                    <% } %>
                                 </div>
 
                                 <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary">Thêm mới</button>
+                                    <button type="submit" class="btn btn-primary"><%= (editBanner != null ? "Cập nhật" : "Thêm mới") %></button>
                                     <button type="reset" class="btn btn-outline-secondary">Làm lại</button>
+                                    <a class="btn btn-outline-secondary" href="MainController?action=getAllBannerActive">Danh sách banner</a>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
-
-                <!-- Danh sách banners -->
-                <div class="col-lg-7">
-                    <div class="card">
-                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                            <strong>Danh sách</strong>
-                            <form class="d-flex" method="get" action="BannersController">
-                                <input type="hidden" name="action" value="search" />
-                                <input class="form-control form-control-sm me-2" type="search" name="q" placeholder="Tìm theo tiêu đề..." value="<%= request.getParameter("q") != null ? request.getParameter("q") : "" %>" />
-                                <button class="btn btn-sm btn-outline-primary" type="submit">Tìm</button>
-                            </form>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th style="width:70px">ID</th>
-                                            <th style="width:120px">Ảnh</th>
-                                            <th>Tiêu đề</th>
-                                            <th style="width:120px">Trạng thái</th>
-                                            <th style="width:160px" class="text-end">Thao tác</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <%
-                                            if (banners != null && !banners.isEmpty()) {
-                                                for (Banners b : banners) {
-                                                    String badgeClass = "badge-inactive";
-                                                    if ("active".equalsIgnoreCase(b.getStatus())) badgeClass = "badge-active";
-                                        %>
-                                        <tr>
-                                            <td><%= b.getId() %></td>
-                                            <td>
-                                                <%
-                                                  if (b.getImage_url() != null && !b.getImage_url().isEmpty()) {
-                                                %>
-                                                <img class="thumb" src="<%= ctx %>/<%= b.getImage_url() %>" alt="thumb"/>
-                                                <%
-                                                  } else {
-                                                %>
-                                                <span class="text-muted">(không có)</span>
-                                                <%
-                                                  }
-                                                %>
-                                            </td>
-                                            <td>
-                                                <div class="fw-semibold"><%= b.getTitle() %></div>
-                                                <small class="text-muted">#<%= b.getId() %></small>
-                                            </td>
-                                            <td>
-                                                <span class="badge <%= badgeClass %>"><%= b.getStatus() %></span>
-                                            </td>
-                                            <td class="text-end">
-                                                <a class="btn btn-sm btn-outline-secondary" href="BannersController?action=edit&id=<%= b.getId() %>">Sửa</a>
-                                                <a class="btn btn-sm btn-outline-danger" href="BannersController?action=delete&id=<%= b.getId() %>"
-                                                   onclick="return confirm('Xoá banner #<%= b.getId() %>?');">Xoá</a>
-                                            </td>
-                                        </tr>
-                                        <%
-                                                }
-                                            } else {
-                                        %>
-                                        <tr>
-                                            <td colspan="5" class="text-center text-muted py-4">Chưa có banner nào</td>
-                                        </tr>
-                                        <%
-                                            }
-                                        %>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
 
