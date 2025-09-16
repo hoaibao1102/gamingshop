@@ -194,7 +194,7 @@ public class ProductController extends HttpServlet {
             // Gán hình ảnh cho từng sản phẩm
             for (Products p : pageResult.getContent()) {
                 List<Product_images> images = productImagesDAO.getByProductId(p.getId());
-                p.setImage(images);
+                p.setCoverImg(images.get(0).getImage_url());
             }
 
             request.setAttribute("pageResult", pageResult);
@@ -1375,7 +1375,7 @@ public class ProductController extends HttpServlet {
         if (keyword != null && !keyword.trim().isEmpty()) {
             list = postsDAO.getByName(keyword.trim());
             if (list == null || list.isEmpty()) {
-                checkError = "No products found with name: " + keyword;
+                checkError = "No posts found with name: " + keyword;
             }
         } else {
             list = postsDAO.getAll();
@@ -1477,9 +1477,9 @@ public class ProductController extends HttpServlet {
             if (success) {
                 // Nếu có cache list sản phẩm để edit trong session thì xoá để lần sau nạp mới
                 request.getSession().removeAttribute("cachedProductListEdit");
-                request.setAttribute("messageDeletePosts", "Product deleted successfully.");
+                request.setAttribute("messageDeletePosts", "Posts deleted successfully.");
             } else {
-                request.setAttribute("checkErrorDeletePosts", "Failed to delete product.");
+                request.setAttribute("checkErrorDeletePosts", "Failed to delete posts.");
             }
 
         } catch (Exception e) {
@@ -1626,7 +1626,6 @@ public class ProductController extends HttpServlet {
             return null;
         }
     }
-
 
     private String handleGetProduct(HttpServletRequest request, HttpServletResponse response) {
         try {

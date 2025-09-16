@@ -175,7 +175,7 @@
                     .then(data => {
                     alert("Xoá thành công!");
                     // Ví dụ quay về danh sách bài viết
-                    window.location.href = "psots.jsp";
+                    window.location.href = "posts.jsp";
                     })
                     .catch(err => {
                     console.error("Error:", err);
