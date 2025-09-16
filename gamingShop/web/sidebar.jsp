@@ -395,7 +395,7 @@
         <aside class="sidebar">
             <!-- Logo -->
             <div class="logo-card">
-                <img class="logo" src="https://via.placeholder.com/220x220.png?text=LOGO" alt="Logo cửa hàng">
+                <img class="logo" src="assets/img/logo/logo.png" alt="Logo cửa hàng">
             </div>
 
             <!-- Menu -->
