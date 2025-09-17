@@ -35,7 +35,10 @@ public class UserController extends HttpServlet {
                 url = handleLogin(request, response);
             } else if ("logout".equals(action)) {
                 url = handleLogout(request, response);
-            } else {
+            }
+            else if ("goLoginForm".equals(action)) {
+                url = handleGoLoginForm(request, response);
+            }else {
                 request.setAttribute("message", "Invalid action: " + action);
             }
         } catch (Exception e) {
@@ -94,8 +97,7 @@ public class UserController extends HttpServlet {
         if (accountsDAO.login(userName, password)) {
             Accounts accounts = accountsDAO.getByUsername(userName);
             session.setAttribute("user", accounts);
-            handleViewAllProducts_sidebar(request, response);
-            return handleViewAllProducts(request, response);
+            return "MainController?action=prepareHome";
         } else {
             request.setAttribute("message", "UserName or Password incorrect!");
             return LOGIN_PAGE;
@@ -105,53 +107,13 @@ public class UserController extends HttpServlet {
     private String handleLogout(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
         if (session != null) {
-            session.invalidate();
-            handleViewAllProducts_sidebar(request, response);
-
+            session.removeAttribute("user");
         }
-        return handleViewAllProducts(request, response);
+        return "MainController?action=prepareHome";
     }
 
-    public void handleViewAllProducts_sidebar(HttpServletRequest request, HttpServletResponse response) {
-        List<Products> list = productsdao.getAll();
-        request.setAttribute("list", list);
-    }
+    private String handleGoLoginForm(HttpServletRequest request, HttpServletResponse response) {
+        return "login.jsp";
 
-    public String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            request.setCharacterEncoding("UTF-8");
-            // Tạo filter mặc định
-            ProductFilter filter = new ProductFilter();
-
-            // Lấy tham số page nếu có
-            String pageParam = request.getParameter("page");
-            if (pageParam != null && !pageParam.isEmpty()) {
-                try {
-                    int page = Integer.parseInt(pageParam);
-                    if (page > 0) {
-                        filter.setPage(page);
-                    }
-                } catch (NumberFormatException e) {
-                    // Ignore, use default page
-                }
-            }
-
-            // Lấy dữ liệu với phân trang
-            Page<Products> pageResult = productsdao.getProductsWithFilter(filter);
-
-            // Gán hình ảnh cho từng sản phẩm
-            for (Products p : pageResult.getContent()) {
-                List<Product_images> images = productImagesDAO.getByProductId(p.getId());
-                p.setCoverImg(images.get(0).getImage_url());
-            }
-            request.setAttribute("pageResult", pageResult);
-            request.setAttribute("currentFilter", filter);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("checkError", "Error loading products: " + e.getMessage());
-        }
-
-        return INDEX_PAGE;
     }
 }

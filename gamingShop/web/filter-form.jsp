@@ -1,18 +1,19 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<!-- Filter Form Section -->
-<div class="filter-section">
-    <div class="filter-header">
+<!-- Filter Section -->
+<div class="filter-section" id="productFilter">
+    <div class="filter-header" onclick="toggleFilter()" role="button" aria-controls="filterContent">
         <h3>Lọc & Sắp xếp sản phẩm</h3>
-        <button type="button" class="filter-toggle" onclick="toggleFilter()">
+        <button type="button" class="filter-toggle" aria-expanded="false">
             <span class="filter-icon">🔍</span>
             <span class="toggle-text">Mở rộng</span>
         </button>
     </div>
 
-    <div class="filter-content" id="filterContent">
-        <form action="ProductController" method="GET" class="filter-form">
+    <!-- Ẩn mặc định bằng class 'collapsed' -->
+    <div class="filter-content collapsed" id="filterContent" aria-hidden="true">
+        <form action="ProductController" method="GET" class="filter-form" onsubmit="applyFilter(event)">
             <input type="hidden" name="action" value="filterProducts">
 
             <div class="filter-row">
@@ -28,8 +29,8 @@
                 <div class="filter-group">
                     <label for="productType">Loại sản phẩm:</label>
                     <select id="productType" name="productType">
-                        <option value="all" ${currentFilter.productType eq 'all' ? 'selected' : ''}>Tất cả</option>
-                        <option value="new" ${currentFilter.productType eq 'new' ? 'selected' : ''}>Mới</option>
+                        <option value="all"  ${currentFilter.productType eq 'all'  ? 'selected' : ''}>Tất cả</option>
+                        <option value="new"  ${currentFilter.productType eq 'new'  ? 'selected' : ''}>Mới</option>
                         <option value="used" ${currentFilter.productType eq 'used' ? 'selected' : ''}>Đã sử dụng</option>
                     </select>
                 </div>
@@ -38,26 +39,26 @@
             <div class="filter-row">
                 <!-- Khoảng giá -->
                 <div class="filter-group price-range">
-                            <label>Khoảng giá (VND):</label>
-                            <div class="price-inputs">
-                                <input type="number" id="minPrice" name="minPrice" 
-                                        placeholder="${empty currentFilter.minPrice ? 'Giá từ...' : currentFilter.minPrice}" min="0" step="1000">
-                                <span class="price-separator">→</span>
-                                <input type="number" id="maxPrice" name="maxPrice" 
-                                       placeholder="${empty currentFilter.maxPrice ? 'Giá đến...' : currentFilter.maxPrice}" min="0" step="1000">
-                            </div>
-                        </div>
+                    <label>Khoảng giá (VND):</label>
+                    <div class="price-inputs">
+                        <input type="number" id="minPrice" name="minPrice" 
+                               placeholder="${empty currentFilter.minPrice ? 'Giá từ...' : currentFilter.minPrice}" min="0" step="1000">
+                        <span class="price-separator">→</span>
+                        <input type="number" id="maxPrice" name="maxPrice" 
+                               placeholder="${empty currentFilter.maxPrice ? 'Giá đến...' : currentFilter.maxPrice}" min="0" step="1000">
+                    </div>
+                </div>
 
                 <!-- Sắp xếp -->
                 <div class="filter-group">
                     <label for="sortBy">Sắp xếp theo:</label>
                     <select id="sortBy" name="sortBy">
-                        <option value="name_asc" ${currentFilter.sortBy eq 'name_asc' ? 'selected' : ''}>Tên A → Z</option>
+                        <option value="name_asc"  ${currentFilter.sortBy eq 'name_asc'  ? 'selected' : ''}>Tên A → Z</option>
                         <option value="name_desc" ${currentFilter.sortBy eq 'name_desc' ? 'selected' : ''}>Tên Z → A</option>
                         <option value="price_asc" ${currentFilter.sortBy eq 'price_asc' ? 'selected' : ''}>Giá thấp → cao</option>
-                        <option value="price_desc" ${currentFilter.sortBy eq 'price_desc' ? 'selected' : ''}>Giá cao → thấp</option>
+                        <option value="price_desc"${currentFilter.sortBy eq 'price_desc'? 'selected' : ''}>Giá cao → thấp</option>
                         <option value="date_desc" ${currentFilter.sortBy eq 'date_desc' ? 'selected' : ''}>Mới nhất</option>
-                        <option value="date_asc" ${currentFilter.sortBy eq 'date_asc' ? 'selected' : ''}>Cũ nhất</option>
+                        <option value="date_asc"  ${currentFilter.sortBy eq 'date_asc'  ? 'selected' : ''}>Cũ nhất</option>
                     </select>
                 </div>
             </div>
@@ -76,6 +77,11 @@
 </div>
 
 <style>
+    :root{
+        --primary-gradient: linear-gradient(135deg,#667eea, #764ba2);
+        --text-dark:#0f172a;
+    }
+
     /* Filter Section Styles */
     .filter-section {
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
@@ -265,44 +271,40 @@
 </style>
 
 <script>
-    // Filter Functions
-        function toggleFilter() {
-            const content = document.getElementById('filterContent');
-            const toggleBtn = document.querySelector('.filter-toggle .toggle-text');
-            
-            if (content.classList.contains('collapsed')) {
-                content.classList.remove('collapsed');
-                toggleBtn.textContent = 'Thu gọn';
-            } else {
-                content.classList.add('collapsed');
-                toggleBtn.textContent = 'Mở rộng';
-            }
-        }
+    // Toggle mở/đóng filter (đóng mặc định)
+    function toggleFilter() {
+        const content = document.getElementById('filterContent');
+        const toggleBtn = document.querySelector('.filter-toggle');
+        const toggleTxt = document.querySelector('.filter-toggle .toggle-text');
 
-        function resetFilter() {
-            document.getElementById('name').value = '';
-            document.getElementById('productType').value = 'all';
-            document.getElementById('minPrice').value = '';
-            document.getElementById('maxPrice').value = '';
-            document.getElementById('sortBy').value = 'name_asc';
-            
-            // Apply empty filter (show all products)
-            console.log('Filter reset - redirecting to show all products');
+        const willOpen = content.classList.contains('collapsed');
+        if (willOpen) {
+            content.classList.remove('collapsed');
+            toggleTxt.textContent = 'Thu gọn';
+            toggleBtn.setAttribute('aria-expanded', 'true');
+            content.setAttribute('aria-hidden', 'false');
+        } else {
+            content.classList.add('collapsed');
+            toggleTxt.textContent = 'Mở rộng';
+            toggleBtn.setAttribute('aria-expanded', 'false');
+            content.setAttribute('aria-hidden', 'true');
         }
+    }
 
-        function applyFilter(event) {
-            event.preventDefault();
-            
-            const formData = new FormData(event.target);
-            const filterData = {
-                name: formData.get('name'),
-                productType: formData.get('productType'),
-                minPrice: formData.get('minPrice'),
-                maxPrice: formData.get('maxPrice'),
-                sortBy: formData.get('sortBy')
-            };
-            
-            console.log('Applying filter:', filterData);
-            // Here you would redirect with filter parameters
-        }
+    function resetFilter() {
+        document.getElementById('name').value = '';
+        document.getElementById('productType').value = 'all';
+        document.getElementById('minPrice').value = '';
+        document.getElementById('maxPrice').value = '';
+        document.getElementById('sortBy').value = 'name_asc';
+
+        // Nếu muốn reset về danh sách đầy đủ:
+        // window.location.href = 'ProductController?action=filterProducts';
+    }
+
+    function applyFilter(e) {
+        // Cho phép submit bình thường tới Controller; nếu muốn AJAX thì ngăn mặc định:
+        // e.preventDefault();
+        // ... fetch() / redirect build query string tại đây
+    }
 </script>

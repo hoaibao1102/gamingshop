@@ -411,8 +411,8 @@
 
                 <c:if test="${not empty user}">
                     <form action="MainController" method="get" class="nav-form">
-                        <input type="hidden" name="action" value="quanLyDanhMuc">
-                        <input class="nav-item" type="submit" value="🗂️ Quản lý danh mục">
+                        <input type="hidden" name="action" value="searchPosts">
+                        <input class="nav-item" type="submit" value="🗂️ Quản lý bài post">
                     </form>
                     <form action="MainController" method="post" class="search-form" autocomplete="off">
                         <input type="hidden" name="action" value="searchProduct"/>
@@ -444,13 +444,13 @@
                                     <li class="item-sb">
                                         <form action="MainController" method="get" class="card">
                                             <input type="hidden" name="action" value="getProduct"/>
-                                            <input type="hidden" name="id" value="${i.id}"/>
+                                            <input type="hidden" name="idProduct" value="${i.id}"/>
 
                                             <!-- Bấm vào cả card là submit -->
                                             <button type="submit" class="thumb-btn-sb">
                                                 <!-- Container cho ảnh và giá -->
                                                 <div class="image-price-container-sb">
-                                                    <img class="thumb-sb" src="${i.image.image_url}" alt="${i.name}"/>
+                                                    <img class="thumb-sb" src="${i.coverImg}" alt="${i.name}"/>
                                                     <div class="price-box-sb">
                                                         <div class="price-text-sb"><fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" />
                                                             VND</div>

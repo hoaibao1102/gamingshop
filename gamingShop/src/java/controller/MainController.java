@@ -84,7 +84,8 @@ public class MainController extends HttpServlet {
 
     private boolean isUserAction(String action) {
         return "login".equals(action)
-                || "logout".equals(action);
+                || "logout".equals(action)
+                || "goLoginForm".equals(action);
     }
 
     private boolean isProductAction(String action) {
@@ -124,7 +125,8 @@ public class MainController extends HttpServlet {
                 || "deleteService".equals(action)
                 || "listMayChoiGame".equals(action)
                 || "listTheGame".equals(action)
-                || "viewAllProducts".equals(action);
+                || "viewAllProducts".equals(action)
+                || "showAddPosts".equals(action);
     }
 
     private boolean isBannersAction(String action) {
