@@ -326,17 +326,8 @@
                 <jsp:include page="header.jsp"/>
 
                 <div class="container">
-                    <!-- Breadcrumbs -->
-                    <div class="breadcrumbs">
-                        <a href="dashboard.jsp">Dashboard</a>
-                        <span class="sep">/</span>
-                        <a href="products.jsp">Sản phẩm</a>
-                        <span class="sep">/</span>
-                        <span><c:choose><c:when test="${not empty product}">Chỉnh sửa</c:when><c:otherwise>Thêm mới</c:otherwise></c:choose></span>
-                            </div>
-
-                            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:12px; flex-wrap:wrap;">
-                                <h2 class="page-title" style="margin:0;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:12px; flex-wrap:wrap;">
+                        <h2 class="page-title" style="margin:0;">
                             <c:choose>
                                 <c:when test="${not empty product}">Chỉnh sửa sản phẩm</c:when>
                                 <c:otherwise>Thêm sản phẩm mới</c:otherwise>
@@ -562,10 +553,10 @@
                     </div>
                 </div>
 
-            
+
             </div>
         </div>
-
+        <jsp:include page="footer.jsp"/>
         <!-- Swiper JS (nếu dùng nơi khác) -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 

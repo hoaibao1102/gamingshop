@@ -2,6 +2,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page import="utils.AuthUtils" %>
+<c:set var="isLoggedIn" value="<%= AuthUtils.isLoggedIn(request) %>" />
 <fmt:setLocale value="vi_VN"/>
 
 <%-- 
@@ -166,8 +168,9 @@
                 flex-wrap:wrap;
                 color:#6b7280;
                 font-size:.9rem;
-                margin-bottom:8px
+                margin-bottom:10px
             }
+
             .badge{
                 display:inline-flex;
                 align-items:center;
@@ -249,6 +252,7 @@
             .page-title{
                 font-size:1.1rem
             }
+
             .search-bar input[type="text"]{
                 padding:8px 10px
             }
@@ -271,6 +275,12 @@
             }
             .card .title{
                 font-size:.98rem
+            }
+
+            .body .title{
+                text-align: center;
+                height: 45px;
+                margin-top: 10px
             }
             .card .meta{
                 font-size:.85rem;
@@ -338,7 +348,7 @@
                 font-size: 20px;
                 font-weight: 700;
                 color: #111827;
-                margin-right: 550px;
+                margin-right: 590px;
             }
             .admin-toolbar .search-form {
                 display: flex;
@@ -441,22 +451,23 @@
                 </div>
 
                 <div class="container">
-                    <div class="admin-toolbar">
-                        <div class="title">Danh sách sản phẩm</div>
-                        <div class="header-actions">
-                            <form action="MainController" method="post" class="search-form" autocomplete="off">
-                                <input type="hidden" name="action" value="searchPosts"/>
-                                <input type="text" name="keyword" value="${keyword != null ? keyword : ''}" placeholder="Nhập tên bài post..." />
-                                <button type="submit" class="btn btn-custom">Tìm kiếm</button>
-                            </form>
+                    <c:if test="${isLoggedIn}">
+                        <div class="admin-toolbar">
+                            <div class="title">Danh sách sản phẩm</div>
+                            <div class="header-actions">
+                                <form action="MainController" method="post" class="search-form" autocomplete="off">
+                                    <input type="hidden" name="action" value="searchPosts"/>
+                                    <input type="text" name="keyword" value="${keyword != null ? keyword : ''}" placeholder="Nhập tên bài post..." />
+                                    <button type="submit" class="btn btn-custom">Tìm kiếm</button>
+                                </form>
 
-                            <form action="MainController" method="post" class="action-form">
-                                <input type="hidden" name="action" value="showAddPosts"/>
-                                <button class="btn btn-custom" type="submit">+ Thêm bài post</button>
-                            </form>
+                                <form action="MainController" method="post" class="action-form">
+                                    <input type="hidden" name="action" value="showAddPosts"/>
+                                    <button class="btn btn-custom" type="submit">+ Thêm bài post</button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-
+                    </c:if>
                     <!-- Thông báo -->
                     <c:if test="${not empty checkErrorSearchPosts}">
                         <div class="alert alert-danger">${checkErrorSearchPosts}</div>
@@ -472,18 +483,22 @@
                     </c:if>
 
                     <div class="products-card">
-                        <div class="products-meta">
-                            <span class="meta-pill"><span class="dot"></span><b>Từ khóa:</b>&nbsp;${keyword != null && fn:length(keyword) > 0 ? keyword : '—'}</span>
-                            <span class="meta-pill"><b>Tổng:</b>&nbsp;<c:choose>
-                                    <c:when test="${not empty list}">${fn:length(list)}</c:when>
-                                    <c:otherwise>0</c:otherwise>
-                                </c:choose> sản phẩm</span>
-                        </div> <br>
+                        <c:if test="${isLoggedIn}">
+                            <div class="products-meta">
+                                <span class="meta-pill"><span class="dot"></span><b>Từ khóa:</b>&nbsp;${keyword != null && fn:length(keyword) > 0 ? keyword : '—'}</span>
+                                <span class="meta-pill"><b>Tổng:</b>&nbsp;<c:choose>
+                                        <c:when test="${not empty list}">${fn:length(list)}</c:when>
+                                        <c:otherwise>0</c:otherwise>
+                                    </c:choose> sản phẩm</span>
+                            </div> <br>
+                        </c:if>
                         <!-- Danh sách bài viết -->
                         <c:choose>
                             <c:when test="${not empty list}">
                                 <ul class="card-grid" style="list-style:none; padding-left:0; margin:0">
                                     <c:forEach var="p" items="${list}">
+                                        <!-- Chỉ hiển thị nếu đã login, hoặc bài đã xuất bản -->
+                                        <c:if test="${isLoggedIn or p.status == 1}">
                                             <li class="card">
                                                 <c:choose>
                                                     <c:when test="${not empty p.image_url}">
@@ -497,42 +512,46 @@
                                                 <div class="body">
                                                     <span class="title">${p.title}</span>
                                                     <div class="meta">
-                                                        <span class="badge">#${p.id}</span>
+                                                        <c:if test="${isLoggedIn}">
+                                                            <span class="badge">#${p.id}</span>
+                                                        </c:if>
                                                         <span>Tác giả: <strong>${p.author}</strong></span>
-                                                        <span>
-                                                            <fmt:formatDate value="${p.publish_date}" pattern="dd/MM/yyyy"/>
-                                                        </span>
+                                                        <span><fmt:formatDate value="${p.publish_date}" pattern="dd/MM/yyyy"/></span>
+
+                                                        <!-- Badge trạng thái: luôn hiện Published; Draft chỉ hiện khi đã login -->
                                                         <c:choose>
                                                             <c:when test="${p.status == 1}">
                                                                 <span class="badge success">Đã xuất bản</span>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <span class="badge warning">Bản nháp</span>
+                                                                <c:if test="${isLoggedIn}">
+                                                                    <span class="badge warning">Bản nháp</span>
+                                                                </c:if>
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </div>
+
                                                     <div class="content">
                                                         <c:out value="${p.content_html}" escapeXml="false"/>
                                                     </div>
                                                 </div>
 
                                                 <div class="actions">
-                                                    <form action="MainController" method="post" style="display:inline-flex; gap:8px; width:100%">
-                                                        <input type="hidden" name="keyword" value="${keyword != null ? keyword : ''}" />
-
-                                                        <input type="hidden" name="id" value="${p.id}"/>
-                                                        <button class="btn btn-outline" name="action" value="goToUpdatePosts" type="submit">Sửa</button>
-
-                                                        <input type="hidden" name="deleteId" value="${p.id}"/>
-                                                        <button class="btn btn-danger" 
-                                                                name="action" value="deletePosts" type="submit"
-                                                                onclick="return confirm('Xoá bài viết #${p.id}?');">Xoá</button>
-                                                    </form>
+                                                    <c:if test="${isLoggedIn}">
+                                                        <form action="MainController" method="post" style="display:inline-flex; gap:8px; width:100%">
+                                                            <input type="hidden" name="keyword" value="${keyword != null ? keyword : ''}" />
+                                                            <input type="hidden" name="id" value="${p.id}"/>
+                                                            <button class="btn btn-outline" name="action" value="goToUpdatePosts" type="submit">Sửa</button>
+                                                            <input type="hidden" name="deleteId" value="${p.id}"/>
+                                                            <button class="btn btn-danger" name="action" value="deletePosts" type="submit"
+                                                                    onclick="return confirm('Xoá bài viết #${p.id}?');">Xoá</button>
+                                                        </form>
+                                                    </c:if>
                                                 </div>
                                             </li>
+                                        </c:if>
                                     </c:forEach>
                                 </ul>
-
                             </c:when>
                             <c:otherwise>
                                 <div class="empty-state">

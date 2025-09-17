@@ -112,12 +112,12 @@
                 <div class="mt-4 d-flex gap-2">
                     <button type="submit" class="btn btn-primary">Lưu bài viết</button>
                     <button type="reset" class="btn btn-outline-secondary">Làm mới</button>
-                    <a href="posts.jsp" class="btn btn-secondary">Back to List</a>
+                    <a href="MainController?action=searchPosts" class="btn btn-secondary">Back to List</a>
                 </div>
                 <br>
             </form>
         </div>
-
+        <jsp:include page="footer.jsp"/>
         <script>
             (function () {
             const ctx = '<%= request.getContextPath() %>';

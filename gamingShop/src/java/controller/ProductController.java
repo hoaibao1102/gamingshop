@@ -208,14 +208,14 @@ public class ProductController extends HttpServlet {
     public void handleViewAllProducts_sidebar(HttpServletRequest request, HttpServletResponse response) {
         List<Products> list = productsdao.getAll();
         // Gán hình ảnh cho từng sản phẩm
-            for (Products p : list) {
-                List<Product_images> images = productImagesDAO.getByProductId(p.getId());
-                if (images.size() > 0) {
-                    p.setCoverImg(images.get(0).getImage_url());
-                } else {
-                    p.setCoverImg("");
-                }
+        for (Products p : list) {
+            List<Product_images> images = productImagesDAO.getByProductId(p.getId());
+            if (images.size() > 0) {
+                p.setCoverImg(images.get(0).getImage_url());
+            } else {
+                p.setCoverImg("");
             }
+        }
         request.getSession().setAttribute("listForSidebar", list);
     }
 
@@ -303,13 +303,15 @@ public class ProductController extends HttpServlet {
             Page<Products> pageResult = productsdao.getProductsWithFilter(filter);
 
             // ===== Gán ảnh cho từng sản phẩm =====
-                for (Products p : pageResult.getContent()) {
-                    // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
-                    Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
-                    if (coverImg != null) {
-                        p.setCoverImg(coverImg.getImage_url());
-                    }else p.setCoverImg("");
+            for (Products p : pageResult.getContent()) {
+                // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
+                Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
+                if (coverImg != null) {
+                    p.setCoverImg(coverImg.getImage_url());
+                } else {
+                    p.setCoverImg("");
                 }
+            }
 
             request.setAttribute("pageResult", pageResult);
             request.setAttribute("currentFilter", filter);
@@ -1418,20 +1420,29 @@ public class ProductController extends HttpServlet {
         String checkError = "";
         try {
             request.setCharacterEncoding("UTF-8");
-            String author = request.getParameter("author");
+
+            // --- Tác giả: mặc định Admin nếu null/rỗng ---
+            String authorParam = request.getParameter("author");
+            String author = (authorParam != null && !authorParam.trim().isEmpty())
+                    ? authorParam.trim()
+                    : "Admin";
+
             String title = request.getParameter("title");
             String content = request.getParameter("content_html");
             String statusStr = request.getParameter("status");
             String publishDateStr = request.getParameter("publish_date");
             int status = (statusStr != null && !statusStr.isEmpty()) ? Integer.parseInt(statusStr) : 0;
-            Date publishDate = null;
-            if (publishDateStr != null && !publishDateStr.isEmpty()) {
-                try {
-                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
-                    publishDate = sdf.parse(publishDateStr);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+
+            // --- Xử lý ngày xuất bản: mặc định hôm nay nếu null/rỗng ---
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+            sdf.setLenient(false);
+            java.util.Date publishDate;
+            if (publishDateStr == null || publishDateStr.isEmpty()) {
+                String todayStr = sdf.format(new java.util.Date());
+                publishDate = sdf.parse(todayStr);
+                publishDateStr = todayStr; // để hiển thị lại lên form
+            } else {
+                publishDate = sdf.parse(publishDateStr);
             }
 
             // --- Xử lý file upload ---
@@ -1439,7 +1450,7 @@ public class ProductController extends HttpServlet {
             String fileName = null;
             String imageUrl = null;
             if (filePart != null && filePart.getSize() > 0) {
-                fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+                fileName = java.nio.file.Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
                 String uploadPath = request.getServletContext().getRealPath("/assets/img/posts");
                 File uploadDir = new File(uploadPath);
                 if (!uploadDir.exists()) {
@@ -1452,11 +1463,11 @@ public class ProductController extends HttpServlet {
 
             // --- Tạo object ---
             Posts post = new Posts();
-            post.setAuthor(author);
+            post.setAuthor(author);                 // ✅ đã có mặc định Admin
             post.setTitle(title);
             post.setContent_html(content);
             post.setImage_url(imageUrl);
-            post.setPublish_date(publishDate);
+            post.setPublish_date(publishDate);      // ✅ đã có mặc định hôm nay
             post.setStatus(status);
 
             // --- Lưu xuống DB ---
@@ -1471,11 +1482,11 @@ public class ProductController extends HttpServlet {
             }
 
             // --- set lại dữ liệu nhập ---
-            request.setAttribute("post", post); // ✅ Quan trọng: đưa object post vào request
-            request.setAttribute("author", author);
+            request.setAttribute("post", post);
+            request.setAttribute("author", author); // ✅ đẩy giá trị sau khi mặc định
             request.setAttribute("title", title);
             request.setAttribute("content_html", content);
-            request.setAttribute("publish_date", publishDateStr); // giữ nguyên string cho input date
+            request.setAttribute("publish_date", publishDateStr);
             request.setAttribute("status", statusStr);
             request.setAttribute("image_url", imageUrl);
 
