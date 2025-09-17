@@ -124,7 +124,8 @@ public class MainController extends HttpServlet {
                 || "deleteService".equals(action)
                 || "listMayChoiGame".equals(action)
                 || "listTheGame".equals(action)
-                || "viewAllProducts".equals(action);
+                || "viewAllProducts".equals(action)
+                || "showAddPosts".equals(action);
     }
 
     private boolean isBannersAction(String action) {
