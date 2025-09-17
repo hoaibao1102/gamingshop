@@ -30,6 +30,47 @@
         <!-- Trang riêng -->
         <style>
             /* khối chung */
+            .header-actions{
+                display:flex;
+                align-items:center;
+                gap:12px;
+            }
+            .header-actions .search-form{
+                display:flex;
+                align-items:center;
+                gap:8px;
+                flex:1 1 auto;
+            }
+            .header-actions .search-form input[type="text"]{
+                flex:1;
+                min-width:220px;
+                border-radius:12px;
+            }
+            .header-actions .action-form{
+                display:flex;
+                align-items:center;
+                gap:8px;
+                flex:0 0 auto;
+            }
+            .btn{
+                display:inline-flex;
+                align-items:center;
+                justify-content:center;
+                white-space:nowrap;
+            }
+
+            /* Nút xanh kiểu pill */
+            .btn-custom{
+                background:#2563eb;
+                color:#fff;
+                border:1px solid #2563eb;
+                border-radius:12px;
+                font-weight:700;
+                padding:10px 16px;
+            }
+            .btn-custom:hover{
+                background:#1d4ed8;
+            }
             .page-header {
                 display:flex;
                 align-items:center;
@@ -297,7 +338,7 @@
                 font-size: 20px;
                 font-weight: 700;
                 color: #111827;
-                margin-right: 400px;
+                margin-right: 550px;
             }
             .admin-toolbar .search-form {
                 display: flex;
@@ -346,6 +387,38 @@
                 background-color: #4b5563;
             }
 
+            .products-card {
+                margin-top: 16px;
+                background: #fff;
+                border: 1px solid #e5e7eb;
+                border-radius: 16px;
+                overflow: hidden;
+            }
+            .products-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                padding: 12px 16px;
+                border-bottom: 1px solid #e5e7eb;
+                background: #f9fafb;
+            }
+            .meta-pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 10px;
+                border-radius: 999px;
+                font-size: 12px;
+                background: #f3f4f6;
+                color: #374151;
+                border: 1px dashed #d1d5db;
+            }
+            .meta-pill .dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 999px;
+                background: #22c55e;
+            }
         </style>
     </head>
 
@@ -398,78 +471,84 @@
                         <div class="alert alert-danger">${checkErrorDeletePosts}</div>
                     </c:if>
 
-                    <!-- Danh sách bài viết -->
-                    <c:choose>
-                        <c:when test="${not empty list}">
-                            <ul class="card-grid" style="list-style:none; padding-left:0; margin:0">
-                                <c:forEach var="p" items="${list}">
-                                    <c:if test="${p.status ne 0}">
-                                        <li class="card">
-                                            <c:choose>
-                                                <c:when test="${not empty p.image_url}">
-                                                    <img class="thumb" src="${p.image_url}" alt="${fn:escapeXml(p.title)}" />
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <img class="thumb" src="/assets/images/no-image.jpg" alt="No image" />
-                                                </c:otherwise>
-                                            </c:choose>
+                    <div class="products-card">
+                        <div class="products-meta">
+                            <span class="meta-pill"><span class="dot"></span><b>Từ khóa:</b>&nbsp;${keyword != null && fn:length(keyword) > 0 ? keyword : '—'}</span>
+                            <span class="meta-pill"><b>Tổng:</b>&nbsp;<c:choose>
+                                    <c:when test="${not empty list}">${fn:length(list)}</c:when>
+                                    <c:otherwise>0</c:otherwise>
+                                </c:choose> sản phẩm</span>
+                        </div> <br>
+                        <!-- Danh sách bài viết -->
+                        <c:choose>
+                            <c:when test="${not empty list}">
+                                <ul class="card-grid" style="list-style:none; padding-left:0; margin:0">
+                                    <c:forEach var="p" items="${list}">
+                                            <li class="card">
+                                                <c:choose>
+                                                    <c:when test="${not empty p.image_url}">
+                                                        <img class="thumb" src="${p.image_url}" alt="${fn:escapeXml(p.title)}" />
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <img class="thumb" src="/assets/images/no-image.jpg" alt="No image" />
+                                                    </c:otherwise>
+                                                </c:choose>
 
-                                            <div class="body">
-                                                <span class="title">${p.title}</span>
-                                                <div class="meta">
-                                                    <span class="badge">#${p.id}</span>
-                                                    <span>Tác giả: <strong>${p.author}</strong></span>
-                                                    <span>
-                                                        <fmt:formatDate value="${p.publish_date}" pattern="dd/MM/yyyy"/>
-                                                    </span>
-                                                    <c:choose>
-                                                        <c:when test="${p.status == 1}">
-                                                            <span class="badge success">Đã xuất bản</span>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <span class="badge warning">Bản nháp</span>
-                                                        </c:otherwise>
-                                                    </c:choose>
+                                                <div class="body">
+                                                    <span class="title">${p.title}</span>
+                                                    <div class="meta">
+                                                        <span class="badge">#${p.id}</span>
+                                                        <span>Tác giả: <strong>${p.author}</strong></span>
+                                                        <span>
+                                                            <fmt:formatDate value="${p.publish_date}" pattern="dd/MM/yyyy"/>
+                                                        </span>
+                                                        <c:choose>
+                                                            <c:when test="${p.status == 1}">
+                                                                <span class="badge success">Đã xuất bản</span>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="badge warning">Bản nháp</span>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </div>
+                                                    <div class="content">
+                                                        <c:out value="${p.content_html}" escapeXml="false"/>
+                                                    </div>
                                                 </div>
-                                                <div class="content">
-                                                    <c:out value="${p.content_html}" escapeXml="false"/>
+
+                                                <div class="actions">
+                                                    <form action="MainController" method="post" style="display:inline-flex; gap:8px; width:100%">
+                                                        <input type="hidden" name="keyword" value="${keyword != null ? keyword : ''}" />
+
+                                                        <input type="hidden" name="id" value="${p.id}"/>
+                                                        <button class="btn btn-outline" name="action" value="goToUpdatePosts" type="submit">Sửa</button>
+
+                                                        <input type="hidden" name="deleteId" value="${p.id}"/>
+                                                        <button class="btn btn-danger" 
+                                                                name="action" value="deletePosts" type="submit"
+                                                                onclick="return confirm('Xoá bài viết #${p.id}?');">Xoá</button>
+                                                    </form>
                                                 </div>
-                                            </div>
+                                            </li>
+                                    </c:forEach>
+                                </ul>
 
-                                            <div class="actions">
-                                                <form action="MainController" method="post" style="display:inline-flex; gap:8px; width:100%">
-                                                    <input type="hidden" name="keyword" value="${keyword != null ? keyword : ''}" />
-
-                                                    <input type="hidden" name="id" value="${p.id}"/>
-                                                    <button class="btn btn-outline" name="action" value="goToUpdatePosts" type="submit">Sửa</button>
-
-                                                    <input type="hidden" name="deleteId" value="${p.id}"/>
-                                                    <button class="btn btn-danger" 
-                                                            name="action" value="deletePosts" type="submit"
-                                                            onclick="return confirm('Xoá bài viết #${p.id}?');">Xoá</button>
-                                                </form>
-                                            </div>
-                                        </li>
-                                    </c:if>
-                                </c:forEach>
-                            </ul>
-
-                        </c:when>
-                        <c:otherwise>
-                            <div class="empty-state">
-                                <h3>Không tìm thấy bài viết</h3>
-                                <p>Thử đổi từ khoá tìm kiếm hoặc xem tất cả bài viết.</p>
-                                <form action="MainController" method="post" style="display:inline-flex; gap:8px">
-                                    <input type="hidden" name="action" value="searchPosts"/>
-                                    <input type="hidden" name="keyword" value=""/>
-                                    <button class="btn btn-primary" type="submit">Xem tất cả</button>
-                                </form>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="empty-state">
+                                    <h3>Không tìm thấy bài viết</h3>
+                                    <p>Thử đổi từ khoá tìm kiếm hoặc xem tất cả bài viết.</p>
+                                    <form action="MainController" method="post" style="display:inline-flex; gap:8px">
+                                        <input type="hidden" name="action" value="searchPosts"/>
+                                        <input type="hidden" name="keyword" value=""/>
+                                        <button class="btn btn-primary" type="submit">Xem tất cả</button>
+                                    </form>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                        <br>
+                    </div>
                 </div>
-
-
             </div>
         </div>
         <jsp:include page="footer.jsp"/>
