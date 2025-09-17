@@ -58,7 +58,7 @@ public class ProductController extends HttpServlet {
     private final MemoriesDAO memoriesDAO = new MemoriesDAO();
     private final ModelsDAO modelsDAO = new ModelsDAO();
     private final ServicesDAO servicesDAO = new ServicesDAO();
-   
+
     String INDEX_PAGE = "index.jsp";
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -111,6 +111,8 @@ public class ProductController extends HttpServlet {
                 url = handlePostSearching(request, response);
             } else if (action.equals("addPosts")) {
                 url = handleAddPosts(request, response);
+            } else if (action.equals("showAddPosts")) {
+                url = handleShowAddPosts(request, response);
             } else if (action.equals("deletePosts")) {
                 url = handleDeletePosts(request, response);
             } else if (action.equals("deleteImagePost")) {
@@ -152,7 +154,7 @@ public class ProductController extends HttpServlet {
                 url = handleServiceDelete(request, response);
             } else if (action.equals("listMayChoiGame")) {
                 url = handleListMayChoiGame(request, response);
-            }else if (action.equals("listTheGame")) {
+            } else if (action.equals("listTheGame")) {
                 url = handleListTheGame(request, response);
 
             }
@@ -938,7 +940,6 @@ public class ProductController extends HttpServlet {
 //                // If we can't check, continue but log the error
 //                e.printStackTrace();
 //            }
-
             // 4. Validate quantity - required, numeric, and non-negative
             if (quantityStr == null || quantityStr.trim().isEmpty()) {
                 request.setAttribute("checkErrorAddAccessory", "Quantity is required.");
@@ -1739,7 +1740,9 @@ public class ProductController extends HttpServlet {
                 if (coverImg != null) {
                     p.setCoverImg(coverImg.getImage_url());
 
-                }else p.setCoverImg("");
+                } else {
+                    p.setCoverImg("");
+                }
             }
 
             request.setAttribute("listProductsByCategory", pageResult);
@@ -1752,7 +1755,6 @@ public class ProductController extends HttpServlet {
         }
         return "index.jsp";
     }
-
 
     // ===============================================
     // MODELS CRUD CONTROLLER METHODS
@@ -1793,7 +1795,6 @@ public class ProductController extends HttpServlet {
 //            } catch (Exception e) {
 //                e.printStackTrace();
 //            }
-
             // 4. Validate status value
             if (status != null && !status.trim().isEmpty()) {
                 String normalizedStatus = status.trim();
@@ -1857,7 +1858,7 @@ public class ProductController extends HttpServlet {
                 if (!uploadDir.exists()) {
                     uploadDir.mkdirs();
                 }
-                
+
                 //take extention
                 String originalFileName = imagePart.getSubmittedFileName();
                 String fileExtension = "";
@@ -1865,7 +1866,7 @@ public class ProductController extends HttpServlet {
                 if (dot >= 0) {
                     fileExtension = originalFileName.substring(dot);
                 }
-                
+
                 // create temporary file
                 String tempName = "tmp_" + System.currentTimeMillis() + fileExtension;
                 File tempFile = new File(uploadDir, tempName);
@@ -1879,7 +1880,7 @@ public class ProductController extends HttpServlet {
                 }
                 // Set image_url tạm thời là null để insert trước
                 newModel.setImage_url(null);
-                
+
                 // ===== Insert để lấy generated ID =====
                 if (modelsDAO.create(newModel) && newModel.getId() > 0) {
                     String finalName = "model_" + newModel.getId() + "_1" + fileExtension;
@@ -1916,7 +1917,7 @@ public class ProductController extends HttpServlet {
                 // No image provided
                 newModel.setImage_url(null);
                 boolean success = modelsDAO.create(newModel);
-                
+
                 if (!success) {
                     request.setAttribute("checkErrorAddModel", "Failed to add model.");
                     return "modelUpdate.jsp";
@@ -1981,7 +1982,6 @@ public class ProductController extends HttpServlet {
 //            } catch (Exception e) {
 //                e.printStackTrace();
 //            }
-
             // Validate status
             if (status != null && !status.trim().isEmpty()) {
                 String normalizedStatus = status.trim();
@@ -2179,39 +2179,38 @@ public class ProductController extends HttpServlet {
         request.setAttribute("model", null);
         return "modelUpdate.jsp";
     }
-    
+
 // ===============================================
 // SERVICES CRUD CONTROLLER METHODS
 // ===============================================
+    /**
+     * Xử lý thêm service mới
+     */
+    private String handleServiceAdding(HttpServletRequest request, HttpServletResponse response) {
 
-/**
- * Xử lý thêm service mới
- */
-private String handleServiceAdding(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
 
-    try {
-        request.setCharacterEncoding("UTF-8");
+            // ===== Lấy dữ liệu từ form =====
+            String serviceType = request.getParameter("service_type");
+            String descriptionHtml = request.getParameter("description_html");
+            String priceStr = request.getParameter("price");
+            String status = request.getParameter("status");
 
-        // ===== Lấy dữ liệu từ form =====
-        String serviceType = request.getParameter("service_type");
-        String descriptionHtml = request.getParameter("description_html");
-        String priceStr = request.getParameter("price");
-        String status = request.getParameter("status");
+            // ===== VALIDATION SECTION =====
+            // 1. Validate service_type - required and not empty
+            if (serviceType == null || serviceType.trim().isEmpty()) {
+                request.setAttribute("checkErrorAddService", "Service type is required.");
+                return "serviceUpdate.jsp";
+            }
 
-        // ===== VALIDATION SECTION =====
-        // 1. Validate service_type - required and not empty
-        if (serviceType == null || serviceType.trim().isEmpty()) {
-            request.setAttribute("checkErrorAddService", "Service type is required.");
-            return "serviceUpdate.jsp";
-        }
+            // 2. Validate service_type length
+            if (serviceType.trim().length() > 100) {
+                request.setAttribute("checkErrorAddService", "Service type must be 100 characters or less.");
+                return "serviceUpdate.jsp";
+            }
 
-        // 2. Validate service_type length
-        if (serviceType.trim().length() > 100) {
-            request.setAttribute("checkErrorAddService", "Service type must be 100 characters or less.");
-            return "serviceUpdate.jsp";
-        }
-
-        // 3. Check for duplicate service_type (UNIQUE constraint)
+            // 3. Check for duplicate service_type (UNIQUE constraint)
 //        try {
 //            boolean typeExists = servicesDAO.isServiceTypeExists(serviceType.trim());
 //            if (typeExists) {
@@ -2221,111 +2220,110 @@ private String handleServiceAdding(HttpServletRequest request, HttpServletRespon
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-
-        // 4. Validate price
-        double price = 0.0;
-        if (priceStr == null || priceStr.trim().isEmpty()) {
-            request.setAttribute("checkErrorAddService", "Price is required.");
-            return "serviceUpdate.jsp";
-        }
-        
-        try {
-            price = Double.parseDouble(priceStr.trim());
-            if (price < 0) {
-                request.setAttribute("checkErrorAddService", "Price cannot be negative.");
+            // 4. Validate price
+            double price = 0.0;
+            if (priceStr == null || priceStr.trim().isEmpty()) {
+                request.setAttribute("checkErrorAddService", "Price is required.");
                 return "serviceUpdate.jsp";
             }
-            if (price > 999999999.99) {
-                request.setAttribute("checkErrorAddService", "Price is too large.");
+
+            try {
+                price = Double.parseDouble(priceStr.trim());
+                if (price < 0) {
+                    request.setAttribute("checkErrorAddService", "Price cannot be negative.");
+                    return "serviceUpdate.jsp";
+                }
+                if (price > 999999999.99) {
+                    request.setAttribute("checkErrorAddService", "Price is too large.");
+                    return "serviceUpdate.jsp";
+                }
+            } catch (NumberFormatException e) {
+                request.setAttribute("checkErrorAddService", "Invalid price format. Please enter a valid number.");
                 return "serviceUpdate.jsp";
             }
-        } catch (NumberFormatException e) {
-            request.setAttribute("checkErrorAddService", "Invalid price format. Please enter a valid number.");
-            return "serviceUpdate.jsp";
-        }
 
-        // 5. Validate status value
-        if (status != null && !status.trim().isEmpty()) {
-            String normalizedStatus = status.trim();
-            if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {
-                request.setAttribute("checkErrorAddService", "Status must be either 'active' or 'inactive'.");
+            // 5. Validate status value
+            if (status != null && !status.trim().isEmpty()) {
+                String normalizedStatus = status.trim();
+                if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {
+                    request.setAttribute("checkErrorAddService", "Status must be either 'active' or 'inactive'.");
+                    return "serviceUpdate.jsp";
+                }
+            }
+
+            // 6. Validate description length (optional but if provided, should be reasonable)
+            if (descriptionHtml != null && descriptionHtml.trim().length() > 10000) {
+                request.setAttribute("checkErrorAddService", "Description must be 10000 characters or less.");
                 return "serviceUpdate.jsp";
             }
-        }
 
-        // 6. Validate description length (optional but if provided, should be reasonable)
-        if (descriptionHtml != null && descriptionHtml.trim().length() > 10000) {
-            request.setAttribute("checkErrorAddService", "Description must be 10000 characters or less.");
+            // ===== Tạo đối tượng Services và set dữ liệu =====
+            Services newService = new Services();
+            newService.setService_type(serviceType.trim());
+            newService.setDescription_html(descriptionHtml != null ? descriptionHtml.trim() : "");
+            newService.setPrice(price);
+            newService.setStatus(status != null ? status.trim() : "active");
+            newService.setCreated_at(new java.util.Date());
+            newService.setUpdated_at(new java.util.Date());
+
+            // ===== Insert vào database =====
+            boolean success = servicesDAO.create(newService);
+
+            if (!success) {
+                request.setAttribute("checkErrorAddService", "Failed to add service.");
+                return "serviceUpdate.jsp";
+            }
+
+            // Success
+            HttpSession session = request.getSession();
+            session.removeAttribute("cachedServiceList");
+
+            request.setAttribute("messageAddService", "New service added successfully.");
+            request.setAttribute("service", newService);
+            return "serviceUpdate.jsp";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorAddService", "Error while adding service: " + e.getMessage());
             return "serviceUpdate.jsp";
         }
-
-        // ===== Tạo đối tượng Services và set dữ liệu =====
-        Services newService = new Services();
-        newService.setService_type(serviceType.trim());
-        newService.setDescription_html(descriptionHtml != null ? descriptionHtml.trim() : "");
-        newService.setPrice(price);
-        newService.setStatus(status != null ? status.trim() : "active");
-        newService.setCreated_at(new java.util.Date());
-        newService.setUpdated_at(new java.util.Date());
-
-        // ===== Insert vào database =====
-        boolean success = servicesDAO.create(newService);
-        
-        if (!success) {
-            request.setAttribute("checkErrorAddService", "Failed to add service.");
-            return "serviceUpdate.jsp";
-        }
-
-        // Success
-        HttpSession session = request.getSession();
-        session.removeAttribute("cachedServiceList");
-
-        request.setAttribute("messageAddService", "New service added successfully.");
-        request.setAttribute("service", newService);
-        return "serviceUpdate.jsp";
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        request.setAttribute("checkErrorAddService", "Error while adding service: " + e.getMessage());
-        return "serviceUpdate.jsp";
     }
-}
 
-/**
- * Xử lý cập nhật service
- */
-private String handleServiceEditing(HttpServletRequest request, HttpServletResponse response) {
-    try {
-        request.setCharacterEncoding("UTF-8");
-        
-        // Lấy ID
-        int serviceId = Integer.parseInt(request.getParameter("id"));
-        Services existingService = servicesDAO.getById(serviceId);
-        if (existingService == null) {
-            request.setAttribute("checkErrorEditService", "Service not found.");
-            return "serviceUpdate.jsp";
-        }
+    /**
+     * Xử lý cập nhật service
+     */
+    private String handleServiceEditing(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
 
-        // Lấy dữ liệu từ form
-        String serviceType = request.getParameter("service_type");
-        String descriptionHtml = request.getParameter("description_html");
-        String priceStr = request.getParameter("price");
-        String status = request.getParameter("status");
+            // Lấy ID
+            int serviceId = Integer.parseInt(request.getParameter("id"));
+            Services existingService = servicesDAO.getById(serviceId);
+            if (existingService == null) {
+                request.setAttribute("checkErrorEditService", "Service not found.");
+                return "serviceUpdate.jsp";
+            }
 
-        // Validate service_type
-        if (serviceType == null || serviceType.trim().isEmpty()) {
-            request.setAttribute("checkErrorEditService", "Service type is required.");
-            request.setAttribute("service", existingService);
-            return "serviceUpdate.jsp";
-        }
+            // Lấy dữ liệu từ form
+            String serviceType = request.getParameter("service_type");
+            String descriptionHtml = request.getParameter("description_html");
+            String priceStr = request.getParameter("price");
+            String status = request.getParameter("status");
 
-        if (serviceType.trim().length() > 100) {
-            request.setAttribute("checkErrorEditService", "Service type must be 100 characters or less.");
-            request.setAttribute("service", existingService);
-            return "serviceUpdate.jsp";
-        }
+            // Validate service_type
+            if (serviceType == null || serviceType.trim().isEmpty()) {
+                request.setAttribute("checkErrorEditService", "Service type is required.");
+                request.setAttribute("service", existingService);
+                return "serviceUpdate.jsp";
+            }
 
-        // Check duplicate service_type (exclude current record)
+            if (serviceType.trim().length() > 100) {
+                request.setAttribute("checkErrorEditService", "Service type must be 100 characters or less.");
+                request.setAttribute("service", existingService);
+                return "serviceUpdate.jsp";
+            }
+
+            // Check duplicate service_type (exclude current record)
 //        try {
 //            boolean typeExists = servicesDAO.isServiceTypeExistsExcept(serviceType.trim(), serviceId);
 //            if (typeExists) {
@@ -2336,266 +2334,267 @@ private String handleServiceEditing(HttpServletRequest request, HttpServletRespo
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-
-        // Validate price
-        double price = 0.0;
-        if (priceStr == null || priceStr.trim().isEmpty()) {
-            request.setAttribute("checkErrorEditService", "Price is required.");
-            request.setAttribute("service", existingService);
-            return "serviceUpdate.jsp";
-        }
-        
-        try {
-            price = Double.parseDouble(priceStr.trim());
-            if (price < 0) {
-                request.setAttribute("checkErrorEditService", "Price cannot be negative.");
+            // Validate price
+            double price = 0.0;
+            if (priceStr == null || priceStr.trim().isEmpty()) {
+                request.setAttribute("checkErrorEditService", "Price is required.");
                 request.setAttribute("service", existingService);
                 return "serviceUpdate.jsp";
             }
-            if (price > 999999999.99) {
-                request.setAttribute("checkErrorEditService", "Price is too large.");
+
+            try {
+                price = Double.parseDouble(priceStr.trim());
+                if (price < 0) {
+                    request.setAttribute("checkErrorEditService", "Price cannot be negative.");
+                    request.setAttribute("service", existingService);
+                    return "serviceUpdate.jsp";
+                }
+                if (price > 999999999.99) {
+                    request.setAttribute("checkErrorEditService", "Price is too large.");
+                    request.setAttribute("service", existingService);
+                    return "serviceUpdate.jsp";
+                }
+            } catch (NumberFormatException e) {
+                request.setAttribute("checkErrorEditService", "Invalid price format. Please enter a valid number.");
                 request.setAttribute("service", existingService);
                 return "serviceUpdate.jsp";
             }
-        } catch (NumberFormatException e) {
-            request.setAttribute("checkErrorEditService", "Invalid price format. Please enter a valid number.");
-            request.setAttribute("service", existingService);
-            return "serviceUpdate.jsp";
-        }
 
-        // Validate status
-        if (status != null && !status.trim().isEmpty()) {
-            String normalizedStatus = status.trim();
-            if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {
-                request.setAttribute("checkErrorEditService", "Status must be either 'active' or 'inactive'.");
+            // Validate status
+            if (status != null && !status.trim().isEmpty()) {
+                String normalizedStatus = status.trim();
+                if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {
+                    request.setAttribute("checkErrorEditService", "Status must be either 'active' or 'inactive'.");
+                    request.setAttribute("service", existingService);
+                    return "serviceUpdate.jsp";
+                }
+            }
+
+            // Validate description length
+            if (descriptionHtml != null && descriptionHtml.trim().length() > 10000) {
+                request.setAttribute("checkErrorEditService", "Description must be 10000 characters or less.");
                 request.setAttribute("service", existingService);
                 return "serviceUpdate.jsp";
             }
-        }
 
-        // Validate description length
-        if (descriptionHtml != null && descriptionHtml.trim().length() > 10000) {
-            request.setAttribute("checkErrorEditService", "Description must be 10000 characters or less.");
-            request.setAttribute("service", existingService);
+            // Update basic info
+            existingService.setService_type(serviceType.trim());
+            existingService.setDescription_html(descriptionHtml != null ? descriptionHtml.trim() : "");
+            existingService.setPrice(price);
+            existingService.setStatus(status != null ? status.trim() : "active");
+            existingService.setUpdated_at(new java.util.Date());
+
+            // Update database
+            boolean success = servicesDAO.update(existingService);
+            if (success) {
+                HttpSession session = request.getSession();
+                session.removeAttribute("cachedServiceList");
+
+                request.setAttribute("messageEditService", "Service updated successfully.");
+                request.setAttribute("service", existingService);
+                return handleServiceEditForm(request, response);
+            } else {
+                request.setAttribute("checkErrorEditService", "Failed to update service.");
+                request.setAttribute("service", existingService);
+                return "serviceUpdate.jsp";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorEditService", "Error while updating service: " + e.getMessage());
             return "serviceUpdate.jsp";
         }
-
-        // Update basic info
-        existingService.setService_type(serviceType.trim());
-        existingService.setDescription_html(descriptionHtml != null ? descriptionHtml.trim() : "");
-        existingService.setPrice(price);
-        existingService.setStatus(status != null ? status.trim() : "active");
-        existingService.setUpdated_at(new java.util.Date());
-
-        // Update database
-        boolean success = servicesDAO.update(existingService);
-        if (success) {
-            HttpSession session = request.getSession();
-            session.removeAttribute("cachedServiceList");
-
-            request.setAttribute("messageEditService", "Service updated successfully.");
-            request.setAttribute("service", existingService);
-            return handleServiceEditForm(request, response);
-        } else {
-            request.setAttribute("checkErrorEditService", "Failed to update service.");
-            request.setAttribute("service", existingService);
-            return "serviceUpdate.jsp";
-        }
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        request.setAttribute("checkErrorEditService", "Error while updating service: " + e.getMessage());
-        return "serviceUpdate.jsp";
     }
-}
 
-/**
- * Xử lý xóa service - Soft delete bằng cách chuyển status thành "inactive"
- */
-private String handleServiceDelete(HttpServletRequest request, HttpServletResponse response) {
-    try {
-        request.setCharacterEncoding("UTF-8");
-
-        String idStr = request.getParameter("id");
-        if (idStr == null || idStr.trim().isEmpty()) {
-            request.setAttribute("checkErrorDeleteService", "Service ID is required.");
-            return "serviceList.jsp";
-        }
-
-        int serviceId;
+    /**
+     * Xử lý xóa service - Soft delete bằng cách chuyển status thành "inactive"
+     */
+    private String handleServiceDelete(HttpServletRequest request, HttpServletResponse response) {
         try {
-            serviceId = Integer.parseInt(idStr);
-        } catch (NumberFormatException e) {
-            request.setAttribute("checkErrorDeleteService", "Invalid service ID format.");
-            return "serviceList.jsp";
-        }
+            request.setCharacterEncoding("UTF-8");
 
-        Services existingService = servicesDAO.getById(serviceId);
-        if (existingService == null) {
-            request.setAttribute("checkErrorDeleteService", "Service not found.");
-            return "serviceList.jsp";
-        }
+            String idStr = request.getParameter("id");
+            if (idStr == null || idStr.trim().isEmpty()) {
+                request.setAttribute("checkErrorDeleteService", "Service ID is required.");
+                return "serviceList.jsp";
+            }
 
-        if ("inactive".equalsIgnoreCase(existingService.getStatus())) {
-            request.setAttribute("checkErrorDeleteService", "Service is already inactive.");
-            return "serviceList.jsp";
-        }
+            int serviceId;
+            try {
+                serviceId = Integer.parseInt(idStr);
+            } catch (NumberFormatException e) {
+                request.setAttribute("checkErrorDeleteService", "Invalid service ID format.");
+                return "serviceList.jsp";
+            }
 
-        // Soft delete: change status to "inactive"
-        existingService.setStatus("inactive");
-        existingService.setUpdated_at(new java.util.Date());
+            Services existingService = servicesDAO.getById(serviceId);
+            if (existingService == null) {
+                request.setAttribute("checkErrorDeleteService", "Service not found.");
+                return "serviceList.jsp";
+            }
 
-        if (servicesDAO.update(existingService)) {
-            HttpSession session = request.getSession();
-            session.removeAttribute("cachedServiceList");
+            if ("inactive".equalsIgnoreCase(existingService.getStatus())) {
+                request.setAttribute("checkErrorDeleteService", "Service is already inactive.");
+                return "serviceList.jsp";
+            }
 
-            request.setAttribute("messageDeleteService",
-                    "Service '" + existingService.getService_type() + "' has been deactivated successfully.");
+            // Soft delete: change status to "inactive"
+            existingService.setStatus("inactive");
+            existingService.setUpdated_at(new java.util.Date());
 
-            return handleServiceList(request, response);
-        } else {
+            if (servicesDAO.update(existingService)) {
+                HttpSession session = request.getSession();
+                session.removeAttribute("cachedServiceList");
+
+                request.setAttribute("messageDeleteService",
+                        "Service '" + existingService.getService_type() + "' has been deactivated successfully.");
+
+                return handleServiceList(request, response);
+            } else {
+                request.setAttribute("checkErrorDeleteService",
+                        "Failed to deactivate service. Please try again.");
+                return "serviceList.jsp";
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
             request.setAttribute("checkErrorDeleteService",
-                    "Failed to deactivate service. Please try again.");
+                    "Error while deactivating service: " + e.getMessage());
+            return handleServiceList(request, response);
+        }
+    }
+
+    /**
+     * Xử lý hiển thị danh sách services
+     */
+    private String handleServiceList(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            HttpSession session = request.getSession();
+
+            // Check cache first
+            List<Services> serviceList = (List<Services>) session.getAttribute("cachedServiceList");
+
+            if (serviceList == null) {
+                // Get from database
+                serviceList = servicesDAO.getAllActive(); // Only get active services
+                session.setAttribute("cachedServiceList", serviceList);
+            }
+
+            request.setAttribute("serviceList", serviceList);
+            return "serviceList.jsp";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorServiceList", "Error loading service list: " + e.getMessage());
             return "serviceList.jsp";
         }
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        request.setAttribute("checkErrorDeleteService",
-                "Error while deactivating service: " + e.getMessage());
-        return handleServiceList(request, response);
     }
-}
 
-/**
- * Xử lý hiển thị danh sách services
- */
-private String handleServiceList(HttpServletRequest request, HttpServletResponse response) {
-    try {
-        HttpSession session = request.getSession();
+    /**
+     * Xử lý hiển thị chi tiết service để edit
+     */
+    private String handleServiceEditForm(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String idStr = request.getParameter("id");
+            if (idStr == null || idStr.trim().isEmpty()) {
+                request.setAttribute("checkErrorServiceDetail", "Service ID is required.");
+                return "serviceUpdate.jsp";
+            }
 
-        // Check cache first
-        List<Services> serviceList = (List<Services>) session.getAttribute("cachedServiceList");
+            int serviceId = Integer.parseInt(idStr);
+            Services service = servicesDAO.getById(serviceId);
 
-        if (serviceList == null) {
-            // Get from database
-            serviceList = servicesDAO.getAllActive(); // Only get active services
-            session.setAttribute("cachedServiceList", serviceList);
-        }
+            if (service == null) {
+                request.setAttribute("checkErrorServiceDetail", "Service not found.");
+                return "serviceUpdate.jsp";
+            }
 
-        request.setAttribute("serviceList", serviceList);
-        return "serviceList.jsp";
+            request.setAttribute("service", service);
+            return "serviceUpdate.jsp";
 
-    } catch (Exception e) {
-        e.printStackTrace();
-        request.setAttribute("checkErrorServiceList", "Error loading service list: " + e.getMessage());
-        return "serviceList.jsp";
-    }
-}
-
-/**
- * Xử lý hiển thị chi tiết service để edit
- */
-private String handleServiceEditForm(HttpServletRequest request, HttpServletResponse response) {
-    try {
-        String idStr = request.getParameter("id");
-        if (idStr == null || idStr.trim().isEmpty()) {
-            request.setAttribute("checkErrorServiceDetail", "Service ID is required.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorServiceDetail", "Error loading service details: " + e.getMessage());
             return "serviceUpdate.jsp";
         }
+    }
 
-        int serviceId = Integer.parseInt(idStr);
-        Services service = servicesDAO.getById(serviceId);
-
-        if (service == null) {
-            request.setAttribute("checkErrorServiceDetail", "Service not found.");
-            return "serviceUpdate.jsp";
-        }
-
-        request.setAttribute("service", service);
-        return "serviceUpdate.jsp";
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        request.setAttribute("checkErrorServiceDetail", "Error loading service details: " + e.getMessage());
+    /**
+     * Xử lý hiển thị form thêm service mới
+     */
+    private String handleServiceAddForm(HttpServletRequest request, HttpServletResponse response) {
+        request.setAttribute("service", null);
         return "serviceUpdate.jsp";
     }
-}
 
-/**
- * Xử lý hiển thị form thêm service mới
- */
-private String handleServiceAddForm(HttpServletRequest request, HttpServletResponse response) {
-    request.setAttribute("service", null);
-    return "serviceUpdate.jsp";
-}
-    
-    
-    private String handleListMayChoiGame(HttpServletRequest request, HttpServletResponse response){
+    private String handleListMayChoiGame(HttpServletRequest request, HttpServletResponse response) {
         String condition = request.getParameter("condition");
         if (condition == null) {
             return handleListMayChoiGameWithCondition(request, response, "all");
-        }else if (condition.equals("new")){
+        } else if (condition.equals("new")) {
             return handleListMayChoiGameWithCondition(request, response, "new");
-        }else if (condition.equals("likenew")){
+        } else if (condition.equals("likenew")) {
             return handleListMayChoiGameWithCondition(request, response, "likenew");
         }
         return "";
     }
 
     private String handleListMayChoiGameWithCondition(HttpServletRequest request, HttpServletResponse response, String condition) {
-        
+
         //truong hop lay may choi game khong chia moi hay cu
-        
-            try {
-                request.setCharacterEncoding("UTF-8");
-                // Tạo filter mặc định
-                ProductFilter filter = new ProductFilter();
+        try {
+            request.setCharacterEncoding("UTF-8");
+            // Tạo filter mặc định
+            ProductFilter filter = new ProductFilter();
 
-                // Lấy tham số page nếu có
-                String pageParam = request.getParameter("page");
-                if (pageParam != null && !pageParam.isEmpty()) {
-                    try {
-                        int page = Integer.parseInt(pageParam);
-                        if (page > 0) {
-                            filter.setPage(page);
-                        }
-                    } catch (NumberFormatException e) {
-                        // Ignore, use default page
+            // Lấy tham số page nếu có
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.isEmpty()) {
+                try {
+                    int page = Integer.parseInt(pageParam);
+                    if (page > 0) {
+                        filter.setPage(page);
                     }
+                } catch (NumberFormatException e) {
+                    // Ignore, use default page
                 }
-
-                // Lấy dữ liệu với phân trang
-                Page<Products> pageResult = productsdao.getMayChoiGame(filter, condition);
-                 // ===== Gán ảnh cho từng sản phẩm =====
-                for (Products p : pageResult.getContent()) {
-                    System.out.println(p.getId());
-                }
-
-
-                // ===== Gán ảnh cho từng sản phẩm =====
-                for (Products p : pageResult.getContent()) {
-                    // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
-                    Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
-                    if (coverImg != null) {
-                        p.setCoverImg(coverImg.getImage_url());
-                    }else p.setCoverImg("");
-                }
-
-                request.setAttribute("listProductsByCategory", pageResult);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                request.setAttribute("checkError", "Error loading products: " + e.getMessage());
             }
 
-        
-            
+            // Lấy dữ liệu với phân trang
+            Page<Products> pageResult = productsdao.getMayChoiGame(filter, condition);
+            // ===== Gán ảnh cho từng sản phẩm =====
+            for (Products p : pageResult.getContent()) {
+//                    System.out.println(p.getId());
+            }
+
+            // ===== Gán ảnh cho từng sản phẩm =====
+            for (Products p : pageResult.getContent()) {
+                // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
+                Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
+                if (coverImg != null) {
+                    p.setCoverImg(coverImg.getImage_url());
+                } else {
+                    p.setCoverImg("");
+                }
+            }
+
+            request.setAttribute("listProductsByCategory", pageResult);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error loading products: " + e.getMessage());
+        }
+
         return INDEX_PAGE;
     }
 
     private String handleListTheGame(HttpServletRequest request, HttpServletResponse response) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private String handleShowAddPosts(HttpServletRequest request, HttpServletResponse response) {
+        request.setAttribute("post", null);
+        return "postsUpdate.jsp";
     }
 
 }
