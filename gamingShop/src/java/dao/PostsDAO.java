@@ -9,6 +9,7 @@ import utils.DBUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -313,5 +314,46 @@ public class PostsDAO implements IDAO<Posts, Integer> {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public List<Posts> getRecentPosts(int limit, boolean includeDrafts, int excludeId) {
+        // SQL Server: dùng OFFSET / FETCH thay cho LIMIT
+        // Ưu tiên sắp xếp theo publish_date; nếu null thì dùng created_at
+        final String sql
+                = "SELECT id, title, author, image_url, publish_date, status "
+                + "FROM dbo.Posts "
+                + "WHERE id <> ? "
+                + (includeDrafts ? "" : "AND status = 1 ")
+                + "ORDER BY ISNULL(publish_date, created_at) DESC, id DESC "
+                + "OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY";
+
+        try ( Connection c = DBUtils.getConnection();  PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setInt(1, excludeId);
+            ps.setInt(2, limit);
+
+            try ( ResultSet rs = ps.executeQuery()) {
+                List<Posts> list = new ArrayList<>();
+                while (rs.next()) {
+                    Posts p = new Posts();
+                    p.setId(rs.getInt("id"));
+                    p.setTitle(rs.getString("title"));
+                    p.setAuthor(rs.getString("author"));
+                    p.setImage_url(rs.getString("image_url"));
+
+                    Timestamp ts = rs.getTimestamp("publish_date");
+                    if (ts != null) {
+                        p.setPublish_date(new java.util.Date(ts.getTime()));
+                    }
+
+                    p.setStatus(rs.getInt("status"));
+                    list.add(p);
+                }
+                return list;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 }

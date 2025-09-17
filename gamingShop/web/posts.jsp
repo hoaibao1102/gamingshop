@@ -429,6 +429,16 @@
                 border-radius: 999px;
                 background: #22c55e;
             }
+            .card-link{
+                display:block;
+                color:inherit;
+                text-decoration:none
+            }
+            .card:hover{
+                box-shadow:0 8px 24px rgba(0,0,0,.08);
+                transform:translateY(-2px);
+                transition:.15s
+            }
         </style>
     </head>
 
@@ -451,9 +461,10 @@
                 </div>
 
                 <div class="container">
-                    <c:if test="${isLoggedIn}">
-                        <div class="admin-toolbar">
-                            <div class="title">Danh sách sản phẩm</div>
+
+                    <div class="admin-toolbar">
+                        <div class="title">Danh sách sản phẩm</div>
+                        <c:if test="${isLoggedIn}">
                             <div class="header-actions">
                                 <form action="MainController" method="post" class="search-form" autocomplete="off">
                                     <input type="hidden" name="action" value="searchPosts"/>
@@ -466,8 +477,8 @@
                                     <button class="btn btn-custom" type="submit">+ Thêm bài post</button>
                                 </form>
                             </div>
-                        </div>
-                    </c:if>
+                        </c:if>
+                    </div>
                     <!-- Thông báo -->
                     <c:if test="${not empty checkErrorSearchPosts}">
                         <div class="alert alert-danger">${checkErrorSearchPosts}</div>
@@ -500,42 +511,41 @@
                                         <!-- Chỉ hiển thị nếu đã login, hoặc bài đã xuất bản -->
                                         <c:if test="${isLoggedIn or p.status == 1}">
                                             <li class="card">
-                                                <c:choose>
-                                                    <c:when test="${not empty p.image_url}">
-                                                        <img class="thumb" src="${p.image_url}" alt="${fn:escapeXml(p.title)}" />
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <img class="thumb" src="/assets/images/no-image.jpg" alt="No image" />
-                                                    </c:otherwise>
-                                                </c:choose>
+                                                <a class="card-link" href="MainController?action=viewPost&id=${p.id}" aria-label="Xem chi tiết ${fn:escapeXml(p.title)}">
+                                                    <c:choose>
+                                                        <c:when test="${not empty p.image_url}">
+                                                            <img class="thumb" src="${p.image_url}" alt="${fn:escapeXml(p.title)}" />
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <img class="thumb" src="/assets/images/no-image.jpg" alt="No image" />
+                                                        </c:otherwise>
+                                                    </c:choose>
 
-                                                <div class="body">
-                                                    <span class="title">${p.title}</span>
-                                                    <div class="meta">
-                                                        <c:if test="${isLoggedIn}">
-                                                            <span class="badge">#${p.id}</span>
-                                                        </c:if>
-                                                        <span>Tác giả: <strong>${p.author}</strong></span>
-                                                        <span><fmt:formatDate value="${p.publish_date}" pattern="dd/MM/yyyy"/></span>
+                                                    <div class="body">
+                                                        <span class="title">${p.title}</span>
+                                                        <div class="meta">
+                                                            <c:if test="${isLoggedIn}">
+                                                                <span class="badge">#${p.id}</span>
+                                                            </c:if>
+                                                            <span>Tác giả: <strong>${p.author}</strong></span>
+                                                            <span><fmt:formatDate value="${p.publish_date}" pattern="dd/MM/yyyy"/></span>
 
-                                                        <!-- Badge trạng thái: luôn hiện Published; Draft chỉ hiện khi đã login -->
-                                                        <c:choose>
-                                                            <c:when test="${p.status == 1}">
-                                                                <span class="badge success">Đã xuất bản</span>
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <c:if test="${isLoggedIn}">
-                                                                    <span class="badge warning">Bản nháp</span>
-                                                                </c:if>
-                                                            </c:otherwise>
-                                                        </c:choose>
+                                                            <c:choose>
+                                                                <c:when test="${p.status == 1}">
+                                                                    <span class="badge success">Đã xuất bản</span>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <c:if test="${isLoggedIn}">
+                                                                        <span class="badge warning">Bản nháp</span>
+                                                                    </c:if>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                        </div>
+                                                        <!-- Mô tả bạn đang ẩn rồi -->
                                                     </div>
+                                                </a>
 
-                                                    <div class="content">
-                                                        <c:out value="${p.content_html}" escapeXml="false"/>
-                                                    </div>
-                                                </div>
-
+                                                <!-- Hành động chỉ dành cho đã đăng nhập -->
                                                 <div class="actions">
                                                     <c:if test="${isLoggedIn}">
                                                         <form action="MainController" method="post" style="display:inline-flex; gap:8px; width:100%">
@@ -560,7 +570,7 @@
                                     <form action="MainController" method="post" style="display:inline-flex; gap:8px">
                                         <input type="hidden" name="action" value="searchPosts"/>
                                         <input type="hidden" name="keyword" value=""/>
-                                        <button class="btn btn-primary" type="submit">Xem tất cả</button>
+                                        <button class="btn btn-custom" type="submit">Xem tất cả</button>
                                     </form>
                                 </div>
                             </c:otherwise>
