@@ -822,7 +822,7 @@ public class ProductController extends HttpServlet {
     private String handleViewAllAccessories(HttpServletRequest request, HttpServletResponse response) {
         try {
             // Lấy tất cả accessories từ database
-            List<Accessories> accessories = accessoriesDAO.getAllActive();
+            List<Accessories> accessories = accessoriesDAO.getAll();
 
             // Set vào request để JSP hiển thị
             request.setAttribute("accessories", accessories);
@@ -869,7 +869,7 @@ public class ProductController extends HttpServlet {
                 }
             } else {
                 // Nếu không có từ khóa, hiển thị tất cả accessories
-                accessories = accessoriesDAO.getAllActive();
+                accessories = accessoriesDAO.getAll();
 
                 if (accessories == null) {
                     accessories = new ArrayList<>();
@@ -1270,7 +1270,7 @@ public class ProductController extends HttpServlet {
                     && !imagePart.getSubmittedFileName().trim().isEmpty()) {
 
                 // Upload ảnh mới
-                String uploadDirPath = request.getServletContext().getRealPath("/uploads/accessories/");
+                String uploadDirPath = request.getServletContext().getRealPath("/assets/accessories/");
                 File uploadDir = new File(uploadDirPath);
                 if (!uploadDir.exists()) {
                     uploadDir.mkdirs();
@@ -2157,7 +2157,7 @@ public class ProductController extends HttpServlet {
 
             if (modelList == null) {
                 // Get from database
-                modelList = modelsDAO.getAllActive(); // Only get active models (de sau check lai trong cai modelDao)
+                modelList = modelsDAO.getAll(); // Only get active models (de sau check lai trong cai modelDao)
                 session.setAttribute("cachedModelList", modelList);
             }
 
@@ -2501,7 +2501,7 @@ public class ProductController extends HttpServlet {
 
             if (serviceList == null) {
                 // Get from database
-                serviceList = servicesDAO.getAllActive(); // Only get active services
+                serviceList = servicesDAO.getAll(); // Only get active services
                 session.setAttribute("cachedServiceList", serviceList);
             }
 

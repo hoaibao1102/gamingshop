@@ -418,14 +418,19 @@
                         <input type="hidden" name="action" value="searchProduct"/>
                         <input class="nav-item" type="submit" value="📦 Quản lý sản phẩm">
                     </form>
-                    <form action="MainController" method="get" class="nav-form">
-                        <input type="hidden" name="action" value="quanLyPhuKien">
+                    <form action="MainController" method="post" class="nav-form">
+                        <input type="hidden" name="action" value="viewAllAccessories">
                         <input class="nav-item" type="submit" value="🔧 Quản lý phụ kiện">
                     </form>
                     <form action="MainController" method="get" class="nav-form">
-                        <input type="hidden" name="action" value="quanLyDichVu">
+                        <input type="hidden" name="action" value="viewServiceList">
                         <input class="nav-item" type="submit" value="⚙️ Quản lý dịch vụ">
                     </form>
+                    <form action="MainController" method="post" class="nav-form">
+                        <input type="hidden" name="action" value="viewModelList">
+                        <input class="nav-item" type="submit" value="🎮 Quản lý model"> 
+                    </form>
+
                 </c:if>
 
             </nav>

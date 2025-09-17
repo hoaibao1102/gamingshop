@@ -9,195 +9,480 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="vi">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Accessories List</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Gaming Shop — Quản Lý Phụ Kiện</title>
+
+        <!-- Swiper CSS (nếu cần cho banner nội bộ) -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+        <!-- Main CSS đồng bộ với trang chủ -->
+        <link rel="stylesheet" href="assets/css/maincss.css" />
+
         <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; }
-            .btn { padding: 5px 10px; margin: 2px; text-decoration: none; border: 1px solid #ccc; }
-            .btn-edit { background-color: #4CAF50; color: white; }
-            .btn-delete { background-color: #f44336; color: white; }
-            .btn-add { background-color: #008CBA; color: white; }
-            .error { color: red; margin: 10px 0; }
-            .success { color: green; margin: 10px 0; }
-            .price { font-weight: bold; color: #2196F3; }
-            .status-active { color: green; font-weight: bold; }
-            .status-inactive { color: red; font-weight: bold; }
-            .status-out_of_stock { color: orange; font-weight: bold; }
-            .search-form { margin: 10px 0; padding: 15px; background-color: #f9f9f9; border-radius: 5px; }
-            .search-form input { padding: 8px; margin-right: 10px; border: 1px solid #ddd; border-radius: 4px; }
-            .search-form button { padding: 8px 15px; background-color: #008CBA; color: white; border: none; border-radius: 4px; }
+            /* --- Chỉ bổ sung vài style cho trang quản trị (không phá vỡ maincss.css) --- */
+            .admin-toolbar {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 12px;
+                padding: 16px;
+                background: #f3f4f6;
+                border-radius: 12px;
+                box-shadow: 0 6px 18px rgba(0,0,0,.1);
+            }
+            .admin-toolbar .title {
+                font-size: 20px;
+                font-weight: 700;
+                color: #111827;
+                margin-right: auto;
+            }
+            .admin-toolbar .search-form {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+            .admin-toolbar input[type="text"] {
+                height: 40px;
+                border-radius: 10px;
+                border: 1px solid #d1d5db;
+                background: #fff;
+                color: #111827;
+                padding: 0 12px;
+                min-width: 280px;
+            }
+            .admin-toolbar .btn {
+                height: 40px;
+                border: 0;
+                border-radius: 10px;
+                padding: 0 14px;
+                font-weight: 600;
+                cursor: pointer;
+            }
+            .btn-primary {
+                background: #2563eb;
+                color: #fff;
+            }
+            .btn-secondary {
+                background: #6b7280;
+                color: #fff;
+            }
+            .btn-danger {
+                background: #dc2626;
+                color: #fff;
+            }
+
+            .accessories-card {
+                margin-top: 16px;
+                background: #fff;
+                border: 1px solid #e5e7eb;
+                border-radius: 16px;
+                overflow: hidden;
+            }
+            .accessories-meta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                padding: 12px 16px;
+                border-bottom: 1px solid #e5e7eb;
+                background: #f9fafb;
+            }
+            .meta-pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 10px;
+                border-radius: 999px;
+                font-size: 12px;
+                background: #f3f4f6;
+                color: #374151;
+                border: 1px dashed #d1d5db;
+            }
+            .meta-pill .dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 999px;
+                background: #22c55e;
+            }
+
+            .table-wrap {
+                width: 100%;
+                overflow: auto;
+                background: #ffffff;
+                border: 1px solid #e5e7eb;
+                border-radius: 12px;
+            }
+            table.accessories {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
+                background: #ffffff;
+                color: #111111;
+            }
+            table.accessories thead th {
+                position: sticky;
+                top: 0;
+                background: #ffffff;
+                color: #111111;
+                text-align: left;
+                font-weight: 700;
+                padding: 12px 14px;
+                border-bottom: 1px solid #e5e7eb;
+                z-index: 1;
+            }
+            table.accessories tbody td {
+                padding: 12px 14px;
+                border-bottom: 1px solid #f1f5f9;
+                color: #111111;
+                vertical-align: top;
+            }
+            .acc-thumb {
+                width: 72px;
+                height: 72px;
+                border-radius: 10px;
+                object-fit: cover;
+                border: 1px solid #d1d5db;
+                background: #f9fafb;
+            }
+            .acc-name {
+                font-weight: 700;
+            }
+            .acc-id {
+                font-size: 12px;
+                opacity: .7;
+            }
+            .status-pill {
+                display:inline-flex;
+                align-items:center;
+                gap:6px;
+                padding:4px 10px;
+                border-radius:999px;
+                font-size:12px;
+            }
+            .status-active {
+                background:#dcfce7;
+                color:#166534;
+                border:1px solid #16a34a;
+            }
+            .status-inactive {
+                background:#fee2e2;
+                color:#991b1b;
+                border:1px solid #ef4444;
+            }
+            .gift-pill {
+                display:inline-flex;
+                align-items:center;
+                gap:6px;
+                padding:4px 10px;
+                border-radius:999px;
+                font-size:12px;
+            }
+            .gift-freebie {
+                background:#e8f5e8;
+                color:#2e7d2e;
+                border:1px solid #4ade80;
+            }
+            .gift-sellable {
+                background:#fff3e0;
+                color:#e65100;
+                border:1px solid #f97316;
+            }
+            .row-actions .btn {
+                height: 36px;
+                padding: 0 16px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                color: #fff;
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            .row-actions .btn-secondary {
+                background-color: #3b82f6; /* xanh dương */
+            }
+            .row-actions .btn-secondary:hover {
+                background-color: #1d4ed8;
+            }
+            .row-actions .btn-danger {
+                background-color: #ef4444; /* đỏ */
+            }
+            .row-actions .btn-danger:hover {
+                background-color: #b91c1c;
+            }
+            .row-actions {
+                display: flex;
+                gap: 8px;
+                justify-content: center;
+            }
+
+            /* Style lại nút tìm kiếm */
+            .admin-toolbar .btn-primary {
+                background-color: #2563eb;
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                padding: 0 16px;
+                transition: all 0.2s ease;
+            }
+            .admin-toolbar .btn-primary:hover {
+                background-color: #1d4ed8;
+            }
+
+            .empty-state {
+                text-align:center;
+                padding: 48px 16px;
+            }
+            .empty-state h3 {
+                color:#111827;
+                margin-bottom:8px;
+            }
+            .empty-state p {
+                color:#6b7280;
+                margin-bottom:12px;
+            }
+
+            .alert {
+                padding: 12px 14px;
+                border-radius: 10px;
+                margin-top: 12px;
+                opacity: 1;
+                transition: opacity 0.5s ease-out;
+            }
+            .alert-success {
+                background:#dcfce7;
+                color:#166534;
+                border:1px solid #16a34a;
+            }
+            .alert-danger {
+                background:#fee2e2;
+                color:#991b1b;
+                border:1px solid #ef4444;
+            }
+            .alert.fade-out {
+                opacity: 0;
+            }
+
+            /* Pagination */
+            .pagination-wrap {
+                padding: 16px;
+                display:flex;
+                justify-content:center;
+                gap: 8px;
+            }
+
+            /* Zebra rows + hover */
+            table.accessories tbody tr:nth-child(even) {
+                background: #fafafa;
+            }
+            table.accessories tbody tr:hover {
+                background: #f5f5f5;
+            }
+
+            /* Responsive */
+            @media (max-width: 768px){
+                .admin-toolbar .search-form {
+                    width: 100%;
+                }
+                .admin-toolbar input[type="text"] {
+                    flex: 1;
+                    min-width: 0;
+                }
+                .table-wrap {
+                    border-radius: 0;
+                }
+            }
         </style>
     </head>
     <body>
-        <h1>Accessories Management</h1>
-        
-        <!-- Search Form -->
-        <div class="search-form">
-            <form action="MainController" method="get">
-                <input type="hidden" name="action" value="searchAccessory">
-                <input type="text" name="keyword" placeholder="Search accessories..." value="${keyword}">
-                <button type="submit">Search</button>
-                <c:if test="${not empty keyword}">
-                    <a href="MainController?action=viewAllAccessories" class="btn">Clear</a>
-                </c:if>
-            </form>
-        </div>
-        
-        <!-- Add New Button -->
-        <a href="MainController?action=showAddAccessoryForm" class="btn btn-add">Add New Accessory</a>
-        
-        <!-- Messages -->
-        <c:if test="${not empty checkError}">
-            <div class="error">${checkError}</div>
-        </c:if>
-        <c:if test="${not empty messageDeleteAccessory}">
-            <div class="success">${messageDeleteAccessory}</div>
-        </c:if>
-        
-        <!-- Search Results Info -->
-        <c:if test="${not empty keyword}">
-            <p style="color: #666; font-style: italic;">Search results for: "<strong>${keyword}</strong>"</p>
-        </c:if>
-        
-        <!-- Accessories Table -->
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Image</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Status</th>
-                    <th>Gift Type</th>
-                    <th>Updated</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <c:choose>
-                    <c:when test="${empty accessories}">
-                        <tr><td colspan="10" style="text-align: center;">No accessories found</td></tr>
-                    </c:when>
-                    <c:otherwise>
-                        <c:forEach var="accessory" items="${accessories}">
-                            <tr>
-                                <td>${accessory.id}</td>
-                                <td><strong>${accessory.name}</strong></td>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${not empty accessory.description}">
-                                            <c:choose>
-                                                <c:when test="${fn:length(accessory.description) > 50}">
-                                                    ${fn:substring(accessory.description, 0, 50)}...
-                                                </c:when>
-                                                <c:otherwise>
-                                                    ${accessory.description}
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </c:when>
-                                        <c:otherwise><em>No description</em></c:otherwise>
-                                    </c:choose>
-                                </td>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${not empty accessory.image_url}">
-                                            <img src="${accessory.image_url}" alt="Accessory Image" 
-                                                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
-                                        </c:when>
-                                        <c:otherwise><em>No image</em></c:otherwise>
-                                    </c:choose>
-                                </td>
-                                <td style="text-align: center; font-weight: bold;">
-                                    ${accessory.quantity}
-                                </td>
-                                <td class="price">
-                                    $<fmt:formatNumber value="${accessory.price}" pattern="#,##0.00"/>
-                                </td>
-                                <td>
-                                    <span class="status-${accessory.status}">
-                                        <c:choose>
-                                            <c:when test="${accessory.status == 'active'}">Active</c:when>
-                                            <c:when test="${accessory.status == 'inactive'}">Inactive</c:when>
-                                            <c:when test="${accessory.status == 'out_of_stock'}">Out of Stock</c:when>
-                                            <c:otherwise>${accessory.status}</c:otherwise>
-                                        </c:choose>
-                                    </span>
-                                </td>
-                                <td>
-                                    <c:choose>
-                                        <c:when test="${accessory.gift == 'Phụ kiện tặng kèm'}">
-                                            <span style="background-color: #e8f5e8; padding: 2px 6px; border-radius: 3px; font-size: 12px; color: #2e7d2e;">
-                                                Tặng kèm
-                                            </span>
-                                        </c:when>
-                                        <c:when test="${accessory.gift == 'Phụ kiện bán'}">
-                                            <span style="background-color: #fff3e0; padding: 2px 6px; border-radius: 3px; font-size: 12px; color: #e65100;">
-                                                Phụ kiện bán
-                                            </span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span style="background-color: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 12px;">
-                                                ${accessory.gift}
-                                            </span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
-                                <td>
-                                    <fmt:formatDate value="${accessory.updated_at}" pattern="dd/MM/yyyy"/>
-                                </td>
-                                <td>
-                                    <a href="ProductController?action=showEditAccessoryForm&id=${accessory.id}" class="btn btn-edit">Edit</a>
-                                    <a href="MainController?action=deleteAccessory&id=${accessory.id}" class="btn btn-delete" 
-                                       onclick="return confirmDelete('${accessory.name}')">Delete</a>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                    </c:otherwise>
-                </c:choose>
-            </tbody>
-        </table>
-        
-        <!-- Total count -->
-        <p style="margin-top: 10px; color: #666;">
-            Total: <strong>${fn:length(accessories)}</strong> accessory(s)
-            <c:if test="${not empty totalAccessories}">
-                (${totalAccessories} total in database)
-            </c:if>
-        </p>
-        
-        <!-- Simple Pagination -->
-        <c:if test="${not empty totalPages && totalPages > 1}">
-            <div style="margin-top: 20px; text-align: center;">
-                <c:if test="${currentPage > 1}">
-                    <a href="MainController?action=viewAllAccessories&page=${currentPage - 1}" class="btn">&laquo; Previous</a>
-                </c:if>
-                
-                <span style="margin: 0 10px;">Page ${currentPage} of ${totalPages}</span>
-                
-                <c:if test="${currentPage < totalPages}">
-                    <a href="MainController?action=viewAllAccessories&page=${currentPage + 1}" class="btn">Next &raquo;</a>
-                </c:if>
+        <div class="wrapper">
+            <div class="sidebar">
+                <jsp:include page="sidebar.jsp"/>
             </div>
-        </c:if>
 
+            <div class="Main_content">
+                <jsp:include page="header.jsp"/>
+
+                <!-- ===== Marquee dùng lại từ trang chủ để đồng bộ thông điệp ===== -->
+                <div class="marquee-bar">
+                    <div class="marquee-inner">
+                        <span class="marquee-item"><span class="badge">ADMIN</span> Quản lý phụ kiện — thêm/sửa/xóa nhanh</span>
+                        <span class="marquee-item"><span class="badge">TIP</span> Nhập tên phụ kiện để lọc chính xác</span>
+                        <span class="marquee-item"><a href="MainController?action=viewAllAccessories">Làm mới danh sách →</a></span>
+                    </div>
+                </div>
+
+                <div class="container">
+                    <div class="admin-toolbar">
+                        <div class="title">Danh sách phụ kiện</div>
+                        <form action="MainController" method="get" class="search-form" autocomplete="off">
+                            <input type="hidden" name="action" value="searchAccessory"/>
+                            <input type="text" name="keyword" value="${keyword != null ? keyword : ''}" placeholder="Nhập tên phụ kiện..." />
+                            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                        </form>
+
+                        <form action="MainController" method="post" class="search-form" autocomplete="off">
+                            <input type="hidden" name="action" value="showAddAccessoryForm"/>
+                            <button type="submit" class="btn btn-primary">+ Thêm phụ kiện</button>
+                        </form>
+                    </div>
+
+                    <!-- Thông báo hệ thống -->
+                    <c:if test="${not empty checkError}">
+                        <div class="alert alert-danger">${checkError}</div>
+                    </c:if>
+                    <c:if test="${not empty messageDeleteAccessory}">
+                        <div class="alert alert-success">${messageDeleteAccessory}</div>
+                    </c:if>
+
+                    <!-- Meta: tổng số, từ khóa -->
+                    <div class="accessories-card">
+                        <div class="accessories-meta">
+                            <span class="meta-pill"><span class="dot"></span><b>Từ khóa:</b>&nbsp;${keyword != null && fn:length(keyword) > 0 ? keyword : '—'}</span>
+                            <span class="meta-pill"><b>Tổng:</b>&nbsp;<c:choose>
+                                    <c:when test="${not empty accessories}">${fn:length(accessories)}</c:when>
+                                    <c:otherwise>0</c:otherwise>
+                                </c:choose> phụ kiện</span>
+                        </div>
+
+                        <!-- Bảng phụ kiện -->
+                        <c:choose>
+                            <c:when test="${not empty accessories}">
+                                <div class="table-wrap">
+                                    <table class="accessories">
+                                        <thead>
+                                            <tr>
+                                                <th>Ảnh</th>
+                                                <th>ID</th>
+                                                <th>Tên phụ kiện</th>
+                                                <th>Mô tả</th>
+                                                <th>Giá</th>
+                                                <th>Tồn kho</th>
+                                                <th>Trạng thái</th>
+                                                <th>Loại</th>
+                                                <th>Cập nhật</th>
+                                                <th>Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <c:forEach var="accessory" items="${accessories}">
+                                                <tr>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${not empty accessory.image_url}">
+                                                                <img class="acc-thumb" src="${accessory.image_url}" alt="${accessory.name}" />
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <img class="acc-thumb" src="assets/img/no-image.png" alt="No image" />
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td>${accessory.id}</td>
+                                                    <td>
+                                                        <div class="acc-name">${accessory.name}</div>
+                                                        <div class="acc-id">#${accessory.id}</div>
+                                                    </td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${not empty accessory.description}">
+                                                                <c:choose>
+                                                                    <c:when test="${fn:length(accessory.description) > 50}">
+                                                                        ${fn:substring(accessory.description, 0, 50)}...
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        ${accessory.description}
+                                                                    </c:otherwise>
+                                                                </c:choose>
+                                                            </c:when>
+                                                            <c:otherwise><em>Chưa có mô tả</em></c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td>
+                                                        $<fmt:formatNumber value="${accessory.price}" pattern="#,##0.00"/>
+                                                    </td>
+                                                    <td style="text-align: center; font-weight: bold;">${accessory.quantity}</td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${accessory.status eq 'active'}">
+                                                                <span class="status-pill status-active">Hoạt động</span>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="status-pill status-inactive">Ngừng</span>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${accessory.gift == 'Phụ kiện tặng kèm'}">
+                                                                <span class="gift-pill gift-freebie">Tặng kèm</span>
+                                                            </c:when>
+                                                            <c:when test="${accessory.gift == 'Phụ kiện bán'}">
+                                                                <span class="gift-pill gift-sellable">Phụ kiện bán</span>
+                                                            </c:when>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td>
+                                                        <fmt:formatDate value="${accessory.updated_at}" pattern="dd/MM/yyyy"/>
+                                                    </td>
+                                                    <td>
+                                                        <div class="row-actions">
+                                                            <a href="MainController?action=showEditAccessoryForm&id=${accessory.id}" class="btn btn-secondary">Sửa</a>
+                                                            <c:if test="${accessory.status == 'active'}">
+                                                                <a href="MainController?action=deleteAccessory&id=${accessory.id}" class="btn btn-danger" 
+                                                                   onclick="return confirmDelete('${accessory.name}')">Xóa</a>
+                                                            </c:if>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Pagination -->
+                                <c:if test="${not empty totalPages && totalPages > 1}">
+                                    <div class="pagination-wrap">
+                                        <c:if test="${currentPage > 1}">
+                                            <a href="MainController?action=viewAllAccessories&page=${currentPage - 1}" class="btn btn-secondary">&laquo; Trước</a>
+                                        </c:if>
+                                        <span style="margin: 0 10px; align-self: center;">Trang ${currentPage} / ${totalPages}</span>
+                                        <c:if test="${currentPage < totalPages}">
+                                            <a href="MainController?action=viewAllAccessories&page=${currentPage + 1}" class="btn btn-secondary">Sau &raquo;</a>
+                                        </c:if>
+                                    </div>
+                                </c:if>
+
+                            </c:when>
+                            <c:otherwise>
+                                <div class="empty-state">
+                                    <h3>Không tìm thấy phụ kiện</h3>
+                                    <p>Vui lòng thử lại với từ khóa khác hoặc bỏ lọc để xem tất cả.</p>
+                                    <a href="MainController?action=viewAllAccessories" class="btn btn-primary">Xem tất cả phụ kiện</a>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <jsp:include page="footer.jsp"/>                    
+        <!-- Swiper JS (tuỳ chọn) -->
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
         <script>
             function confirmDelete(accessoryName) {
-                return confirm('Are you sure you want to delete accessory: ' + accessoryName + '?');
+                return confirm('Bạn có chắc chắn muốn xóa phụ kiện: ' + accessoryName + '?');
             }
-            
+
             // Auto hide messages after 5 seconds
-            setTimeout(function() {
-                var errorDiv = document.querySelector('.error');
-                var successDiv = document.querySelector('.success');
-                if (errorDiv) errorDiv.style.display = 'none';
-                if (successDiv) successDiv.style.display = 'none';
+            setTimeout(function () {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    alert.classList.add('fade-out');
+                    setTimeout(function() {
+                        alert.style.display = 'none';
+                    }, 500); // Wait for fade animation to complete
+                });
             }, 5000);
         </script>
     </body>
