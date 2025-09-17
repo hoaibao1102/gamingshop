@@ -324,7 +324,11 @@
                             <input type="text" name="keyword" value="${keyword != null ? keyword : ''}" placeholder="Nhập tên sản phẩm..." />
                             <button type="submit" class="btn btn-primary">Tìm kiếm</button>
                         </form>
-                        <a href="MainController?action=showAddProductForm" class="btn btn-primary">+ Thêm sản phẩm</a>
+                        
+                        <form action="MainController" method="post" class="search-form" autocomplete="off">
+                            <input type="hidden" name="action" value="showAddProductForm"/>
+                            <button type="submit" class="btn btn-primary">+ Thêm sản phẩm</button>
+                        </form>
                     </div>
 
                     <!-- Thông báo hệ thống -->
