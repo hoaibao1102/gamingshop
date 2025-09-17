@@ -324,7 +324,7 @@
                             <input type="text" name="keyword" value="${keyword != null ? keyword : ''}" placeholder="Nhập tên sản phẩm..." />
                             <button type="submit" class="btn btn-primary">Tìm kiếm</button>
                         </form>
-                        
+
                         <form action="MainController" method="post" class="search-form" autocomplete="off">
                             <input type="hidden" name="action" value="showAddProductForm"/>
                             <button type="submit" class="btn btn-primary">+ Thêm sản phẩm</button>
@@ -378,67 +378,67 @@
                                         </thead>
                                         <tbody>
                                             <c:forEach var="p" items="${list}">
-                                                    <tr>
-                                                        <td>
-                                                            <c:set var="imgUrl" value="">
-                                                            </c:set>
-                                                            <%
-                                                              // Lấy ảnh đầu tiên nếu có
-                                                              List<Product_images> imgs;
-                                                              Products pp;
-                                                              try {
-                                                                pp = (Products) pageContext.findAttribute("p");
-                                                                imgs = (pp != null) ? pp.getImage() : null;
-                                                              } catch(Exception e){ imgs = null; }
-                                                              String iUrl = (imgs != null && !imgs.isEmpty() && imgs.get(0) != null && imgs.get(0).getImage_url() != null && !imgs.get(0).getImage_url().isEmpty())
-                                                                ? imgs.get(0).getImage_url()
-                                                                : "assets/img/no-image.png";
-                                                            %>
-                                                            <img class="prod-thumb" src="<%= iUrl %>" alt="${p.name}" />
-                                                        </td>
-                                                        <td>${p.id}</td>
-                                                        <td>
-                                                            <div class="prod-name">${p.name}</div>
-                                                            <div class="prod-sku">#${p.id}</div>
-                                                        </td>
-                                                        <td>${p.sku}</td>
-                                                        <td>
-                                                            <fmt:formatNumber value="${p.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
-                                                        </td>
-                                                        <td>${p.product_type}</td>
-                                                        <td>${p.quantity}</td>
-                                                        <td>
-                                                            <c:choose>
-                                                                <c:when test="${p.status eq 'active'}">
-                                                                    <span class="status-pill status-active">Đang bán</span>
-                                                                </c:when>
-                                                                <c:when test="${p.status eq 'prominent'}">
-                                                                    <span class="status-pill status-prominent">Nổi bật</span>
-                                                                </c:when>
-                                                                <c:otherwise>
-                                                                    <span class="status-pill status-inactive">Ngừng</span>
-                                                                </c:otherwise>
-                                                            </c:choose>
-                                                        </td>
-                                                        <td>
-                                                            <div class="row-actions">
-                                                                <form action="MainController" method="post" style="display:inline;">
-                                                                    <input type="hidden" name="action" value="editMainProduct"/>
-                                                                    <input type="hidden" name="product_id" value="${p.id}"/>
-                                                                    <input type="hidden" name="price" value="${p.price}"/>
-                                                                    <input type="hidden" name="keyword" value="${keyword != null ? keyword : ''}" />
-                                                                    <input type="submit" value="Sửa" class="btn btn-secondary" />
-                                                                </form>
+                                                <tr>
+                                                    <td>
+                                                        <c:set var="imgUrl" value="">
+                                                        </c:set>
+                                                        <%
+                                                          // Lấy ảnh đầu tiên nếu có
+                                                          List<Product_images> imgs;
+                                                          Products pp;
+                                                          try {
+                                                            pp = (Products) pageContext.findAttribute("p");
+                                                            imgs = (pp != null) ? pp.getImage() : null;
+                                                          } catch(Exception e){ imgs = null; }
+                                                          String iUrl = (imgs != null && !imgs.isEmpty() && imgs.get(0) != null && imgs.get(0).getImage_url() != null && !imgs.get(0).getImage_url().isEmpty())
+                                                            ? imgs.get(0).getImage_url()
+                                                            : "assets/img/no-image.png";
+                                                        %>
+                                                        <img class="prod-thumb" src="<%= iUrl %>" alt="${p.name}" />
+                                                    </td>
+                                                    <td>${p.id}</td>
+                                                    <td>
+                                                        <div class="prod-name">${p.name}</div>
+                                                        <div class="prod-sku">#${p.id}</div>
+                                                    </td>
+                                                    <td>${p.sku}</td>
+                                                    <td>
+                                                        <fmt:formatNumber value="${p.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
+                                                    </td>
+                                                    <td>${p.product_type}</td>
+                                                    <td>${p.quantity}</td>
+                                                    <td>
+                                                        <c:choose>
+                                                            <c:when test="${p.status eq 'active'}">
+                                                                <span class="status-pill status-active">Đang bán</span>
+                                                            </c:when>
+                                                            <c:when test="${p.status eq 'prominent'}">
+                                                                <span class="status-pill status-prominent">Nổi bật</span>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <span class="status-pill status-inactive">Ngừng</span>
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </td>
+                                                    <td>
+                                                        <div class="row-actions">
+                                                            <form action="MainController" method="post" style="display:inline;">
+                                                                <input type="hidden" name="action" value="editMainProduct"/>
+                                                                <input type="hidden" name="product_id" value="${p.id}"/>
+                                                                <input type="hidden" name="price" value="${p.price}"/>
+                                                                <input type="hidden" name="keyword" value="${keyword != null ? keyword : ''}" />
+                                                                <input type="submit" value="Sửa" class="btn btn-secondary" />
+                                                            </form>
 
-                                                                <form action="MainController" method="post" style="display:inline;" onsubmit="return confirm('Xóa sản phẩm này?');">
-                                                                    <input type="hidden" name="action" value="deleteProduct"/>
-                                                                    <input type="hidden" name="product_id" value="${p.id}"/>
-                                                                    <input type="hidden" name="keyword" value="${keyword != null ? keyword : ''}" />
-                                                                    <input type="submit" value="Xóa" class="btn btn-danger" />
-                                                                </form>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
+                                                            <form action="MainController" method="post" style="display:inline;" onsubmit="return confirm('Xóa sản phẩm này?');">
+                                                                <input type="hidden" name="action" value="deleteProduct"/>
+                                                                <input type="hidden" name="product_id" value="${p.id}"/>
+                                                                <input type="hidden" name="keyword" value="${keyword != null ? keyword : ''}" />
+                                                                <input type="submit" value="Xóa" class="btn btn-danger" />
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             </c:forEach>
                                         </tbody>
                                     </table>
@@ -457,13 +457,11 @@
                 </div>
             </div>
         </div>
-
-        
-
+        <jsp:include page="footer.jsp"/>                    
         <!-- Swiper JS (tuỳ chọn) -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
         <script>
-                                                                    // Bạn có thể tái sử dụng slider cho khối admin nếu cần sau này
+                                                                // Bạn có thể tái sử dụng slider cho khối admin nếu cần sau này
         </script>
     </body>
 </html>
