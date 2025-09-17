@@ -207,6 +207,15 @@ public class ProductController extends HttpServlet {
 
     public void handleViewAllProducts_sidebar(HttpServletRequest request, HttpServletResponse response) {
         List<Products> list = productsdao.getAll();
+        // Gán hình ảnh cho từng sản phẩm
+            for (Products p : list) {
+                List<Product_images> images = productImagesDAO.getByProductId(p.getId());
+                if (images.size() > 0) {
+                    p.setCoverImg(images.get(0).getImage_url());
+                } else {
+                    p.setCoverImg("");
+                }
+            }
         request.getSession().setAttribute("listForSidebar", list);
     }
 
