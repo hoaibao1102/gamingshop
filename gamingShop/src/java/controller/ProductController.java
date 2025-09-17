@@ -1769,6 +1769,7 @@ public class ProductController extends HttpServlet {
             }
 
             request.setAttribute("listProductsByCategory", pageResult);
+            request.setAttribute("nameProductsByCategory", "San pham noi bat");
 //            đánh dấu là lấy ds sp nổi bật nên không hiện biên sidebar.jsp nữa
             request.setAttribute("isListProminent", "true");
 
@@ -2600,7 +2601,7 @@ public class ProductController extends HttpServlet {
                     p.setCoverImg("");
                 }
             }
-
+            request.setAttribute("nameProductsByCategory", "May choi game");
             request.setAttribute("listProductsByCategory", pageResult);
 
         } catch (Exception e) {

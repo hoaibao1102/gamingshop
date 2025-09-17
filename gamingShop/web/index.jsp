@@ -73,9 +73,10 @@
                     <jsp:include page="filter-form.jsp"/>
                 </c:if>
 
-
+                
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
+                    <h3>${nameProductsByCategory}</h3>
                     <c:choose>
                         <c:when test="${not empty listProductsByCategory}">
                             <c:set var="products" value="${listProductsByCategory.content}" />

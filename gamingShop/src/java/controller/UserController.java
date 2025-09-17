@@ -112,8 +112,8 @@ public class UserController extends HttpServlet {
         return "MainController?action=prepareHome";
     }
 
-
     private String handleGoLoginForm(HttpServletRequest request, HttpServletResponse response) {
         return "login.jsp";
+
     }
 }
