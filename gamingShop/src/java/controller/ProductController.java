@@ -302,11 +302,14 @@ public class ProductController extends HttpServlet {
 
             Page<Products> pageResult = productsdao.getProductsWithFilter(filter);
 
-            // Gán hình ảnh cho từng sản phẩm
-            for (Products p : pageResult.getContent()) {
-                List<Product_images> images = productImagesDAO.getByProductId(p.getId());
-                p.setImage(images);
-            }
+            // ===== Gán ảnh cho từng sản phẩm =====
+                for (Products p : pageResult.getContent()) {
+                    // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
+                    Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
+                    if (coverImg != null) {
+                        p.setCoverImg(coverImg.getImage_url());
+                    }else p.setCoverImg("");
+                }
 
             request.setAttribute("pageResult", pageResult);
             request.setAttribute("currentFilter", filter);
