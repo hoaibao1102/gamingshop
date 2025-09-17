@@ -84,7 +84,8 @@ public class MainController extends HttpServlet {
 
     private boolean isUserAction(String action) {
         return "login".equals(action)
-                || "logout".equals(action);
+                || "logout".equals(action)
+                || "goLoginForm".equals(action);
     }
 
     private boolean isProductAction(String action) {

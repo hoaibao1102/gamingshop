@@ -2601,7 +2601,50 @@ public class ProductController extends HttpServlet {
     }
 
     private String handleListTheGame(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try {
+            request.setCharacterEncoding("UTF-8");
+            // Tạo filter mặc định
+            ProductFilter filter = new ProductFilter();
+
+            // Lấy tham số page nếu có
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.isEmpty()) {
+                try {
+                    int page = Integer.parseInt(pageParam);
+                    if (page > 0) {
+                        filter.setPage(page);
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore, use default page
+                }
+            }
+
+            // Lấy dữ liệu với phân trang
+            Page<Products> pageResult = productsdao.getListTheGame(filter);
+            // ===== Gán ảnh cho từng sản phẩm =====
+            for (Products p : pageResult.getContent()) {
+//                    System.out.println(p.getId());
+            }
+
+            // ===== Gán ảnh cho từng sản phẩm =====
+            for (Products p : pageResult.getContent()) {
+                // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
+                Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
+                if (coverImg != null) {
+                    p.setCoverImg(coverImg.getImage_url());
+                } else {
+                    p.setCoverImg("");
+                }
+            }
+
+            request.setAttribute("listProductsByCategory", pageResult);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error loading products: " + e.getMessage());
+        }
+
+        return INDEX_PAGE;
     }
 
     private String handleShowAddPosts(HttpServletRequest request, HttpServletResponse response) {
