@@ -247,7 +247,7 @@
         }
 
         .filter-header {
-            padding: 12px 16px;
+            padding: 3px 12px;
         }
 
         .filter-content {
