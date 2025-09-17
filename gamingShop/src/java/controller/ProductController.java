@@ -113,6 +113,8 @@ public class ProductController extends HttpServlet {
                 url = handleAddPosts(request, response);
             } else if (action.equals("showAddPosts")) {
                 url = handleShowAddPosts(request, response);
+            } else if (action.equals("viewPost")) {
+                url = handleViewDetailsPost(request, response);
             } else if (action.equals("deletePosts")) {
                 url = handleDeletePosts(request, response);
             } else if (action.equals("deleteImagePost")) {
@@ -2662,6 +2664,45 @@ public class ProductController extends HttpServlet {
     private String handleShowAddPosts(HttpServletRequest request, HttpServletResponse response) {
         request.setAttribute("post", null);
         return "postsUpdate.jsp";
+    }
+
+    private String handleViewDetailsPost(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+            PostsDAO dao = new PostsDAO();
+
+            Posts post = dao.getById(id);
+            if (post == null) {
+                request.setAttribute("checkErrorViewPost", "Bài viết không tồn tại hoặc đã bị xoá.");
+                return "products.jsp";
+            }
+
+            boolean includeDrafts = AuthUtils.isLoggedIn(request);
+
+            // (Tuỳ chọn, khuyên dùng) chặn xem chi tiết bài nháp khi chưa đăng nhập:
+            if (post.getStatus() != 1 && !includeDrafts) {
+                request.setAttribute("checkErrorViewPost", "Bài viết không khả dụng.");
+                return "products.jsp";
+            }
+
+            List<Posts> recent = dao.getRecentPosts(6, /* includeDrafts */ includeDrafts, post.getId());
+
+            // Lọc cứng khi guest (phòng khi SQL chưa lọc)
+            if (!includeDrafts) {
+                recent = recent.stream()
+                        .filter(p -> p.getStatus() == 1)
+                        .collect(java.util.stream.Collectors.toList());
+            }
+
+            request.setAttribute("post", post);
+            request.setAttribute("recentPosts", recent);
+
+            return "postDetails.jsp"; // đảm bảo là FORWARD trong front controller
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorViewPost", "Có lỗi xảy ra khi tải bài viết.");
+            return "MainController?action=searchPosts";
+        }
     }
 
 }
