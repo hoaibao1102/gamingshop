@@ -4,6 +4,12 @@
  */
 package controller;
 
+import dao.AccessoriesDAO;
+import dto.Accessories;
+import dto.Page;
+import dto.ProductFilter;
+import dto.Product_images;
+import dto.Products;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -19,30 +25,24 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet(name = "AccessoryController", urlPatterns = {"/AccessoryController"})
 public class AccessoryController extends HttpServlet {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    String INDEX_PAGE = "index.jsp";
+    AccessoriesDAO adao = new AccessoriesDAO();
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try ( PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet AccessoryController</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet AccessoryController at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+        String url = INDEX_PAGE;
+        String action = request.getParameter("action");
+        try {
+            if("listPhuKien".equals(action)){
+                url = handleListPhuKien(request, response);
+            }
+        } catch (Exception e) {
+        } finally {
+            request.getRequestDispatcher(url).forward(request, response);
         }
+        
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -83,5 +83,38 @@ public class AccessoryController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private String handleListPhuKien(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
+            // Tạo filter mặc định
+            ProductFilter filter = new ProductFilter();
+
+            // Lấy tham số page nếu có
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.isEmpty()) {
+                try {
+                    int page = Integer.parseInt(pageParam);
+                    if (page > 0) {
+                        filter.setPage(page);
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore, use default page
+                }
+            }
+
+            // Lấy dữ liệu với phân trang
+            Page<Accessories> pageResult = adao.getListAccessotiesBuy(filter);
+
+            request.setAttribute("listProductsByCategory", pageResult);
+            request.setAttribute("isListProductsByCategory", "true");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error loading products: " + e.getMessage());
+        }
+
+        return INDEX_PAGE;
+    }
 
 }

@@ -1110,7 +1110,7 @@ public class ProductController extends HttpServlet {
                 }
 
                 // Set image_url tạm thời là null để insert trước
-                newAccessory.setImage_url(null);
+                newAccessory.setCoverImg(null);
 
                 // ===== Insert để lấy generated ID =====
                 boolean success = accessoriesDAO.create(newAccessory);
@@ -1136,7 +1136,7 @@ public class ProductController extends HttpServlet {
                     }
 
                     storedImageUrl = "uploads/accessories/" + finalName;
-                    newAccessory.setImage_url(storedImageUrl);
+                    newAccessory.setCoverImg(storedImageUrl);
 
                     // Update image_url vào DB
                     accessoriesDAO.update(newAccessory);
@@ -1152,7 +1152,7 @@ public class ProductController extends HttpServlet {
 
             } else {
                 // KHÔNG có ảnh -> insert luôn
-                newAccessory.setImage_url(null);
+                newAccessory.setCoverImg(null);
                 boolean success = accessoriesDAO.create(newAccessory);
 
                 if (!success) {
@@ -1262,7 +1262,7 @@ public class ProductController extends HttpServlet {
             } catch (Exception ignore) {
             }
 
-            String oldImageUrl = existingAccessory.getImage_url();
+            String oldImageUrl = existingAccessory.getCoverImg();
 
             if (imagePart != null && imagePart.getSize() > 0
                     && imagePart.getSubmittedFileName() != null
@@ -1286,7 +1286,7 @@ public class ProductController extends HttpServlet {
                 File newFile = new File(uploadDir, newFileName);
                 imagePart.write(newFile.getAbsolutePath());
 
-                existingAccessory.setImage_url("uploads/accessories/" + newFileName);
+                existingAccessory.setCoverImg("uploads/accessories/" + newFileName);
             }
 
             // ===== Update database =====

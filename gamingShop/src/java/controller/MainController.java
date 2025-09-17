@@ -34,6 +34,8 @@ public class MainController extends HttpServlet {
                 url = "/ProductController";
             } else if (isBannersAction(action)) {
                 url = "/BannerController";
+            } else if (isAccessoryAction(action)) {
+                url = "/AccessoryController";
             }
 
         } catch (Exception e) {
@@ -137,6 +139,10 @@ public class MainController extends HttpServlet {
                 || "updateBanner".equals(action)
                 || "searchBanner".equals(action)
                 || "editBanners".equals(action);
+    }
+    
+    private boolean isAccessoryAction(String action) {
+        return "listPhuKien".equals(action);
     }
 
 }
