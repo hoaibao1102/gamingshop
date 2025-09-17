@@ -928,16 +928,16 @@ public class ProductController extends HttpServlet {
             }
 
             // 3. NEW: Check for duplicate name (UNIQUE constraint validation)
-//            try {
-//
-//                if (accessoriesDAO.isNameExists(name)) {
-//                    request.setAttribute("checkErrorAddAccessory", "Accessory name '" + name.trim() + "' already exists. Please choose a different name.");
-//                    return "accessoryUpdate.jsp";
-//                }
-//            } catch (Exception e) {
-//                // If we can't check, continue but log the error
-//                e.printStackTrace();
-//            }
+            try {
+
+                if (accessoriesDAO.isNameExists(name)) {
+                    request.setAttribute("checkErrorAddAccessory", "Accessory name '" + name.trim() + "' already exists. Please choose a different name.");
+                    return "accessoryUpdate.jsp";
+                }
+            } catch (Exception e) {
+                // If we can't check, continue but log the error
+                e.printStackTrace();
+            }
 
             // 4. Validate quantity - required, numeric, and non-negative
             if (quantityStr == null || quantityStr.trim().isEmpty()) {
@@ -1120,7 +1120,7 @@ public class ProductController extends HttpServlet {
                         }
                     }
 
-                    storedImageUrl = "uploads/accessories/" + finalName;
+                    storedImageUrl = "assets/accessories/" + finalName;
                     newAccessory.setImage_url(storedImageUrl);
 
                     // Update image_url vào DB
@@ -1271,7 +1271,7 @@ public class ProductController extends HttpServlet {
                 File newFile = new File(uploadDir, newFileName);
                 imagePart.write(newFile.getAbsolutePath());
 
-                existingAccessory.setImage_url("uploads/accessories/" + newFileName);
+                existingAccessory.setImage_url("assets/accessories/" + newFileName);
             }
 
             // ===== Update database =====
