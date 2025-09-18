@@ -223,15 +223,6 @@ public class ProductController extends HttpServlet {
         }
         List<Banners> listBanner = bannersDAO.getTop5Active();
 
-        if (listBanner == null || listBanner.isEmpty()) {
-            System.out.println("⚠️ Không có banner nào được trả về!");
-        } else {
-            System.out.println("✅ Có " + listBanner.size() + " banner được trả về.");
-            for (Banners b : listBanner) {
-                System.out.println(" - " + b.getId() + " | " + b.getTitle());
-            }
-        }
-
         request.setAttribute("topBanners", listBanner);
         request.getSession().setAttribute("listForSidebar", list);
     }
@@ -1784,15 +1775,6 @@ public class ProductController extends HttpServlet {
                 }
             }
             List<Banners> listBanner = bannersDAO.getTop5Active();
-
-            if (listBanner == null || listBanner.isEmpty()) {
-                System.out.println("⚠️ Không có banner nào được trả về!");
-            } else {
-                System.out.println("✅ Có " + listBanner.size() + " banner được trả về.");
-                for (Banners b : listBanner) {
-                    System.out.println(" - " + b.getId() + " | " + b.getTitle());
-                }
-            }
 
             request.setAttribute("topBanners", listBanner);
 
