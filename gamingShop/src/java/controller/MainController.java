@@ -139,7 +139,8 @@ public class MainController extends HttpServlet {
                 || "deleteBanner".equals(action)
                 || "updateBanner".equals(action)
                 || "searchBanner".equals(action)
-                || "editBanners".equals(action);
+                || "editBanners".equals(action)
+                || "getAllBanner".equals(action);
     }
     
     private boolean isAccessoryAction(String action) {

@@ -14,6 +14,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>Sidebar Sản phẩm nổi bật</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
         <style>
             :root{
                 --ring:#e5e7eb;
@@ -404,7 +405,7 @@
                     <span class="nav-icon">🏠</span>
                     <span>Trang chủ</span>
                 </a>
-                
+
                 <form action="MainController" method="post" class="nav-form">
                     <input type="hidden" name="action" value="searchPosts">
                     <input class="nav-item" type="submit" value="📰 Bài đăng gần đây">
@@ -412,8 +413,12 @@
 
                 <c:if test="${not empty user}">
                     <form action="MainController" method="post" class="nav-form">
+                        <input type="hidden" name="action" value="searchBanner">
+                        <input class="nav-item" type="submit" value="🪧️ Quản lý banners">
+                    </form>
+                    <form action="MainController" method="post" class="nav-form">
                         <input type="hidden" name="action" value="searchPosts">
-                        <input class="nav-item" type="submit" value="🗂️ Quản lý bài post">
+                        <input class="nav-item" type="submit" value="🗂️ Quản lý bài posts">
                     </form>
                     <form action="MainController" method="post" class="search-form" autocomplete="off">
                         <input type="hidden" name="action" value="searchProduct"/>

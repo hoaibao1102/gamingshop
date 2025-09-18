@@ -5,6 +5,7 @@
 package controller;
 
 import dao.AccessoriesDAO;
+import dao.BannersDAO;
 import dto.Accessories;
 import dao.GuaranteesDAO;
 import dao.MemoriesDAO;
@@ -13,6 +14,7 @@ import dao.PostsDAO;
 import dao.ProductImagesDAO;
 import dao.ProductsDAO;
 import dao.ServicesDAO;
+import dto.Banners;
 import dto.Guarantees;
 import dto.Memories;
 import dto.Models;
@@ -58,6 +60,7 @@ public class ProductController extends HttpServlet {
     private final MemoriesDAO memoriesDAO = new MemoriesDAO();
     private final ModelsDAO modelsDAO = new ModelsDAO();
     private final ServicesDAO servicesDAO = new ServicesDAO();
+    private final BannersDAO bannersDAO = new BannersDAO();
 
     String INDEX_PAGE = "index.jsp";
 
@@ -218,6 +221,18 @@ public class ProductController extends HttpServlet {
                 p.setCoverImg("");
             }
         }
+        List<Banners> listBanner = bannersDAO.getTop5Active();
+
+        if (listBanner == null || listBanner.isEmpty()) {
+            System.out.println("⚠️ Không có banner nào được trả về!");
+        } else {
+            System.out.println("✅ Có " + listBanner.size() + " banner được trả về.");
+            for (Banners b : listBanner) {
+                System.out.println(" - " + b.getId() + " | " + b.getTitle());
+            }
+        }
+
+        request.setAttribute("topBanners", listBanner);
         request.getSession().setAttribute("listForSidebar", list);
     }
 
@@ -239,7 +254,6 @@ public class ProductController extends HttpServlet {
                     // Ignore, use default page
                 }
             }
-
             // Lấy dữ liệu với phân trang
             Page<Products> pageResult = productsdao.getProductsWithFilter(filter);
 
@@ -1769,6 +1783,18 @@ public class ProductController extends HttpServlet {
                     p.setCoverImg("");
                 }
             }
+            List<Banners> listBanner = bannersDAO.getTop5Active();
+
+            if (listBanner == null || listBanner.isEmpty()) {
+                System.out.println("⚠️ Không có banner nào được trả về!");
+            } else {
+                System.out.println("✅ Có " + listBanner.size() + " banner được trả về.");
+                for (Banners b : listBanner) {
+                    System.out.println(" - " + b.getId() + " | " + b.getTitle());
+                }
+            }
+
+            request.setAttribute("topBanners", listBanner);
 
             request.setAttribute("listProductsByCategory", pageResult);
             request.setAttribute("nameProductsByCategory", "San pham noi bat");

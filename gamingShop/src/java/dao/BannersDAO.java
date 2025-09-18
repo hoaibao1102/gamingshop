@@ -32,6 +32,12 @@ public class BannersDAO implements IDAO<Banners, Integer> {
     private static final String DELETE
             = "DELETE FROM dbo.Banners WHERE id = ?";
 
+    private static final String GET_TOP5_ACTIVE
+            = "SELECT TOP 5 * "
+            + "FROM dbo.Banners "
+            + "WHERE status = ? "
+            + "ORDER BY ISNULL(updated_at, created_at) DESC, id DESC";
+
     @Override
     public boolean create(Banners e) {
         Connection c = null;
@@ -206,5 +212,26 @@ public class BannersDAO implements IDAO<Banners, Integer> {
         } finally {
             close(c, st, null);
         }
+    }
+
+    public List<Banners> getTop5Active() {
+        List<Banners> list = new ArrayList<>();
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(GET_TOP5_ACTIVE);
+            st.setString(1, "active");
+            rs = st.executeQuery();
+            while (rs.next()) {
+                list.add(map(rs));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(c, st, rs);
+        }
+        return list;
     }
 }

@@ -415,6 +415,11 @@
                                             onclick="return confirm('Xoá bài viết #${post.id}?');">🗑️ Xoá</button>
                                 </form>
                             </c:if>
+                            <!-- Nút quay lại danh sách (ai cũng thấy) -->
+                            <form action="MainController" method="post" autocomplete="off" style="display:flex">
+                                <input type="hidden" name="action" value="searchPosts"/>
+                                <button class="btn ghost" type="submit">Quay lại danh sách</button>
+                            </form>
                         </div><br>
 
                         <div class="pub-date">
