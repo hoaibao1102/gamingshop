@@ -355,7 +355,11 @@
                 width:18px;
                 height:18px
             }
-
+            
+            .logoHeader{
+                    width: 65px;
+                    height: 100%;
+                }
             /* Mobile responsive adjustments */
             @media (max-width: 768px) {
                 .btn {
@@ -373,7 +377,7 @@
                     font-size: 14px;
                 }
 
-                .logo {
+                .logoHeader{
                     width: 65px;
                     height: 100%;
                 }
@@ -599,7 +603,7 @@
             <div class="topbar">
                 <div class="left-group">
                     <label for="nav-toggle" class="hamburger" aria-label="Mở menu"><span></span></label>
-                    <span class="brand-name"><a href="MainController?action=prepareHome"><img class="logo" src="assets/img/logo/logo.png" alt="Logo cửa hàng"></a></span>
+                    <span class="brand-name"><a href="MainController?action=prepareHome"><img class="logoHeader" src="assets/img/logo/logo.png" alt="Logo cửa hàng"></a></span>
                 </div>
                 <form class="search" role="search" aria-label="Tìm kiếm" action="MainController" method="get">
                     <button aria-label="Tìm" type="submit">
