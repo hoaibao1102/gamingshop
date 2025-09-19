@@ -355,11 +355,11 @@
                 width:18px;
                 height:18px
             }
-            
+
             .logoHeader{
-                    width: 65px;
-                    height: 100%;
-                }
+                width: 65px;
+                height: 100%;
+            }
             /* Mobile responsive adjustments */
             @media (max-width: 768px) {
                 .btn {
@@ -665,6 +665,15 @@
                     </li>
                     <li>
                         <form class="mobile-link-form" action="MainController" method="get">
+                            <input type="hidden" name="action" value="searchPosts"/>
+                            <button class="mobile-link-button" type="submit"> Bài đăng gần đây</button>
+                        </form>
+                    </li>
+
+
+
+                    <li>
+                        <form class="mobile-link-form" action="MainController" method="get">
                             <input type="hidden" name="action" value="showLienHe"/>
                             <button class="mobile-link-button" type="submit">Liên hệ</button>
                         </form>
@@ -794,6 +803,26 @@
                                 </button>
                             </form>
                         </li>
+
+                        <li>
+                            <form class="link-form" action="MainController" method="get">
+                                <input type="hidden" name="action" value="searchPosts"/>
+                                <button class="link-button" type="submit">
+                                    <!-- ICON Post -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" 
+                                         fill="none" viewBox="0 0 24 24" 
+                                         stroke="currentColor" stroke-width="2" 
+                                         class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" 
+                                          d="M7 8h10M7 12h10M7 16h6M5 4h14a2 2 0 0 1 2 2v12a2 
+                                          2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+                                    </svg>
+                                    Post
+
+                                </button>
+                            </form>
+                        </li>
+
                         <li>
                             <form class="link-form" action="MainController" method="get">
                                 <input type="hidden" name="action" value="showLienHe"/>

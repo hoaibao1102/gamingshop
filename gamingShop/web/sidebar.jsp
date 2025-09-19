@@ -406,10 +406,7 @@
                     <span>Trang chủ</span>
                 </a>
 
-                <form action="MainController" method="post" class="nav-form">
-                    <input type="hidden" name="action" value="searchPosts">
-                    <input class="nav-item" type="submit" value="📰 Bài đăng gần đây">
-                </form>
+                
 
                 <c:if test="${not empty user}">
                     <form action="MainController" method="post" class="nav-form">
