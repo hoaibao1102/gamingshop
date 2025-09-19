@@ -329,7 +329,6 @@
                                     <table class="services">
                                         <thead>
                                             <tr>
-                                                <th>Icon</th>
                                                 <th>ID</th>
                                                 <th>Tên Service</th>
                                                 <th>Mô tả</th>
