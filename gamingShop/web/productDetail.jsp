@@ -231,6 +231,42 @@
                 padding:8px;
             }
 
+            .pd-accessories {
+                margin-top: 15px;
+                padding: 15px;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                background-color: #fafafa;
+                font-family: Arial, sans-serif;
+            }
+
+            .pd-accessories b {
+                display: block;
+                font-size: 16px;
+                margin-bottom: 8px;
+                color: #333;
+            }
+
+            .pd-accessories ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .pd-accessories li {
+                position: relative;
+                padding-left: 24px;
+                margin-bottom: 6px;
+                font-size: 14px;
+                color: #555;
+            }
+
+            .pd-accessories li::before {
+                content: "🎁";
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
             /* Empty state */
             .empty-state{
                 text-align:center;
@@ -431,7 +467,12 @@
 
                                     <div class="pd-basic">
                                         <div class="pd-row"><b>SKU</b><span>${productDetail.sku}</span></div>
-                                        <div class="pd-row"><b>Loại</b><span>${productDetail.product_type}</span></div>
+                                        <div class="pd-row">
+                                            <b>Loại</b>
+                                            <span>
+                                                ${productDetail.product_type == 'new' ? 'New' : (productDetail.product_type == 'used' ? 'Link New' : productDetail.product_type)}
+                                            </span>
+                                        </div>
                                         <div class="pd-row pd-row-price">
                                             <b>Giá</b>
                                             <span><fmt:formatNumber value="${productDetail.price}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND</span>
@@ -439,6 +480,19 @@
                                         <div class="pd-row"><b>Bảo hành</b><span>${guaranteeProduct}</span></div>
                                         <div class="pd-row"><b>Bộ nhớ</b><span>${memoryProduct}</span></div>
                                     </div>
+
+                                    <c:if test="${not empty accessories}">
+                                        <div class="pd-accessories">
+                                            <b>Phụ kiện tặng kèm:</b>
+                                            <ul>
+                                                <c:forEach var="acc" items="${accessories}">
+                                                    <li>
+                                                        ${acc.name} (x${acc.quantity})
+                                                    </li>
+                                                </c:forEach>
+                                            </ul>
+                                        </div>
+                                    </c:if>
 
                                     <!-- Description_html nằm chung cột phải -->
                                     <div class="pd-desc">

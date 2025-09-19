@@ -250,8 +250,6 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         } catch (Exception ignore) {
         }
     }
-    
-    
 
     public Page<Accessories> getListAccessotiesWithCondition(ProductFilter filter, Map<String, String> equalsConditions) {
         Connection c = null;
@@ -267,8 +265,8 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         int offset = (page - 1) * pageSize;
 
         // ===== Whitelist & kiểu dữ liệu (khớp DB) =====
-        final Set<String> ALLOWED_FILTER_FIELDS = new HashSet<>(Arrays.asList("id","name","quantity",
-                "price","description_html","image_url","created_at","updated_at","status","gift"));
+        final Set<String> ALLOWED_FILTER_FIELDS = new HashSet<>(Arrays.asList("id", "name", "quantity",
+                "price", "description_html", "image_url", "created_at", "updated_at", "status", "gift"));
 
         final Map<String, String> FIELD_TYPES = new HashMap<>();
         FIELD_TYPES.put("id", "int");
@@ -344,7 +342,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         }
         return new Page<>(accessories, page, pageSize, totalCount);
     }
-    
+
     // ===== [NEW] Ép kiểu param theo loại cột để tránh convert ngầm & tận dụng index =====
     private Object castParam(String raw, String kind) {
         if (raw == null) {
@@ -372,9 +370,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         }
     }
 
-    
-        
-     private void addOrderBy(StringBuilder queryBuilder, String sortBy) {
+    private void addOrderBy(StringBuilder queryBuilder, String sortBy) {
         if (sortBy == null || sortBy.isEmpty()) {
             sortBy = "name_asc";
         }
@@ -402,34 +398,33 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
                 queryBuilder.append(" ORDER BY name ASC");
         }
     }
-    
+
     private void addFilterConditions(StringBuilder q, StringBuilder cq, ProductFilter filter, List<Object> params) {
-    String conditions = "";
+        String conditions = "";
 
-    // CHỈ GIỮ những cột có thật trong Accessories
-    if (filter.getName() != null && !filter.getName().trim().isEmpty()) {
-        conditions += " AND name LIKE ?";
-        params.add("%" + filter.getName().trim() + "%");
+        // CHỈ GIỮ những cột có thật trong Accessories
+        if (filter.getName() != null && !filter.getName().trim().isEmpty()) {
+            conditions += " AND name LIKE ?";
+            params.add("%" + filter.getName().trim() + "%");
+        }
+
+        if (filter.getMinPrice() != null && filter.getMinPrice() >= 0) {
+            conditions += " AND price >= ?";
+            params.add(filter.getMinPrice());
+        }
+
+        if (filter.getMaxPrice() != null && filter.getMaxPrice() > 0) {
+            conditions += " AND price <= ?";
+            params.add(filter.getMaxPrice());
+        }
+
+        // Status đúng với constraint
+        conditions += " AND status = 'Active'";
+
+        q.append(conditions);
+        cq.append(conditions);
     }
 
-    if (filter.getMinPrice() != null && filter.getMinPrice() >= 0) {
-        conditions += " AND price >= ?";
-        params.add(filter.getMinPrice());
-    }
-
-    if (filter.getMaxPrice() != null && filter.getMaxPrice() > 0) {
-        conditions += " AND price <= ?";
-        params.add(filter.getMaxPrice());
-    }
-
-    // Status đúng với constraint
-    conditions += " AND status = 'Active'";
-
-    q.append(conditions);
-    cq.append(conditions);
-}
-
-    
     private void setParameters(PreparedStatement st, List<Object> params) throws SQLException {
         for (int i = 0; i < params.size(); i++) {
             st.setObject(i + 1, params.get(i));
@@ -437,10 +432,31 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     }
 
     public Page<Accessories> getListAccessotiesBuy(ProductFilter filter) {
-        
-       Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
+
+        Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
         where.put("gift", "Phụ kiện bán");
         return getListAccessotiesWithCondition(filter, where);
+    }
+
+    public List<Accessories> getActiveGiftAccessories() {
+        List<Accessories> list = new ArrayList<>();
+        Connection c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String sql = "SELECT * FROM dbo.Accessories WHERE status = 'active' AND gift = N'Phụ kiện tặng kèm'";
+        try {
+            c = DBUtils.getConnection();
+            ps = c.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(map(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(c, ps, rs);
+        }
+        return list;
     }
 
 }
