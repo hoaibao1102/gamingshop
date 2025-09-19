@@ -43,6 +43,8 @@ public class BannerController extends HttpServlet {
 
             if (action.equals("getAllBannerActive")) {
                 url = handleGetAllBannerActive(request, response);
+            } else if (action.equals("getAllBanner")) {
+                url = handleGetAllBanner(request, response);
             } else if (action.equals("addBanner")) {
                 url = handleAddBanner(request, response);
             } else if (action.equals("showAddBannerForm")) {
@@ -104,6 +106,12 @@ public class BannerController extends HttpServlet {
     }// </editor-fold>
 
     private String handleGetAllBannerActive(HttpServletRequest request, HttpServletResponse response) {
+        List<Banners> topBanners = bannersDAO.getTop5Active();
+        request.setAttribute("topBanners", topBanners);
+        return "";
+    }
+    
+    private String handleGetAllBanner(HttpServletRequest request, HttpServletResponse response) {
         List<Banners> list = bannersDAO.getAll();
         request.setAttribute("list", list);
         return "banners.jsp";
@@ -311,10 +319,10 @@ public class BannerController extends HttpServlet {
             if (list == null || list.isEmpty()) {
                 request.setAttribute("checkErrorSearchBanner", "No banners found.");
             } else {
-                request.setAttribute("banners", list);
+                request.setAttribute("list", list);
             }
 
-            return "bannersUpdate.jsp";
+            return "banners.jsp";
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("checkErrorSearchBanner", "Unexpected error: " + e.getMessage());
@@ -347,7 +355,7 @@ public class BannerController extends HttpServlet {
             request.setAttribute("checkErrorDeletePosts", "Unexpected error: " + e.getMessage());
             return "bannersUpdate.jsp";
         }
-        return "MainController?action=getAllBannerActive";
+        return "MainController?action=getAllBanner";
     }
 
     private String handleEditBanner(HttpServletRequest request, HttpServletResponse response) {

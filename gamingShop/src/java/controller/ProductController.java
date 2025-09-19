@@ -5,20 +5,24 @@
 package controller;
 
 import dao.AccessoriesDAO;
+import dao.BannersDAO;
 import dto.Accessories;
 import dao.GuaranteesDAO;
 import dao.MemoriesDAO;
 import dao.ModelsDAO;
 import dao.PostsDAO;
+import dao.ProductAccessoriesDAO;
 import dao.ProductImagesDAO;
 import dao.ProductsDAO;
 import dao.ServicesDAO;
+import dto.Banners;
 import dto.Guarantees;
 import dto.Memories;
 import dto.Models;
 import dto.Page;
 import dto.Posts;
 import dto.ProductFilter;
+import dto.Product_accessories;
 import dto.Product_images;
 import dto.Products;
 import dto.Services;
@@ -58,6 +62,7 @@ public class ProductController extends HttpServlet {
     private final MemoriesDAO memoriesDAO = new MemoriesDAO();
     private final ModelsDAO modelsDAO = new ModelsDAO();
     private final ServicesDAO servicesDAO = new ServicesDAO();
+    private final BannersDAO bannersDAO = new BannersDAO();
 
     String INDEX_PAGE = "index.jsp";
 
@@ -218,6 +223,9 @@ public class ProductController extends HttpServlet {
                 p.setCoverImg("");
             }
         }
+        List<Banners> listBanner = bannersDAO.getTop5Active();
+
+        request.setAttribute("topBanners", listBanner);
         request.getSession().setAttribute("listForSidebar", list);
     }
 
@@ -239,7 +247,6 @@ public class ProductController extends HttpServlet {
                     // Ignore, use default page
                 }
             }
-
             // Lấy dữ liệu với phân trang
             Page<Products> pageResult = productsdao.getProductsWithFilter(filter);
 
@@ -417,9 +424,9 @@ public class ProductController extends HttpServlet {
             int guaranteeId = Integer.parseInt(request.getParameter("guarantee_id"));
             int quantity = Integer.parseInt(request.getParameter("quantity"));
             String specHtml = request.getParameter("spec_html");
-            String status = request.getParameter("status"); // trạng thái: active, inactive, prominent
+            String status = request.getParameter("status");
 
-            // ===== Tạo đối tượng Products và set dữ liệu =====
+            // ===== Tạo đối tượng Products =====
             Products newProduct = new Products();
             newProduct.setName(name);
             newProduct.setSku(sku);
@@ -433,11 +440,9 @@ public class ProductController extends HttpServlet {
             newProduct.setStatus(status);
 
             ProductsDAO productsdao = new ProductsDAO();
-            // Lưu sản phẩm mới vào DB, trả về id tự tăng vừa tạo
             int generatedId = productsdao.createNewProduct(newProduct);
 
             if (generatedId > 0) {
-                // Set lại id cho product (vì trước đó là null)
                 newProduct.setId(generatedId);
 
                 // ===== Upload ảnh =====
@@ -447,7 +452,6 @@ public class ProductController extends HttpServlet {
                 Part img3 = request.getPart("imageFile3");
                 Part img4 = request.getPart("imageFile4");
 
-                // Chỉ thêm file nào có upload (size > 0)
                 if (img1 != null && img1.getSize() > 0) {
                     imageParts.add(img1);
                 }
@@ -461,67 +465,77 @@ public class ProductController extends HttpServlet {
                     imageParts.add(img4);
                 }
 
-                // Thư mục lưu ảnh trên server
                 String uploadDir = getServletContext().getRealPath("/assets/img/products/");
                 new File(uploadDir).mkdirs();
 
                 List<Product_images> imageList = new ArrayList<>();
                 int index = 1;
-
                 try {
-                    // Lặp qua từng ảnh upload
                     for (Part imagePart : imageParts) {
                         String originalFileName = Paths.get(imagePart.getSubmittedFileName()).getFileName().toString();
                         String fileExtension = originalFileName.substring(originalFileName.lastIndexOf('.'));
-                        // Đặt tên file: productId_index.ext
-                        String storedFileName = generatedId + "_" + (index) + fileExtension;
+                        String storedFileName = generatedId + "_" + index + fileExtension;
                         String imagePath = uploadDir + File.separator + storedFileName;
-
-                        // Ghi file vào thư mục
                         imagePart.write(imagePath);
 
-                        // Tạo đối tượng Product_images
                         Product_images img = new Product_images();
                         img.setProduct_id(generatedId);
                         img.setImage_url("assets/img/products/" + storedFileName);
                         img.setCaption("");
-                        img.setSort_order(index);   // QUAN TRỌNG: thứ tự ảnh (1..n)
+                        img.setSort_order(index);
                         img.setStatus(1);
-
                         imageList.add(img);
                         index++;
                     }
-
-                    // Lưu ảnh vào DB
                     ProductImagesDAO imageDao = new ProductImagesDAO();
                     for (Product_images img : imageList) {
                         imageDao.create(img);
                     }
-
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    // Nếu lưu ảnh thất bại, vẫn tạo được product, nhưng báo warning
                     request.setAttribute("warning", "Product created but failed to upload some images: " + ex.getMessage());
+                }
+
+                // ===== Xử lý accessories kèm theo =====
+                try {
+                    String[] accessoryIds = request.getParameterValues("accessoryIds"); // <-- FIX: khai báo ở đây
+                    if (accessoryIds != null) {
+                        ProductAccessoriesDAO paDAO = new ProductAccessoriesDAO();
+                        for (String accIdStr : accessoryIds) {
+                            int accId = Integer.parseInt(accIdStr);
+                            int qty = 1;
+                            try {
+                                qty = Integer.parseInt(request.getParameter("accessoryQty_" + accId));
+                            } catch (NumberFormatException ignore) {
+                            }
+
+                            Product_accessories pa = new Product_accessories(
+                                    generatedId,
+                                    accId,
+                                    qty,
+                                    "active"
+                            );
+                            paDAO.insert(pa);
+                        }
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    request.setAttribute("warningAccessories", "Product created but failed to add accessories: " + ex.getMessage());
                 }
 
                 // ===== Success =====
                 HttpSession session = request.getSession();
-                // Xoá cache danh sách edit product để reload lại
                 session.removeAttribute("cachedProductListEdit");
-                request.setAttribute("messageAddProduct", "New product and images added successfully.");
-                request.setAttribute("product", newProduct);
-                request.setAttribute("productImages", imageList); // gắn list ảnh để show ra
 
-                // Đặt cờ: vừa Add xong (để JSP ẩn phần update 4 slot)
+                request.setAttribute("messageAddProduct", "New product, images and accessories added successfully.");
+                request.setAttribute("product", newProduct);
+                request.setAttribute("productImages", imageList);
                 request.setAttribute("justAdded", Boolean.TRUE);
 
-                // Load dữ liệu cho dropdown (model, memory, guarantee…)
                 loadDropdownData(request);
-
-                // Quay lại trang productsUpdate.jsp
                 return "productsUpdate.jsp";
+
             } else {
-                // Nếu tạo thất bại
                 request.setAttribute("checkErrorAddProduct", "Failed to add product.");
                 loadDropdownData(request);
                 return "productsUpdate.jsp";
@@ -628,8 +642,34 @@ public class ProductController extends HttpServlet {
             // Đặt thông báo tuỳ theo kết quả update
             if (success) {
                 // Xoá cache list sản phẩm trong session (nếu có) để đảm bảo dữ liệu mới
+                // Xử lý accessories
+                String[] accessoryIds = request.getParameterValues("accessoryIds");
+                ProductAccessoriesDAO paDAO = new ProductAccessoriesDAO();
+
+                // Xoá hết phụ kiện cũ trước khi insert lại
+                paDAO.deleteByProductId(product_id);
+
+                if (accessoryIds != null) {
+                    for (String accIdStr : accessoryIds) {
+                        int accId = Integer.parseInt(accIdStr);
+                        int qty = 1;
+                        try {
+                            qty = Integer.parseInt(request.getParameter("accessoryQty_" + accId));
+                        } catch (NumberFormatException ignore) {
+                        }
+
+                        Product_accessories pa = new Product_accessories(
+                                product_id,
+                                accId,
+                                qty,
+                                "active"
+                        );
+                        paDAO.insert(pa);
+                    }
+                }
+
                 request.getSession().removeAttribute("cachedProductListEdit");
-                request.setAttribute("messageUpdateProductMain", "Product updated successfully.");
+                request.setAttribute("messageUpdateProductMain", "Product and accessories updated successfully.");
             } else {
                 request.setAttribute("checkErrorUpdateProductMain", "Failed to update product.");
             }
@@ -669,10 +709,13 @@ public class ProductController extends HttpServlet {
         ModelsDAO modelTypeDAO = new ModelsDAO();
         MemoriesDAO memoryTypeDAO = new MemoriesDAO();
         GuaranteesDAO guaranteeTypeDAO = new GuaranteesDAO();
+        AccessoriesDAO accDAO = new AccessoriesDAO();
+        List<Accessories> giftAccessories = accDAO.getActiveGiftAccessories();
 
         request.setAttribute("modelTypes", modelTypeDAO.getAll());
         request.setAttribute("memoryTypes", memoryTypeDAO.getAll());
         request.setAttribute("guaranteeTypes", guaranteeTypeDAO.getAll());
+        request.setAttribute("giftAccessories", giftAccessories);
     }
 
     private String handleUpdateImageProduct(HttpServletRequest request, HttpServletResponse response) {
@@ -1721,12 +1764,15 @@ public class ProductController extends HttpServlet {
                 }
             }
 
+            ProductAccessoriesDAO paDAO = new ProductAccessoriesDAO();
+            List<Accessories> accessories = paDAO.getAccessoriesByProductId(productId);
+
             // 4) Gán attribute ra view
             request.setAttribute("productDetail", product);
             request.setAttribute("guaranteeProduct", guaranteeProduct);
             request.setAttribute("memoryProduct", memoryProduct);
             request.setAttribute("checkErrorDeleteProduct", null);
-
+            request.setAttribute("accessories", accessories);
             return "productDetail.jsp";
 
         } catch (Exception e) {
@@ -1769,9 +1815,12 @@ public class ProductController extends HttpServlet {
                     p.setCoverImg("");
                 }
             }
+            List<Banners> listBanner = bannersDAO.getTop5Active();
+
+            request.setAttribute("topBanners", listBanner);
 
             request.setAttribute("listProductsByCategory", pageResult);
-            request.setAttribute("nameProductsByCategory", "San pham noi bat");
+            request.setAttribute("nameProductsByCategory", "Sản phẩm nổi bật");
 //            đánh dấu là lấy ds sp nổi bật nên không hiện biên sidebar.jsp nữa
             request.setAttribute("isListProminent", "true");
 
@@ -2562,6 +2611,10 @@ public class ProductController extends HttpServlet {
         } else if (condition.equals("likenew")) {
             return handleListMayChoiGameWithCondition(request, response, "likenew");
         }
+
+        List<Banners> listBanner = bannersDAO.getTop5Active();
+
+        request.setAttribute("topBanners", listBanner);
         return "";
     }
 
@@ -2603,7 +2656,10 @@ public class ProductController extends HttpServlet {
                     p.setCoverImg("");
                 }
             }
-            request.setAttribute("nameProductsByCategory", "May choi game");
+            List<Banners> listBanner = bannersDAO.getTop5Active();
+
+            request.setAttribute("topBanners", listBanner);
+            request.setAttribute("nameProductsByCategory", "Máy chơi game");
             request.setAttribute("listProductsByCategory", pageResult);
 
         } catch (Exception e) {
@@ -2650,6 +2706,10 @@ public class ProductController extends HttpServlet {
                     p.setCoverImg("");
                 }
             }
+
+            List<Banners> listBanner = bannersDAO.getTop5Active();
+
+            request.setAttribute("topBanners", listBanner);
 
             request.setAttribute("listProductsByCategory", pageResult);
 

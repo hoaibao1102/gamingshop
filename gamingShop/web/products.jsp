@@ -405,8 +405,11 @@
                                                     <td>
                                                         <fmt:formatNumber value="${p.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
                                                     </td>
-                                                    <td>${p.product_type}</td>
-                                                    <td>${p.quantity}</td>
+                                                    <td>
+                                                        <c:if test="${p.product_type == 'new'}">New</c:if>
+                                                        <c:if test="${p.product_type == 'used'}">Like new</c:if>
+                                                        </td>
+                                                        <td>${p.quantity}</td>
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${p.status eq 'active'}">
