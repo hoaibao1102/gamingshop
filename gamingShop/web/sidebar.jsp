@@ -267,7 +267,7 @@
             /* Ảnh chiếm 7 phần */
             .thumb-sb{
                 flex: 7;
-                height:80px;
+                width: 80px;
                 object-fit:cover;
                 border-radius:10px;
                 box-shadow:0 2px 8px rgba(0,0,0,.1);
