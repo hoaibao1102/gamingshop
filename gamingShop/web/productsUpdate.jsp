@@ -430,9 +430,9 @@
                                         <div class="field">
                                             <label class="label required">Trạng thái</label>
                                             <select class="select" name="status">
-                                                <option value="active" ${not empty product && product.status == 'active' ? 'selected' : ''}>Active</option>
-                                                <option value="inactive" ${not empty product && product.status == 'inactive' ? 'selected' : ''}>Inactive</option>
-                                                <option value="prominent" ${not empty product && product.status == 'prominent' ? 'selected' : ''}>Prominent</option>
+                                                <option value="active" ${not empty product && product.status == 'active' ? 'selected' : ''}>Hoạt động</option>
+                                                <option value="inactive" ${not empty product && product.status == 'inactive' ? 'selected' : ''}>Ngừng hoạt động</option>
+                                                <option value="prominent" ${not empty product && product.status == 'prominent' ? 'selected' : ''}>Nổi bật sản phẩm</option>
                                             </select>
                                         </div>
                                     </div>

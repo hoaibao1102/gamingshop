@@ -17,7 +17,7 @@ public class Accessories {
     private int quantity;
     private double price;
     private String description;
-    private String image_url;
+    private String coverImg;
     private Date created_at;
     private Date updated_at;
     private String status;
@@ -26,13 +26,13 @@ public class Accessories {
     public Accessories() {
     }
 
-    public Accessories(int id, String name, int quantity, double price, String description, String image_url, Date created_at, Date updated_at, String status, String gift) {
+    public Accessories(int id, String name, int quantity, double price, String description, String coverImg, Date created_at, Date updated_at, String status, String gift) {
         this.id = id;
         this.name = name;
         this.quantity = quantity;
         this.price = price;
         this.description = description;
-        this.image_url = image_url;
+        this.coverImg = coverImg;
         this.created_at = created_at;
         this.updated_at = updated_at;
         this.status = status;
@@ -79,12 +79,12 @@ public class Accessories {
         this.description = description;
     }
 
-    public String getImage_url() {
-        return image_url;
+    public String getCoverImg() {
+        return coverImg;
     }
 
-    public void setImage_url(String image_url) {
-        this.image_url = image_url;
+    public void setCoverImg(String coverImg) {
+        this.coverImg = coverImg;
     }
 
     public Date getCreated_at() {

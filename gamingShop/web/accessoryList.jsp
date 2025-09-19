@@ -370,8 +370,8 @@
                                                 <tr>
                                                     <td>
                                                         <c:choose>
-                                                            <c:when test="${not empty accessory.image_url}">
-                                                                <img class="acc-thumb" src="${accessory.image_url}" alt="${accessory.name}" />
+                                                            <c:when test="${not empty accessory.coverImg}">
+                                                                <img class="acc-thumb" src="${accessory.coverImg}" alt="${accessory.name}" />
                                                             </c:when>
                                                             <c:otherwise>
                                                                 <img class="acc-thumb" src="assets/img/no-image.png" alt="No image" />

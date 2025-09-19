@@ -94,8 +94,16 @@
                                     <c:if test="${product.status ne 'inactive'}">
                                         <li class="item">
                                             <form action="MainController" method="get" class="product-form">
-                                                <input type="hidden" name="idProduct" value="${product.id}">
-                                                <input type="hidden" name="action" value="getProduct">
+                                                <c:choose>
+                                                    <c:when test="${not empty isListProductsByCategory}">
+                                                        <input type="hidden" name="idAccessory" value="${product.id}">
+                                                        <input type="hidden" name="action" value="getAccessory">
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <input type="hidden" name="idProduct" value="${product.id}">
+                                                        <input type="hidden" name="action" value="getProduct">
+                                                    </c:otherwise>
+                                                </c:choose>
 
                                                 <button type="submit" class="product-button">
                                                     <div class="product-content">

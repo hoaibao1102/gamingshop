@@ -387,7 +387,7 @@
     </head>
 
     <body>
-        <div class="wrapper">
+        <div class="wrapper"> 
             <!-- Sidebar -->
             <div class="sidebar">
                 <jsp:include page="sidebar.jsp"/>
@@ -408,14 +408,14 @@
                     </div>
 
                     <c:choose>
-                        <c:when test="${not empty accessories}">
+                        <c:when test="${not empty accessory}">
                             <div class="accessory-detail">
                                 <!-- LEFT: Image -->
                                 <div class="ad-left">
                                     <div class="ad-main">
                                         <c:choose>
-                                            <c:when test="${not empty accessories.image_url}">
-                                                <img src="${accessories.image_url}" alt="${accessories.name}" loading="eager"/>
+                                            <c:when test="${not empty accessory.coverImg}">
+                                                <img src="${accessory.coverImg}" alt="${accessory.name}" loading="eager"/>
                                             </c:when>
                                             <c:otherwise>
                                                 <img src="assets/accessories/no-image.png" alt="Không có hình ảnh" loading="eager"/>
@@ -426,24 +426,24 @@
 
                                 <!-- RIGHT: Info + Description -->
                                 <div class="ad-right">
-                                    <div class="ad-name">${accessories.name}</div>
-                                    <div class="ad-id">Mã phụ kiện: #${accessories.id}</div>
+                                    <div class="ad-name">${accessory.name}</div>
+                                    <div class="ad-id">Mã phụ kiện: #${accessory.id}</div>
 
                                     <div class="ad-basic">
                                         <div class="ad-row-price">
                                             <b>Giá bán</b>
-                                            <span>$<fmt:formatNumber value="${accessories.price}" pattern="#,##0.00"/></span>
+                                            <span>$<fmt:formatNumber value="${accessory.price}" pattern="#,##0.00"/></span>
                                         </div>
 
                                         <div class="ad-row">
                                             <b>Tồn kho</b>
                                             <div class="quantity-info">
-                                                <span>${accessories.quantity}</span>
+                                                <span>${accessory.quantity}</span>
                                                 <c:choose>
-                                                    <c:when test="${accessories.quantity >= 50}">
+                                                    <c:when test="${accessory.quantity >= 50}">
                                                         <span class="quantity-badge quantity-high">Còn nhiều</span>
                                                     </c:when>
-                                                    <c:when test="${accessories.quantity >= 10}">
+                                                    <c:when test="${accessory.quantity >= 10}">
                                                         <span class="quantity-badge quantity-medium">Còn ít</span>
                                                     </c:when>
                                                     <c:otherwise>
@@ -457,62 +457,62 @@
                                             <b>Phân loại</b>
                                             <span>
                                                 <c:choose>
-                                                    <c:when test="${accessories.gift == 'Phụ kiện tặng kèm'}">
+                                                    <c:when test="${accessory.gift == 'Phụ kiện tặng kèm'}">
                                                         <span class="gift-pill gift-freebie">Tặng kèm</span>
                                                     </c:when>
-                                                    <c:when test="${accessories.gift == 'Phụ kiện bán'}">
+                                                    <c:when test="${accessory.gift == 'Phụ kiện bán'}">
                                                         <span class="gift-pill gift-sellable">Phụ kiện bán</span>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span>${accessories.gift}</span>
+                                                        <span>${accessory.gift}</span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </span>
                                         </div>
 
-                                    <!-- Description -->
-                                    <div class="ad-desc">
-                                        <h3>Mô tả sản phẩm</h3>
-                                        <c:choose>
-                                            <c:when test="${not empty accessories.description}">
-                                                <p>${accessories.description}</p>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <p><em>Chưa có mô tả chi tiết cho phụ kiện này.</em></p>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </div>
+                                        <!-- Description -->
+                                        <div class="ad-desc">
+                                            <h3>Mô tả sản phẩm</h3>
+                                            <c:choose>
+                                                <c:when test="${not empty accessory.description}">
+                                                    <p>${accessory.description}</p>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <p><em>Chưa có mô tả chi tiết cho phụ kiện này.</em></p>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
 
-                                    <!-- Action Buttons -->
-                                    <div class="ad-actions">
-                                        <a href="MainController?action=viewAllAccessories" class="btn btn-secondary">
-                                            Quay lại danh sách
-                                        </a>
+                                        <!-- Action Buttons -->
+                                        <div class="ad-actions">
+                                            <a href="MainController?action=viewAllAccessories" class="btn btn-secondary">
+                                                Quay lại danh sách
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </c:when>
+                            </c:when>
 
-                        <c:otherwise>
-                            <div class="empty-state">
-                                <h3>Không tìm thấy phụ kiện</h3>
-                                <p>Phụ kiện bạn đang tìm không tồn tại hoặc đã bị xóa.</p>
-                                <c:if test="${not empty errorMessage}">
-                                    <p style="color: var(--danger); font-weight: 600;">
-                                        <c:out value="${errorMessage}"/>
-                                    </p>
-                                </c:if>
-                                <a href="MainController?action=viewAllAccessories" class="btn btn-primary">
-                                    Xem tất cả phụ kiện
-                                </a>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
+                            <c:otherwise>
+                                <div class="empty-state">
+                                    <h3>Không tìm thấy phụ kiện</h3>
+                                    <p>Phụ kiện bạn đang tìm không tồn tại hoặc đã bị xóa.</p>
+                                    <c:if test="${not empty checkError}">
+                                        <p style="color: var(--danger); font-weight: 600;">
+                                            <c:out value="${checkError}"/>
+                                        </p>
+                                    </c:if>
+                                    <a href="MainController?action=viewAllAccessories" class="btn btn-primary">
+                                        Xem tất cả phụ kiện
+                                    </a>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Footer -->
+        <!-- Footer đặt NGOÀI wrapper để luôn hiển thị khi body cuộn -->
         <jsp:include page="footer.jsp"/>
     </body>
 </html>

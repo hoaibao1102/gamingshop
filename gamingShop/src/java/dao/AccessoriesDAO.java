@@ -5,11 +5,20 @@
 package dao;
 
 import dto.Accessories;
+import dto.Page;
+import dto.ProductFilter;
+import dto.Products;
 import utils.DBUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -24,6 +33,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     private static final String UPDATE = "UPDATE dbo.Accessories SET name = ?, quantity = ?, price = ?, description_html = ?, image_url = ?, status = ?, gift = ?, updated_at = GETDATE() WHERE id = ?";
     private static final String CHECK_EXIST_NAME = "SELECT COUNT(1) FROM dbo.Accessories WHERE name = ? AND status = 'active'";
     private static final String GET_ALL_ACTIVE = "SELECT * FROM dbo.Accessories WHERE status = 'active'";
+
     @Override
     public boolean create(Accessories e) {
         Connection c = null;
@@ -35,7 +45,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
             st.setInt(2, e.getQuantity());
             st.setDouble(3, e.getPrice());
             st.setString(4, e.getDescription());
-            st.setString(5, e.getImage_url());
+            st.setString(5, e.getCoverImg());
             st.setString(6, e.getStatus());
             st.setString(7, e.getGift());
             int affectedRows = st.executeUpdate();
@@ -128,7 +138,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         a.setQuantity(rs.getInt("quantity"));
         a.setPrice(rs.getDouble("price"));
         a.setDescription(rs.getString("description_html"));
-        a.setImage_url(rs.getString("image_url"));
+        a.setCoverImg(rs.getString("image_url"));
 
         // created_at
         Timestamp createdTs = rs.getTimestamp("created_at");
@@ -158,7 +168,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
             st.setInt(2, (int) e.getQuantity());
             st.setDouble(3, e.getPrice());
             st.setString(4, e.getDescription()); // Maps to description_html
-            st.setString(5, e.getImage_url());
+            st.setString(5, e.getCoverImg());
             st.setString(6, e.getStatus());
             st.setString(7, e.getGift());
             st.setInt(8, e.getId()); // WHERE condition
@@ -176,26 +186,25 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
      * Kiểm tra tên accessory đã tồn tại chưa
      */
     public boolean isNameExists(String name) throws SQLException, ClassNotFoundException {
-    
-    try (Connection c = DBUtils.getConnection();
-         PreparedStatement st = c.prepareStatement(CHECK_EXIST_NAME)) {
-        
-        st.setString(1, name);
-        
-        try (ResultSet rs = st.executeQuery()) {
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
+
+        try ( Connection c = DBUtils.getConnection();  PreparedStatement st = c.prepareStatement(CHECK_EXIST_NAME)) {
+
+            st.setString(1, name);
+
+            try ( ResultSet rs = st.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
             }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new SQLException("Error checking name existence: " + ex.getMessage(), ex);
         }
-        
-    } catch (SQLException ex) {
-        ex.printStackTrace();
-        throw new SQLException("Error checking name existence: " + ex.getMessage(), ex);
+
+        return false;
     }
-    
-    return false;
-}
-    
+
     /**
      * Lấy danh sách tất cả các models có status = 'active'
      *
@@ -240,6 +249,198 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
             }
         } catch (Exception ignore) {
         }
+    }
+    
+    
+
+    public Page<Accessories> getListAccessotiesWithCondition(ProductFilter filter, Map<String, String> equalsConditions) {
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Accessories> accessories = new ArrayList<>();
+        int totalCount = 0;
+
+        // ===== Clamp phân trang =====
+        int page = (filter != null && filter.getPage() > 0) ? filter.getPage() : 1;
+        int pageSize = (filter != null && filter.getPageSize() > 0) ? filter.getPageSize() : 12;
+        pageSize = Math.min(Math.max(pageSize, 1), 100);
+        int offset = (page - 1) * pageSize;
+
+        // ===== Whitelist & kiểu dữ liệu (khớp DB) =====
+        final Set<String> ALLOWED_FILTER_FIELDS = new HashSet<>(Arrays.asList("id","name","quantity",
+                "price","description_html","image_url","created_at","updated_at","status","gift"));
+
+        final Map<String, String> FIELD_TYPES = new HashMap<>();
+        FIELD_TYPES.put("id", "int");
+        FIELD_TYPES.put("name", "string");
+        FIELD_TYPES.put("quantity", "int");
+        FIELD_TYPES.put("price", "decimal");   // decimal(10,2)
+        FIELD_TYPES.put("description_html", "string");    // nvarchar(MAX)
+        FIELD_TYPES.put("image_url", "string");    // nvarchar(1024)
+        FIELD_TYPES.put("created_at", "datetime");  // datetime2(3)
+        FIELD_TYPES.put("updated_at", "datetime");  // datetime2(3)
+        FIELD_TYPES.put("status", "string");    // nvarchar(50)
+        FIELD_TYPES.put("gift", "string");    // nvarchar(50)
+
+        try {
+            c = DBUtils.getConnection();
+
+            StringBuilder queryBuilder = new StringBuilder("SELECT * FROM dbo.Accessories WHERE 1=1");
+            StringBuilder countQueryBuilder = new StringBuilder("SELECT COUNT(*) FROM dbo.Accessories WHERE 1=1");
+            List<Object> params = new ArrayList<>();
+
+            // điều kiện có sẵn trong ProductFilter
+            addFilterConditions(queryBuilder, countQueryBuilder, filter, params);
+
+            // ===== N điều kiện equals từ Map =====
+            if (equalsConditions != null && !equalsConditions.isEmpty()) {
+                // DÙNG LinkedHashMap khi gọi hàm để giữ thứ tự tham số ổn định
+                for (Map.Entry<String, String> e : equalsConditions.entrySet()) {
+                    String field = e.getKey();
+                    String value = e.getValue();
+                    if (field == null || value == null || field.trim().isEmpty() || value.trim().isEmpty()) {
+                        continue;
+                    }
+                    if (!ALLOWED_FILTER_FIELDS.contains(field)) {
+                        throw new IllegalArgumentException("Invalid filter field: " + field);
+                    }
+                    queryBuilder.append(" AND ").append(field).append(" = ?");
+                    countQueryBuilder.append(" AND ").append(field).append(" = ?");
+                    String type = FIELD_TYPES.getOrDefault(field, "string");
+                    params.add(castParam(value, type));
+                }
+            }
+
+            // ORDER BY mặc định (hàm cũ của bạn)
+            addOrderBy(queryBuilder, (filter != null) ? filter.getSortBy() : null);
+
+            // phân trang
+            queryBuilder.append(" OFFSET ? ROWS FETCH NEXT ? ROWS ONLY");
+
+            // Đếm tổng
+            st = c.prepareStatement(countQueryBuilder.toString());
+            setParameters(st, params);
+            rs = st.executeQuery();
+            if (rs.next()) {
+                totalCount = rs.getInt(1);
+            }
+            rs.close();
+            st.close();
+
+            // Lấy data
+            st = c.prepareStatement(queryBuilder.toString());
+            setParameters(st, params);
+            st.setInt(params.size() + 1, offset);
+            st.setInt(params.size() + 2, pageSize);
+
+            rs = st.executeQuery();
+            while (rs.next()) {
+                accessories.add(map(rs));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(c, st, rs);
+        }
+        return new Page<>(accessories, page, pageSize, totalCount);
+    }
+    
+    // ===== [NEW] Ép kiểu param theo loại cột để tránh convert ngầm & tận dụng index =====
+    private Object castParam(String raw, String kind) {
+        if (raw == null) {
+            return null;
+        }
+        String v = raw.trim();
+        try {
+            switch (kind) {
+                case "int":
+                    return Integer.valueOf(v);
+                case "long":
+                    return Long.valueOf(v);
+                case "decimal":
+                    return new java.math.BigDecimal(v);
+                case "bool":
+                    return Boolean.valueOf(v);
+                case "datetime":
+                    return java.sql.Timestamp.valueOf(v); // điều chỉnh theo format bạn dùng
+                default:
+                    return v; // string / nvarchar
+            }
+        } catch (Exception e) {
+            // Nếu parse thất bại, trả về chuỗi thô để không vỡ query (hoặc bạn có thể ném lỗi tùy ý)
+            return v;
+        }
+    }
+
+    
+        
+     private void addOrderBy(StringBuilder queryBuilder, String sortBy) {
+        if (sortBy == null || sortBy.isEmpty()) {
+            sortBy = "name_asc";
+        }
+
+        switch (sortBy) {
+            case "name_asc":
+                queryBuilder.append(" ORDER BY name ASC");
+                break;
+            case "name_desc":
+                queryBuilder.append(" ORDER BY name DESC");
+                break;
+            case "price_asc":
+                queryBuilder.append(" ORDER BY price ASC");
+                break;
+            case "price_desc":
+                queryBuilder.append(" ORDER BY price DESC");
+                break;
+            case "date_asc":
+                queryBuilder.append(" ORDER BY created_at ASC");
+                break;
+            case "date_desc":
+                queryBuilder.append(" ORDER BY created_at DESC");
+                break;
+            default:
+                queryBuilder.append(" ORDER BY name ASC");
+        }
+    }
+    
+    private void addFilterConditions(StringBuilder q, StringBuilder cq, ProductFilter filter, List<Object> params) {
+    String conditions = "";
+
+    // CHỈ GIỮ những cột có thật trong Accessories
+    if (filter.getName() != null && !filter.getName().trim().isEmpty()) {
+        conditions += " AND name LIKE ?";
+        params.add("%" + filter.getName().trim() + "%");
+    }
+
+    if (filter.getMinPrice() != null && filter.getMinPrice() >= 0) {
+        conditions += " AND price >= ?";
+        params.add(filter.getMinPrice());
+    }
+
+    if (filter.getMaxPrice() != null && filter.getMaxPrice() > 0) {
+        conditions += " AND price <= ?";
+        params.add(filter.getMaxPrice());
+    }
+
+    // Status đúng với constraint
+    conditions += " AND status = 'Active'";
+
+    q.append(conditions);
+    cq.append(conditions);
+}
+
+    
+    private void setParameters(PreparedStatement st, List<Object> params) throws SQLException {
+        for (int i = 0; i < params.size(); i++) {
+            st.setObject(i + 1, params.get(i));
+        }
+    }
+
+    public Page<Accessories> getListAccessotiesBuy(ProductFilter filter) {
+        
+       Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
+        where.put("gift", "Phụ kiện bán");
+        return getListAccessotiesWithCondition(filter, where);
     }
 
 }

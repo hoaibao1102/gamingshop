@@ -34,6 +34,8 @@ public class MainController extends HttpServlet {
                 url = "/ProductController";
             } else if (isBannersAction(action)) {
                 url = "/BannerController";
+            } else if (isAccessoryAction(action)) {
+                url = "/AccessoryController";
             }
 
         } catch (Exception e) {
@@ -96,13 +98,6 @@ public class MainController extends HttpServlet {
                 || "editMainProduct".equals(action)
                 || "editImageProduct".equals(action)
                 || "deleteProduct".equals(action)
-                || "viewAllAccessories".equals(action)
-                || "searchAccessory".equals(action)
-                || "showAddAccessoryForm".equals(action)
-                || "addAccessory".equals(action)
-                || "editAccessory".equals(action)
-                || "showEditAccessoryForm".equals(action)
-                || "deleteAccessory".equals(action)
                 || "searchPosts".equals(action)
                 || "viewAllPost".equals(action)
                 || "addPosts".equals(action)
@@ -127,7 +122,8 @@ public class MainController extends HttpServlet {
                 || "listMayChoiGame".equals(action)
                 || "listTheGame".equals(action)
                 || "viewAllProducts".equals(action)
-                || "showAddPosts".equals(action);
+                || "showAddPosts".equals(action)
+                || "viewPost".equals(action);
     }
 
     private boolean isBannersAction(String action) {
@@ -138,6 +134,19 @@ public class MainController extends HttpServlet {
                 || "updateBanner".equals(action)
                 || "searchBanner".equals(action)
                 || "editBanners".equals(action);
+    }
+    
+    private boolean isAccessoryAction(String action) {
+        return "listPhuKien".equals(action)
+                || "viewAllAccessories".equals(action)
+                || "searchAccessory".equals(action)
+                || "showAddAccessoryForm".equals(action)
+                || "addAccessory".equals(action)
+                || "editAccessory".equals(action)
+                || "showEditAccessoryForm".equals(action)
+                || "deleteAccessory".equals(action)
+                || "getAccessory".equals(action)
+                ;
     }
 
 }

@@ -352,7 +352,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
     }
 
     private void addFilterConditions(StringBuilder queryBuilder, StringBuilder countQueryBuilder,
-            ProductFilter filter, List<Object> params) {
+        ProductFilter filter, List<Object> params) {
         String conditions = "";
 
         // Lọc theo tên

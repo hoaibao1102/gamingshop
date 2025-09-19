@@ -392,14 +392,14 @@
                                 </div>
 
                                 <!-- Current Image Display (Edit Mode) -->
-                                <c:if test="${not empty accessory && not empty accessory.image_url}">
+                                <c:if test="${not empty accessory && not empty accessory.coverImg}">
                                     <div class="section" style="margin-top:12px;">
                                         <div class="section-hd">Ảnh hiện tại</div>
                                         <div class="section-bd">
                                             <div class="current-image">
-                                                <img src="${accessory.image_url}" alt="Current Accessory Image">
+                                                <img src="${accessory.coverImg}" alt="Current Accessory Image">
                                                 <div class="current-image-info">
-                                                    File: ${fn:substringAfter(accessory.image_url, '/')}
+                                                    File: ${fn:substringAfter(accessory.coverImg, '/')}
                                                 </div>
                                             </div>
                                         </div>
@@ -410,7 +410,7 @@
                                 <div class="section" style="margin-top:12px;">
                                     <div class="section-hd">
                                         <c:choose>
-                                            <c:when test="${not empty accessory && not empty accessory.image_url}">Cập nhật ảnh mới</c:when>
+                                            <c:when test="${not empty accessory && not empty accessory.coverImg}">Cập nhật ảnh mới</c:when>
                                             <c:otherwise>Tải ảnh lên</c:otherwise>
                                         </c:choose>
                                     </div>
@@ -421,7 +421,7 @@
                                                    accept="image/*" onchange="previewImage(this)">
                                             <div class="hint">
                                                 Định dạng hỗ trợ: JPG, JPEG, PNG, GIF, BMP, WEBP | Dung lượng tối đa: 10MB
-                                                <c:if test="${not empty accessory && not empty accessory.image_url}">
+                                                <c:if test="${not empty accessory && not empty accessory.coverImg}">
                                                     <br><strong>Để trống nếu muốn giữ ảnh hiện tại</strong>
                                                 </c:if>
                                             </div>

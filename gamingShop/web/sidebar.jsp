@@ -404,13 +404,14 @@
                     <span class="nav-icon">🏠</span>
                     <span>Trang chủ</span>
                 </a>
-                <a href="#">
-                    <span class="nav-icon">📰</span>
-                    <span>Bài đăng gần đây</span>
-                </a>
+                
+                <form action="MainController" method="post" class="nav-form">
+                    <input type="hidden" name="action" value="searchPosts">
+                    <input class="nav-item" type="submit" value="📰 Bài đăng gần đây">
+                </form>
 
                 <c:if test="${not empty user}">
-                    <form action="MainController" method="get" class="nav-form">
+                    <form action="MainController" method="post" class="nav-form">
                         <input type="hidden" name="action" value="searchPosts">
                         <input class="nav-item" type="submit" value="🗂️ Quản lý bài post">
                     </form>
@@ -418,7 +419,7 @@
                         <input type="hidden" name="action" value="searchProduct"/>
                         <input class="nav-item" type="submit" value="📦 Quản lý sản phẩm">
                     </form>
-                    <form action="MainController" method="post" class="nav-form">
+                    <form action="MainController" method="get" class="nav-form">
                         <input type="hidden" name="action" value="viewAllAccessories">
                         <input class="nav-item" type="submit" value="🔧 Quản lý phụ kiện">
                     </form>
