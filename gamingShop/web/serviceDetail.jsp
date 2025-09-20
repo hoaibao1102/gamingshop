@@ -623,9 +623,6 @@
                                         <button onclick="bookService('${serviceDetail.id}', '${serviceDetail.service_type}', '${serviceDetail.price}')" class="btn-service btn-primary">
                                             🛒 Đặt dịch vụ qua Zalo
                                         </button>
-                                        <button onclick="consultService('${serviceDetail.service_type}')" class="btn-service btn-secondary">
-                                            💬 Liên hệ tư vấn
-                                        </button>
                                         <button onclick="callDirectly()" class="btn-service btn-secondary">
                                             📞 Gọi trực tiếp
                                         </button>
@@ -675,9 +672,9 @@
         <script>
             // ===== CONFIG - Thay đổi thông tin liên hệ ở đây =====
             const SHOP_CONFIG = {
-                zaloId: '0702478561',        // Thay bằng Zalo ID thực tế
-                phoneNumber: '0702478561',   // Thay bằng SĐT thực tế
-                shopName: 'Gaming Shop'
+                zaloId: '0943391235',        // Thay bằng Zalo ID thực tế
+                phoneNumber: '0943391235',   // Thay bằng SĐT thực tế
+                shopName: 'SGV38 Shop'
             };
 
             // ===== MAIN FUNCTIONS =====

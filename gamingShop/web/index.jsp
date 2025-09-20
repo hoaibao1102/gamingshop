@@ -84,7 +84,7 @@
                                 <c:forEach var="product" items="${products}">
                                     <c:if test="${product.status ne 'inactive'}">
                                         <li class="item">
-                                            <form action="MainController" method="get" class="product-form">
+                                            <form action="MainController" method="post" class="product-form">
                                                 <c:choose>
                                                     <c:when test="${not empty isListProductsByCategory}">
                                                         <input type="hidden" name="idAccessory" value="${product.id}">

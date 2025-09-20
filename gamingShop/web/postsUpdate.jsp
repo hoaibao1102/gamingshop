@@ -204,6 +204,124 @@
                 color:#9ca3af
             }
 
+            /* ===== Base tweaks (giữ desktop) ===== */
+            .btn.icon.only {
+                padding: 8px 10px;
+                border-radius: 10px;
+            }
+            .mobile-toggle {
+                display: none;
+            }
+
+            /* ===== ≤ 1024px: chuyển 1 cột, sidebar off-canvas ===== */
+            @media (max-width: 1024px) {
+                .wrapper {
+                    grid-template-columns: 1fr;           /* 1 cột */
+                }
+                .sidebar {
+                    position: fixed;
+                    inset: 0 auto 0 0;                    /* left sheet */
+                    width: 260px;
+                    transform: translateX(-100%);
+                    transition: transform .25s ease;
+                    z-index: 1200;
+                    box-shadow: 6px 0 20px rgba(0,0,0,.15);
+                }
+                .sidebar.is-open {
+                    transform: translateX(0);
+                }
+                /* backdrop khi mở sidebar */
+                .sidebar-backdrop {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0,0,0,.25);
+                    z-index: 1100;
+                    display: none;
+                }
+                .sidebar-backdrop.show {
+                    display: block;
+                }
+
+                .Main_content {
+                    overflow-x: hidden;
+                }
+                .container {
+                    padding: 12px;
+                }
+
+                .grid-2 {
+                    grid-template-columns: 1fr;
+                } /* form 1 cột */
+                .actions {
+                    position: sticky;
+                    bottom: 0;
+                    padding: 10px;
+                    gap: 6px;
+                }
+
+                .mobile-toggle {
+                    display: inline-block;
+                    border: 1px solid #e5e7eb;
+                    background: #fff;
+                    margin-right: 8px;
+                }
+
+                /* ảnh preview co giãn */
+                .thumb, .img-slot {
+                    width: 100%;
+                    max-width: 480px;
+                    height: auto;
+                    aspect-ratio: 5/4;
+                }
+                .img-slot {
+                    min-height: 160px;
+                }
+
+                /* tránh flex/grid bóp chiều cao editor */
+                .grid, .section-bd, .field {
+                    min-height: 0;
+                }
+            }
+
+            /* ===== ≤ 768px: giảm kích thước chữ/padding ===== */
+            @media (max-width: 768px) {
+                .page-title {
+                    font-size: 1.1rem;
+                }
+                .badge-soft {
+                    font-size: .78rem;
+                    padding: 3px 8px;
+                }
+                .input, .select, .textarea, .file {
+                    padding: 9px 10px;
+                }
+                .btn {
+                    padding: 9px 12px;
+                }
+                .breadcrumbs {
+                    font-size: .9rem;
+                }
+            }
+
+            /* ===== ≤ 480px: stack nút, thu gọn margin ===== */
+            @media (max-width: 480px) {
+                .actions {
+                    flex-wrap: wrap;
+                    justify-content: stretch;
+                }
+                .actions .btn {
+                    flex: 1 1 auto;
+                }
+                .container {
+                    padding: 10px 8px;
+                }
+                .section-hd {
+                    padding: 12px;
+                }
+                .section-bd {
+                    padding: 12px;
+                }
+            }
             @media (max-width:1024px){
                 .grid-2{
                     grid-template-columns:1fr
@@ -287,7 +405,7 @@
 
                                     <div class="field" style="grid-column:1/-1;">
                                         <label class="label required">Nội dung (HTML)</label>
-                                        <textarea id="editor" name="content_html" class="textarea" required>${not empty post.content_html ? post.content_html : ''}</textarea>
+                                        <textarea id="editor" name="content_html" class="textarea" >${not empty post.content_html ? post.content_html : ''}</textarea>
                                         <div class="hint">Hỗ trợ chèn ảnh/video trực tiếp (TinyMCE).</div>
                                     </div>
                                 </div>
@@ -348,7 +466,7 @@
         <script>
                                                     tinymce.init({
                                                         selector: '#editor',
-                                                        height: 420,
+                                                        height: 600,
                                                         plugins: 'image link lists table code media autoresize',
                                                         toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media | table | code',
                                                         menubar: 'file edit view insert format tools table help',

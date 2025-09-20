@@ -125,8 +125,7 @@ public class MainController extends HttpServlet {
                 || "showAddPosts".equals(action)
                 || "viewPost".equals(action)
                 || "getService".equals(action)
-                || "listDichVu".equals(action)
-                ;
+                || "listDichVu".equals(action);
     }
 
     private boolean isBannersAction(String action) {
@@ -139,7 +138,7 @@ public class MainController extends HttpServlet {
                 || "editBanners".equals(action)
                 || "getAllBanner".equals(action);
     }
-    
+
     private boolean isAccessoryAction(String action) {
         return "listPhuKien".equals(action)
                 || "viewAllAccessories".equals(action)
@@ -149,8 +148,7 @@ public class MainController extends HttpServlet {
                 || "editAccessory".equals(action)
                 || "showEditAccessoryForm".equals(action)
                 || "deleteAccessory".equals(action)
-                || "getAccessory".equals(action)
-                ;
+                || "getAccessory".equals(action)    ;
     }
 
 }

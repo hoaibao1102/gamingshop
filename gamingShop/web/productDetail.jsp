@@ -75,6 +75,7 @@
                 padding:16px 20px;
             }
 
+
             /* =========================
                Product Detail
             ========================= */
@@ -297,7 +298,63 @@
             .Main_content::-webkit-scrollbar-thumb:hover{
                 background:#9ca3af;
             }
+            .sd-actions {
+                display: flex;
+                flex-wrap: wrap;          /* tự động xuống hàng nếu chật */
+                gap: 12px;                /* khoảng cách giữa các nút */
+                margin-top: 20px;
+                justify-content: center;  /* căn giữa các nút */
+            }
 
+            .btn-service {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px 18px;
+                font-size: 15px;
+                font-weight: 500;
+                border-radius: 8px;
+                border: none;
+                cursor: pointer;
+                text-decoration: none;    /* áp dụng cho thẻ <a> */
+                transition: all 0.25s ease;
+            }
+
+            .btn-primary {
+                background-color: #007bff;
+                color: #fff;
+            }
+
+            .btn-primary:hover {
+                background-color: #0069d9;
+            }
+
+            .btn-secondary {
+                background-color: #f1f3f5;
+                color: #333;
+            }
+
+            .btn-secondary:hover {
+                background-color: #e2e6ea;
+            }
+
+            .btn-service:active {
+                transform: scale(0.96);   /* hiệu ứng nhấn */
+            }
+
+            .pd-desc-title {
+                font-size: 18px;
+                text-align: center;
+                font-weight: 600;
+                color: #111827;
+                margin-bottom: 14px;
+                padding-bottom: 8px;
+                border-bottom: 2px solid #007bff; /* gạch dưới màu xanh */
+                display: flex;
+                justify-content: center;   /* căn giữa ngang */
+                align-items: center;
+                gap: 6px;
+            }
             /* =========================
                Responsive (đã rút gọn)
             ========================= */
@@ -363,7 +420,6 @@
                     flex:0 0 96px !important;
                     scroll-snap-align:start;
                 }
-
                 /* Thông tin: bỏ sticky để không lệch khi cuộn, đồng bộ padding */
                 .pd-right{
                     position:static !important;
@@ -397,6 +453,7 @@
                     padding-right:2px; /* tinh chỉnh nhỏ cho khớp ảnh/thumbs */
                 }
             }
+
 
             /* ≤640px: tinh chỉnh tap-target & chiều cao ảnh */
             @media (max-width:640px){
@@ -454,6 +511,16 @@
                     grid-template-columns: repeat(2, 1fr);
                     gap: 10px;
                 }
+
+                .sd-actions {
+                    flex-direction: column;
+                    align-items: stretch; /* full width theo container */
+                }
+
+                .btn-service {
+                    width: 100%; /* nút chiếm full chiều ngang */
+                    font-size: 16px;
+                }
             }
 
             @media (max-width: 480px) {
@@ -479,6 +546,11 @@
 
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
+                    <div class="breadcrumb">
+                        <a href="MainController?action=listMayChoiGame">Danh sách sản phẩm</a>
+                        <span>/</span>
+                        <span>Chi tiết sản phẩm</span>
+                    </div>
                     <c:choose>
                         <c:when test="${not empty productDetail}">
                             <div class="product-detail">
@@ -545,8 +617,25 @@
                                         </div>
                                     </c:if>
 
+                                    <hr>
+
+                                    <div class="sd-actions">
+                                        <button onclick="bookService('${serviceDetail.id}', '${serviceDetail.service_type}', '${serviceDetail.price}')" class="btn-service btn-primary">
+                                            🛒 Đặt hàng qua Zalo
+                                        </button>
+                                        <button onclick="callDirectly()" class="btn-service btn-secondary">
+                                            📞 Gọi trực tiếp
+                                        </button>
+                                        <a href="MainController?action=listMayChoiGame" class="btn-service btn-secondary">
+                                            📋 Xem sản phẩm khác
+                                        </a>
+                                    </div>
+
                                     <!-- Description_html nằm chung cột phải -->
                                     <div class="pd-desc">
+                                        <div class="pd-desc-title">
+                                            📝 Mô tả sản phẩm
+                                        </div>
                                         ${productDetail.description_html}
                                     </div>
                                 </div>
@@ -560,7 +649,7 @@
                                 <c:if test="${not empty checkErrorDeleteProduct}">
                                     <p><c:out value="${checkErrorDeleteProduct}"/></p>
                                 </c:if>
-                                <form action="MainController" method="get" style="margin-top:12px;">
+                                <form action="MainController" method="post" style="margin-top:12px;">
                                     <input type="hidden" name="action" value="listProducts"/>
                                     <button class="btn-filter" type="submit">Xem tất cả sản phẩm</button>
                                 </form>
@@ -581,14 +670,14 @@
                                 <c:forEach var="i" items="${list_pro}">
                                     <c:if test="${ shown < 4}">
                                         <div class="grid-item-sb">
-                                            <form action="MainController" method="get" class="card">
+                                            <form action="MainController" method="post" class="card">
                                                 <input type="hidden" name="action" value="getProduct"/>
                                                 <input type="hidden" name="idProduct" value="${i.id}"/>
                                                 <!-- Bấm vào cả card là submit -->
                                                 <button type="submit" class="thumb-btn-sb">
                                                     <!-- Container cho ảnh và giá -->
                                                     <div class="image-price-container-sb">
-                                                        <img class="thumb-sb" src="${i.coverImg}" alt="${i.name}"/>
+                                                        <img class="thumb-sb" src="${i.coverImg}" alt="${i.name}" style="height:130px;"/>
                                                         <div class="price-box-sb">
                                                             <div class="price-text-sb"><fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" />
                                                                 VND</div>
@@ -640,6 +729,96 @@
                     btn.classList.add('is-active');
                 }, false);
             })();
+
+            // ===== CONFIG - Thay đổi thông tin liên hệ ở đây =====
+            const SHOP_CONFIG = {
+                zaloId: '0943391235', // Thay bằng Zalo ID thực tế
+                phoneNumber: '0943391235', // Thay bằng SĐT thực tế
+                shopName: 'SGV38 Shop'
+            };
+
+            // ===== MAIN FUNCTIONS =====
+
+            // Đặt dịch vụ qua Zalo
+            function bookService(serviceId, serviceName, price) {
+                // Log user interest (optional - có thể bỏ nếu không cần track)
+                logUserInterest(serviceId, 'book_service');
+
+                // Tạo message template
+                const message = "🎮 ĐẶT DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
+                        "📋 Dịch vụ: " + serviceName + "\n" +
+                        "💰 Giá: " + new Intl.NumberFormat('vi-VN').format(price) + " VND\n" +
+                        "🆔 Mã: #SV" + serviceId + "\n\n" +
+                        "Xin chào! Tôi muốn đặt dịch vụ trên. Vui lòng tư vấn thêm cho tôi.";
+
+                // Mở Zalo
+                const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
+                window.open(zaloUrl, '_blank');
+            }
+
+            // Tư vấn dịch vụ qua Zalo  
+            function consultService(serviceName) {
+                const message = "💬 TƯ VẤN DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
+                        "📋 Về dịch vụ: " + serviceName + "\n\n" +
+                        "Xin chào! Tôi cần được tư vấn thêm về dịch vụ này. Cảm ơn!";
+
+                const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
+                window.open(zaloUrl, '_blank');
+            }
+
+            // Gọi điện trực tiếp
+            function callDirectly() {
+                if (confirm("Gọi đến " + SHOP_CONFIG.phoneNumber + "?")) {
+                    window.open("tel:" + SHOP_CONFIG.phoneNumber, '_self');
+                }
+            }
+
+            // Log user interest (optional - để tracking)
+            function logUserInterest(serviceId, action) {
+                // Có thể gọi API để log, hoặc bỏ nếu không cần
+                fetch('MainController', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `action=logServiceInterest&serviceId=${serviceId}&interestType=${action}`
+                }).catch(e => console.log('Tracking failed:', e)); // Silent fail
+            }
+
+            // ===== UI EFFECTS =====
+            document.addEventListener('DOMContentLoaded', function () {
+                // Hover effects
+                const actionButtons = document.querySelectorAll('.btn-service');
+                actionButtons.forEach(btn => {
+                    btn.addEventListener('mouseenter', function () {
+                        this.style.transform = 'translateY(-2px)';
+                    });
+                    btn.addEventListener('mouseleave', function () {
+                        this.style.transform = 'translateY(0)';
+                    });
+                });
+
+                // Success notification after page load (if redirected back)
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('contacted') === 'true') {
+                    showNotification('✅ Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.', 'success');
+                }
+            });
+
+            // Simple notification system
+            function showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.style.cssText =
+                        "position: fixed; top: 20px; right: 20px; z-index: 9999;" +
+                        "padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600;" +
+                        "background: " + (type === 'success' ? '#10b981' : '#3b82f6') + ";" +
+                        "box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer;" +
+                        "transform: translateX(100%); transition: transform 0.3s ease;";
+                notification.textContent = message;
+                notification.onclick = () => notification.remove();
+
+                document.body.appendChild(notification);
+                setTimeout(() => notification.style.transform = 'translateX(0)', 100);
+                setTimeout(() => notification.remove(), 5000);
+            }
         </script>
     </body>
 </html>

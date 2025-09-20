@@ -15,7 +15,7 @@
 
         <meta charset="UTF-8">
         <title>Gaming Shop — Quản lý model</title>
-         <%@ include file="/WEB-INF/jspf/head.jspf" %>
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
 
         <!-- Swiper CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
@@ -225,8 +225,14 @@
             }
 
             @keyframes fadeIn {
-                from { opacity: 0; transform: scale(0.9); }
-                to { opacity: 1; transform: scale(1); }
+                from {
+                    opacity: 0;
+                    transform: scale(0.9);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1);
+                }
             }
 
             .breadcrumbs {
@@ -264,7 +270,108 @@
             .info-value {
                 color:#6b7280;
             }
+            /* ==== Mobile trigger ==== */
+            .btn.icon.only {
+                padding: 8px 10px;
+                border-radius: 10px;
+            }
+            .mobile-toggle {
+                display: none;
+            }
 
+            /* ===== ≤1024px: sidebar off-canvas + form 1 cột ===== */
+            @media (max-width: 1024px) {
+                .wrapper {
+                    grid-template-columns: 1fr;
+                }
+                .sidebar {
+                    position: fixed;
+                    inset: 0 auto 0 0;
+                    width: 260px;
+                    transform: translateX(-100%);
+                    transition: transform .25s ease;
+                    z-index: 1200;
+                    box-shadow: 6px 0 20px rgba(0,0,0,.15);
+                }
+                .sidebar.is-open {
+                    transform: translateX(0);
+                }
+
+                .sidebar-backdrop {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0,0,0,.25);
+                    z-index: 1100;
+                    display: none;
+                }
+                .sidebar-backdrop.show {
+                    display: block;
+                }
+
+                .mobile-toggle {
+                    display: inline-block;
+                    border: 1px solid #e5e7eb;
+                    background: #fff;
+                    margin-right: 8px;
+                }
+
+                /* Form từ 2–3 cột -> 1 cột, đệm nhỏ hơn */
+                .grid-2, .grid-3 {
+                    grid-template-columns: 1fr;
+                }
+                .container {
+                    padding: 12px;
+                }
+                .section .section-hd, .section .section-bd {
+                    padding: 12px;
+                }
+
+                /* Ảnh/preview co giãn đầy đủ chiều ngang */
+                .current-image img, .image-preview {
+                    max-width: 100%;
+                    height: auto;
+                }
+
+                /* Tránh grid/flex bóp chiều cao con (hữu ích cho editor/ô nhập) */
+                .grid, .section-bd, .field {
+                    min-height: 0;
+                }
+            }
+
+            /* ===== ≤768px: giảm cỡ chữ & padding ===== */
+            @media (max-width: 768px) {
+                .page-title {
+                    font-size: 1.1rem;
+                }
+                .badge-soft {
+                    font-size: .78rem;
+                    padding: 3px 8px;
+                }
+                .input, .select, .textarea, .file {
+                    padding: 9px 10px;
+                }
+                .btn {
+                    padding: 9px 12px;
+                }
+                .breadcrumbs {
+                    font-size: .9rem;
+                }
+            }
+
+            /* ===== ≤480px: actions stack full-width ===== */
+            @media (max-width: 480px) {
+                .actions {
+                    flex-wrap: wrap;
+                    justify-content: stretch;
+                    gap: 6px;
+                }
+                .actions .btn {
+                    flex: 1 1 auto;
+                }
+                .container {
+                    padding: 10px 8px;
+                }
+            }
             @media (max-width: 1024px) {
                 .grid-2, .grid-3 {
                     grid-template-columns: 1fr;
@@ -304,14 +411,19 @@
 
                 <div class="container">
                     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:12px; flex-wrap:wrap;">
-                        <h2 class="page-title" style="margin:0;">
-                            <c:choose>
-                                <c:when test="${not empty model && model.id > 0}">Chỉnh sửa model</c:when>
-                                <c:otherwise>Thêm model mới</c:otherwise>
-                            </c:choose>
-                            <span class="badge-soft" style="margin-left:8px;">Model Management</span>
-                        </h2>
-
+                        <div>
+                            <div class="breadcrumbs">
+                                <a href="MainController?action=viewModelList">Models</a><span class="sep">›</span>
+                                <span>${empty model ? 'Thêm' : 'Chỉnh sửa'}</span>
+                            </div>
+                            <h2 class="page-title" style="margin:0;">
+                                <c:choose>
+                                    <c:when test="${not empty model && model.id > 0}">Chỉnh sửa model</c:when>
+                                    <c:otherwise>Thêm model mới</c:otherwise>
+                                </c:choose>
+                                <span class="badge-soft" style="margin-left:8px;">Model Management</span>
+                            </h2>
+                        </div>
                         <a href="MainController?action=viewModelList" class="btn ghost">Quay lại danh sách</a>
                     </div>
 
@@ -446,84 +558,84 @@
         <script src="https://cdn.tiny.cloud/1/9q1kybnxbgq2f5l3c8palpboawfgsnqsdd53b7gk5ny3dh19/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 
         <script>
-            // Auto-hide toast messages sau 5 giây
-            document.addEventListener('DOMContentLoaded', function() {
-                const toasts = document.querySelectorAll('.toast[data-auto-hide="true"]');
-                toasts.forEach(function(toast) {
-                    setTimeout(function() {
-                        toast.classList.add('fade-out');
-                        setTimeout(function() {
-                            toast.remove();
-                        }, 300);
-                    }, 5000); // 5 seconds
-                });
-            });
+                                                       // Auto-hide toast messages sau 5 giây
+                                                       document.addEventListener('DOMContentLoaded', function () {
+                                                           const toasts = document.querySelectorAll('.toast[data-auto-hide="true"]');
+                                                           toasts.forEach(function (toast) {
+                                                               setTimeout(function () {
+                                                                   toast.classList.add('fade-out');
+                                                                   setTimeout(function () {
+                                                                       toast.remove();
+                                                                   }, 300);
+                                                               }, 5000); // 5 seconds
+                                                           });
+                                                       });
 
-            // Image preview function (matching product style với animation)
-            function previewImage(input) {
-                const preview = document.getElementById('imagePreview');
-                preview.innerHTML = '';
+                                                       // Image preview function (matching product style với animation)
+                                                       function previewImage(input) {
+                                                           const preview = document.getElementById('imagePreview');
+                                                           preview.innerHTML = '';
 
-                if (input.files && input.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.className = 'image-preview';
-                        img.alt = 'Preview ảnh mới';
-                        preview.appendChild(img);
-                    }
-                    reader.readAsDataURL(input.files[0]);
-                }
-            }
+                                                           if (input.files && input.files[0]) {
+                                                               const reader = new FileReader();
+                                                               reader.onload = function (e) {
+                                                                   const img = document.createElement('img');
+                                                                   img.src = e.target.result;
+                                                                   img.className = 'image-preview';
+                                                                   img.alt = 'Preview ảnh mới';
+                                                                   preview.appendChild(img);
+                                                               }
+                                                               reader.readAsDataURL(input.files[0]);
+                                                           }
+                                                       }
 
-            // TinyMCE init 
-            tinymce.init({
-                selector: '#editor',
-                height: 420,
-                plugins: 'image link lists table code media autoresize',
-                toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media | table | code',
-                menubar: 'file edit view insert format tools table help',
-                automatic_uploads: true,
-                file_picker_types: 'file image media',
-                file_picker_callback: function (callback, value, meta) {
-                    let input = document.createElement('input');
-                    input.type = 'file';
-                    if (meta.filetype === 'image')
-                        input.accept = 'image/*';
-                    else if (meta.filetype === 'media')
-                        input.accept = 'video/mp4';
-                    input.onchange = function () {
-                        let file = this.files[0];
-                        let formData = new FormData();
-                        formData.append('file', file);
-                        let uploadUrl = '${pageContext.request.contextPath}/UploadImageController';
-                        if (meta.filetype === 'media')
-                            uploadUrl = '${pageContext.request.contextPath}/UploadVideoController';
-                        fetch(uploadUrl, {method: 'POST', body: formData})
-                                .then(response => response.json())
-                                .then(json => callback(json.location));
-                    };
-                    input.click();
-                }
-            });
+                                                       // TinyMCE init 
+                                                       tinymce.init({
+                                                           selector: '#editor',
+                                                           height: 600,
+                                                           plugins: 'image link lists table code media autoresize',
+                                                           toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media | table | code',
+                                                           menubar: 'file edit view insert format tools table help',
+                                                           automatic_uploads: true,
+                                                           file_picker_types: 'file image media',
+                                                           file_picker_callback: function (callback, value, meta) {
+                                                               let input = document.createElement('input');
+                                                               input.type = 'file';
+                                                               if (meta.filetype === 'image')
+                                                                   input.accept = 'image/*';
+                                                               else if (meta.filetype === 'media')
+                                                                   input.accept = 'video/mp4';
+                                                               input.onchange = function () {
+                                                                   let file = this.files[0];
+                                                                   let formData = new FormData();
+                                                                   formData.append('file', file);
+                                                                   let uploadUrl = '${pageContext.request.contextPath}/UploadImageController';
+                                                                   if (meta.filetype === 'media')
+                                                                       uploadUrl = '${pageContext.request.contextPath}/UploadVideoController';
+                                                                   fetch(uploadUrl, {method: 'POST', body: formData})
+                                                                           .then(response => response.json())
+                                                                           .then(json => callback(json.location));
+                                                               };
+                                                               input.click();
+                                                           }
+                                                       });
 
-            // Form validation
-            document.getElementById('modelForm').addEventListener('submit', function(e) {
-                const modelType = document.querySelector('input[name="model_type"]').value.trim();
-                
-                if (!modelType) {
-                    alert('Tên model là bắt buộc.');
-                    e.preventDefault();
-                    return;
-                }
-                
-                if (modelType.length > 100) {
-                    alert('Tên model không được vượt quá 100 ký tự.');
-                    e.preventDefault();
-                    return;
-                }
-            });
+                                                       // Form validation
+                                                       document.getElementById('modelForm').addEventListener('submit', function (e) {
+                                                           const modelType = document.querySelector('input[name="model_type"]').value.trim();
+
+                                                           if (!modelType) {
+                                                               alert('Tên model là bắt buộc.');
+                                                               e.preventDefault();
+                                                               return;
+                                                           }
+
+                                                           if (modelType.length > 100) {
+                                                               alert('Tên model không được vượt quá 100 ký tự.');
+                                                               e.preventDefault();
+                                                               return;
+                                                           }
+                                                       });
         </script>
     </body>
 </html>
