@@ -297,7 +297,7 @@
                 <div class="container">
                     <div class="admin-toolbar">
                         <div class="title">Danh sách Models</div>
-                        
+
                         <a href="MainController?action=showAddModel" class="btn btn-primary">+ Thêm Model</a>
                     </div>
 
@@ -313,8 +313,8 @@
                     <div class="models-card">
                         <div class="models-meta">
                             <span class="meta-pill"><span class="dot"></span><b>Tổng:</b>&nbsp;<c:choose>
-                                    <c:when test="${not empty modelList}">${fn:length(modelList)}</c:when>
-                                    <c:otherwise>0</c:otherwise>
+                                        <c:when test="${not empty modelList}">${fn:length(modelList)}</c:when>
+                                        <c:otherwise>0</c:otherwise>
                                 </c:choose> model</span>
                         </div>
 
@@ -328,11 +328,10 @@
                                                 <th>Ảnh</th>
                                                 <th>ID</th>
                                                 <th>Loại Model</th>
-                                                <th>Mô tả</th>
                                                 <th>Trạng thái</th>
                                                 <th>Tạo</th>
                                                 <th>Cập nhật</th>
-                                                <th>Thao tác</th>
+                                                <th style="display: flex; justify-content: center; align-items: center;">Thao tác</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -352,21 +351,6 @@
                                                     <td>
                                                         <div class="model-name">${model.model_type}</div>
                                                         <div class="model-id">#${model.id}</div>
-                                                    </td>
-                                                    <td>
-                                                        <c:choose>
-                                                            <c:when test="${not empty model.description_html}">
-                                                                <c:choose>
-                                                                    <c:when test="${fn:length(model.description_html) > 80}">
-                                                                        ${fn:substring(model.description_html, 0, 80)}...
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        ${model.description_html}
-                                                                    </c:otherwise>
-                                                                </c:choose>
-                                                            </c:when>
-                                                            <c:otherwise><em>Chưa có mô tả</em></c:otherwise>
-                                                        </c:choose>
                                                     </td>
                                                     <td>
                                                         <c:choose>
@@ -412,20 +396,20 @@
         <!-- Swiper JS (tuỳ chọn) -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
         <script>
-            function confirmDelete(modelType) {
-                return confirm('Bạn có chắc chắn muốn vô hiệu hóa model: ' + modelType + '?');
-            }
+                                                                       function confirmDelete(modelType) {
+                                                                           return confirm('Bạn có chắc chắn muốn vô hiệu hóa model: ' + modelType + '?');
+                                                                       }
 
-            // Auto hide messages after 5 seconds
-            setTimeout(function () {
-                var alerts = document.querySelectorAll('.alert');
-                alerts.forEach(function(alert) {
-                    alert.classList.add('fade-out');
-                    setTimeout(function() {
-                        alert.style.display = 'none';
-                    }, 500); // Wait for fade animation to complete
-                });
-            }, 5000);
+                                                                       // Auto hide messages after 5 seconds
+                                                                       setTimeout(function () {
+                                                                           var alerts = document.querySelectorAll('.alert');
+                                                                           alerts.forEach(function (alert) {
+                                                                               alert.classList.add('fade-out');
+                                                                               setTimeout(function () {
+                                                                                   alert.style.display = 'none';
+                                                                               }, 500); // Wait for fade animation to complete
+                                                                           });
+                                                                       }, 5000);
         </script>
     </body>
 </html>

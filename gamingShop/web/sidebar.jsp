@@ -422,11 +422,11 @@
                         <input type="hidden" name="action" value="searchProduct"/>
                         <input class="nav-item" type="submit" value="📦 Quản lý sản phẩm">
                     </form>
-                    <form action="MainController" method="get" class="nav-form">
+                    <form action="MainController" method="post" class="nav-form">
                         <input type="hidden" name="action" value="viewAllAccessories">
                         <input class="nav-item" type="submit" value="🔧 Quản lý phụ kiện">
                     </form>
-                    <form action="MainController" method="get" class="nav-form">
+                    <form action="MainController" method="post" class="nav-form">
                         <input type="hidden" name="action" value="viewServiceList">
                         <input class="nav-item" type="submit" value="⚙️ Quản lý dịch vụ">
                     </form>
@@ -451,7 +451,7 @@
                             <c:forEach var="i" items="${listForSidebar}">
                                 <c:if test="${i.status eq 'prominent' and shown < 7}">
                                     <li class="item-sb">
-                                        <form action="MainController" method="get" class="card">
+                                        <form action="MainController" method="post" class="card">
                                             <input type="hidden" name="action" value="getProduct"/>
                                             <input type="hidden" name="idProduct" value="${i.id}"/>
 

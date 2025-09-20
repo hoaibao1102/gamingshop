@@ -228,6 +228,99 @@
                 background-color: #dc3545; /* nền đỏ */
                 color: #fff;               /* chữ trắng */
             }
+            /* Nút hamburger */
+            .btn.icon.only {
+                padding: 8px 10px;
+                border-radius: 10px;
+            }
+            .mobile-toggle {
+                display: none;
+            }
+
+            /* ≤1024px: sidebar off-canvas */
+            @media (max-width:1024px){
+                .wrapper {
+                    grid-template-columns: 1fr;
+                }
+                .sidebar {
+                    position:fixed;
+                    inset:0 auto 0 0;
+                    width:260px;
+                    transform:translateX(-100%);
+                    transition:transform .25s ease;
+                    z-index:1200;
+                    box-shadow:6px 0 20px rgba(0,0,0,.15);
+                }
+                .sidebar.is-open{
+                    transform:translateX(0);
+                }
+                .sidebar-backdrop {
+                    position:fixed;
+                    inset:0;
+                    background:rgba(0,0,0,.25);
+                    z-index:1100;
+                    display:none;
+                }
+                .sidebar-backdrop.show{
+                    display:block;
+                }
+                .mobile-toggle {
+                    display:inline-block;
+                    border:1px solid #e5e7eb;
+                    background:#fff;
+                    margin-right:8px;
+                }
+            }
+
+            /* ≤768px: font/padding nhỏ gọn */
+            @media (max-width:768px){
+                .page-title{
+                    font-size:1.1rem;
+                }
+                .badge-soft{
+                    font-size:.78rem;
+                    padding:3px 8px;
+                }
+                .input, .select, .textarea, .file{
+                    padding:9px 10px;
+                }
+                .btn{
+                    padding:9px 12px;
+                    font-size:.9rem;
+                }
+                .breadcrumbs{
+                    font-size:.9rem;
+                }
+                .tabs{
+                    flex-wrap:wrap;
+                }
+                .tab-btn{
+                    flex:1 1 auto;
+                    text-align:center;
+                }
+            }
+
+            /* ≤480px: actions full-width, ảnh co giãn */
+            @media (max-width:480px){
+                .actions{
+                    flex-wrap:wrap;
+                    justify-content:stretch;
+                    gap:6px;
+                }
+                .actions .btn{
+                    flex:1 1 auto;
+                }
+                .container{
+                    padding:10px 8px;
+                }
+                .thumb, #tab-images .thumb{
+                    max-width:100%;
+                    height:auto;
+                }
+                #tab-images .field{
+                    padding:8px;
+                }
+            }
             @media (max-width: 1024px) {
                 .grid-3 {
                     grid-template-columns: 1fr;
@@ -328,14 +421,20 @@
 
                 <div class="container">
                     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:12px; flex-wrap:wrap;">
-                        <h2 class="page-title" style="margin:0;">
-                            <c:choose>
-                                <c:when test="${not empty product}">Chỉnh sửa sản phẩm</c:when>
-                                <c:otherwise>Thêm sản phẩm mới</c:otherwise>
-                            </c:choose>
-                            <span class="badge-soft" style="margin-left:8px;">Product Management</span>
-                        </h2>
+                        <div>
+                            <div class="breadcrumbs">
+                                <a href="MainController?action=searchProduct">Danh sách sản phẩm</a><span class="sep">›</span>
+                                <span>${empty product ? 'Thêm' : 'Chỉnh sửa'}</span>
+                            </div>
 
+                            <h2 class="page-title" style="margin:0;">
+                                <c:choose>
+                                    <c:when test="${not empty product}">Chỉnh sửa sản phẩm</c:when>
+                                    <c:otherwise>Thêm sản phẩm mới</c:otherwise>
+                                </c:choose>
+                                <span class="badge-soft" style="margin-left:8px;">Product Management</span>
+                            </h2>
+                        </div>
                         <form action="MainController" method="post" autocomplete="off">
                             <input type="hidden" name="action" value="searchProduct"/>
                             <button class="btn ghost" type="submit">Quay lại danh sách</button>
@@ -652,7 +751,7 @@
                                                                     // TinyMCE init
                                                                     tinymce.init({
                                                                         selector: '#editor',
-                                                                        height: 420,
+                                                                        height: 600,
                                                                         plugins: 'image link lists table code media autoresize',
                                                                         toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media | table | code',
                                                                         menubar: 'file edit view insert format tools table help',

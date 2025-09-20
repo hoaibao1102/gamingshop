@@ -13,6 +13,12 @@ import utils.AuthUtils;
     "/postsUpdate.jsp",
     "/products.jsp",
     "/productsUpdate.jsp",
+    "/accessoryList.jsp",
+    "/accessoryUpdate.jsp",
+    "/modelList.jsp",
+    "/modelUpdate.jsp",
+    "/serviceList.jsp",
+    "/serviceUpdate.jsp",
     "/MainController",
     "/UploadImageController",
     "/UploadVideoController",
@@ -36,16 +42,37 @@ public class AdminAuthorizationFilter implements Filter {
         String action = httpRequest.getParameter("action");
         String uri = httpRequest.getRequestURI();
 
-//        if ("login".equals(action) || "logout".equals(action) || "viewAllProjects".equals(action)) {
-//            chain.doFilter(request, response);
-//            return;
-//        }
         if (!AuthUtils.isLoggedIn(httpRequest)) {
-            if (uri.endsWith("banners.jsp") 
-                    || uri.endsWith("bannersUpdate.jsp") 
+            if (uri.endsWith("banners.jsp")
+                    || uri.endsWith("bannersUpdate.jsp")
                     || uri.endsWith("postsUpdate.jsp")
                     || uri.endsWith("products.jsp")
                     || uri.endsWith("productsUpdate.jsp")
+                    || uri.endsWith("accessoryList.jsp")
+                    || uri.endsWith("accessoryUpdate.jsp")
+                    || uri.endsWith("modelList.jsp")
+                    || uri.endsWith("modelUpdate.jsp")
+                    || uri.endsWith("serviceList.jsp")
+                    || uri.endsWith("serviceUpdate.jsp")
+                    || "deleteService".equals(action)
+                    || "editService".equals(action)
+                    || "showEditService".equals(action)
+                    || "showAddService".equals(action)
+                    || "addService".equals(action)
+                    || "viewServiceList".equals(action)
+                    || "deleteModel".equals(action)
+                    || "editModel".equals(action)
+                    || "showEditModel".equals(action)
+                    || "showAddModel".equals(action)
+                    || "addModel".equals(action)
+                    || "viewModelList".equals(action)
+                    || "viewAllAccessories".equals(action)
+                    || "searchAccessory".equals(action)
+                    || "showAddAccessoryForm".equals(action)
+                    || "addAccessory".equals(action)
+                    || "editAccessory".equals(action)
+                    || "showEditAccessoryForm".equals(action)
+                    || "deleteAccessory".equals(action)
                     || "showAddProductForm".equals(action)
                     || "addProduct".equals(action)
                     || "editMainProduct".equals(action)

@@ -606,7 +606,7 @@
                     <label for="nav-toggle" class="hamburger" aria-label="Mở menu"><span></span></label>
                     <span class="brand-name"><a href="MainController?action=prepareHome"><img class="logoHeader" src="assets/img/logo/logo.png" alt="Logo cửa hàng"></a></span>
                 </div>
-                <form class="search" role="search" aria-label="Tìm kiếm" action="MainController" method="get">
+                <form class="search" role="search" aria-label="Tìm kiếm" action="MainController" method="post">
                     <button aria-label="Tìm" type="submit">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     </button>
@@ -619,65 +619,63 @@
                 <div style="font-weight:800; margin-bottom:10px;">Danh mục</div>
                 <ul class="menu">
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
+                        <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listMayChoiGame"/>
                             <button class="mobile-link-button mobile-dropdown-toggle" type="button" onclick="toggleMobileDropdown(this)">Máy chơi game</button>
                         </form>
                         <div class="mobile-dropdown">
-                            <form class="mobile-link-form" action="MainController" method="get">
+                            <form class="mobile-link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
                                 <input type="hidden" name="condition" value="new"/>
                                 <button class="mobile-link-button" type="submit">New</button>
                             </form>
-                            <form class="mobile-link-form" action="MainController" method="get">
+                            <form class="mobile-link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
                                 <input type="hidden" name="condition" value="likenew"/>
                                 <button class="mobile-link-button" type="submit">Like New</button>
                             </form>
-                            <form class="mobile-link-form" action="MainController" method="get">
+                            <form class="mobile-link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
                                 <button class="mobile-link-button" type="submit">Tất cả</button>
                             </form>
                         </div>
                     </li>
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
+                        <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listSanPhamCongNghe"/>
                             <button class="mobile-link-button" type="submit">Sản phẩm công nghệ khác</button>
                         </form>
                     </li>
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
+                        <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listPhuKien"/>
                             <button class="mobile-link-button" type="submit">Phụ kiện</button>
                         </form>
                     </li>
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
+                        <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listTheGame"/>
                             <button class="mobile-link-button" type="submit">Thẻ game</button>
                         </form>
                     </li>
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
+                        <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listDichVu"/>
                             <button class="mobile-link-button" type="submit">Dịch vụ</button>
                         </form>
                     </li>
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
+                        <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="searchPosts"/>
                             <button class="mobile-link-button" type="submit"> Bài đăng gần đây</button>
                         </form>
                     </li>
-
-
-
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
-                            <input type="hidden" name="action" value="showLienHe"/>
-                            <button class="mobile-link-button" type="submit">Liên hệ</button>
-                        </form>
+                        <a class="link-button" 
+                           href="https://zalo.me/0943391235" 
+                           target="_blank" rel="noopener noreferrer">
+                            Liên hệ
+                        </a>
                     </li>
                 </ul>
                 <hr style="margin:14px 0; border:0; height:1px; background:var(--ring)">
@@ -709,7 +707,7 @@
                     <%
                       } else {
                     %>
-                    <form action="MainController" method="get" style="margin:0">
+                    <form action="MainController" method="post" style="margin:0">
                         <input type="hidden" name="action" value="goLoginForm"/>
                         <button class="btn primary" type="submit">Đăng nhập</button>
                     </form>
@@ -724,7 +722,7 @@
                 <nav class="nav" aria-label="Chính">
                     <ul>
                         <li class="has-dd">
-                            <form class="link-form" action="MainController" method="get">
+                            <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Máy chơi game -->
@@ -739,14 +737,14 @@
                             </form>
                             <ul class="dropdown" aria-label="Danh mục Máy chơi game">
                                 <li>
-                                    <form class="link-form" action="MainController" method="get">
+                                    <form class="link-form" action="MainController" method="post">
                                         <input type="hidden" name="action" value="listMayChoiGame"/>
                                         <input type="hidden" name="condition" value="new"/>
                                         <button class="link-button" type="submit">New</button>
                                     </form>
                                 </li>
                                 <li>
-                                    <form class="link-form" action="MainController" method="get">
+                                    <form class="link-form" action="MainController" method="post">
                                         <input type="hidden" name="action" value="listMayChoiGame"/>
                                         <input type="hidden" name="condition" value="likenew"/>
                                         <button class="link-button" type="submit">Like New</button>
@@ -755,7 +753,7 @@
                             </ul>
                         </li>
                         <li>
-                            <form class="link-form" action="MainController" method="get">
+                            <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listSanPhamCongNghe"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Sản phẩm công nghệ khác -->
@@ -768,7 +766,7 @@
                             </form>
                         </li>
                         <li>
-                            <form class="link-form" action="MainController" method="get">
+                            <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listPhuKien"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Phụ kiện -->
@@ -780,7 +778,7 @@
                             </form>
                         </li>
                         <li>
-                            <form class="link-form" action="MainController" method="get">
+                            <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listTheGame"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Thẻ game -->
@@ -793,7 +791,7 @@
                             </form>
                         </li>
                         <li>
-                            <form class="link-form" action="MainController" method="get">
+                            <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listDichVu"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Dịch vụ -->
@@ -806,7 +804,7 @@
                         </li>
 
                         <li>
-                            <form class="link-form" action="MainController" method="get">
+                            <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="searchPosts"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Post -->
@@ -825,17 +823,11 @@
                         </li>
 
                         <li>
-                            <form class="link-form" action="MainController" method="get">
-                                <input type="hidden" name="action" value="showLienHe"/>
-                                <button class="link-button" type="submit">
-                                    <!-- ICON Liên hệ -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H6l-4 2V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                    Liên hệ
-                                </button>
-                            </form>
+                            <a class="link-button" 
+                               href="https://zalo.me/0943391235" 
+                               target="_blank" rel="noopener noreferrer">
+                                Liên hệ
+                            </a>
                         </li>
                     </ul>
                 </nav>
@@ -864,7 +856,7 @@
                     <%
                       } else {
                     %>
-                    <form action="MainController" method="get" style="margin:0">
+                    <form action="MainController" method="post" style="margin:0">
                         <input type="hidden" name="action" value="goLoginForm"/>
                         <button class="btn primary" type="submit" title="Đăng nhập">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
