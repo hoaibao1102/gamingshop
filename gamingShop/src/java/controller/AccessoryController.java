@@ -273,17 +273,17 @@ public class AccessoryController extends HttpServlet {
                 return "accessoryUpdate.jsp";
             }
 
-            // 3. NEW: Check for duplicate name (UNIQUE constraint validation)
-            try {
-
-                if (accessoriesDAO.isNameExists(name)) {
-                    request.setAttribute("checkErrorAddAccessory", "Accessory name '" + name.trim() + "' already exists. Please choose a different name.");
-                    return "accessoryUpdate.jsp";
-                }
-            } catch (Exception e) {
-                // If we can't check, continue but log the error
-                e.printStackTrace();
-            }
+//            // 3. NEW: Check for duplicate name (UNIQUE constraint validation)
+//            try {
+//                
+//                if (accessoriesDAO.isNameExists(name)) {
+//                    request.setAttribute("checkErrorAddAccessory", "Accessory name '" + name.trim() + "' already exists. Please choose a different name.");
+//                    return "accessoryUpdate.jsp";
+//                }
+//            } catch (Exception e) {
+//                // If we can't check, continue but log the error
+//                e.printStackTrace();
+//            }
 
             // 4. Validate quantity - required, numeric, and non-negative
             if (quantityStr == null || quantityStr.trim().isEmpty()) {
