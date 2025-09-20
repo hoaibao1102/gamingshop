@@ -334,7 +334,7 @@
                                             <tr>
                                                 <th>ID</th>
                                                 <th>Tên Service</th>
-                                                <th>Mô tả</th>
+                      
                                                 <th>Giá tiền</th>
                                                 <th>Trạng thái</th>
                                                 <th>Tạo</th>
@@ -345,36 +345,19 @@
                                         <tbody>
                                             <c:forEach var="service" items="${serviceList}">
                                                 <tr>
-                                                    <td>
-                                                        <div class="service-icon">
-                                                            ${fn:substring(service.service_type, 0, 1).toUpperCase()}
-                                                        </div>
-                                                    </td>
+                                
                                                     <td>${service.id}</td>
                                                     <td>
                                                         <div class="service-name">${service.service_type}</div>
                                                         <div class="service-id">#${service.id}</div>
                                                     </td>
                                                     <td>
-                                                        <c:choose>
-                                                            <c:when test="${not empty service.description_html}">
-                                                                <c:choose>
-                                                                    <c:when test="${fn:length(service.description_html) > 80}">
-                                                                        ${fn:substring(service.description_html, 0, 80)}...
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        ${service.description_html}
-                                                                    </c:otherwise>
-                                                                </c:choose>
-                                                            </c:when>
-                                                            <c:otherwise><em>Chưa có mô tả</em></c:otherwise>
-                                                        </c:choose>
-                                                    </td>
-                                                    <td>
                                                         <div class="price-display">
-                                                            $<fmt:formatNumber value="${service.price}" type="number" minFractionDigits="2" maxFractionDigits="2"/>
+                                                            <fmt:formatNumber value="${service.price}" type="number" /> VND
                                                         </div>
                                                     </td>
+                                                  
+                                                    
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${service.status eq 'active'}">

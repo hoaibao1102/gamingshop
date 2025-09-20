@@ -15,6 +15,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
+         <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>Gaming Shop - Dịch vụ</title>
 
         <!-- Swiper CSS -->
