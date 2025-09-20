@@ -1733,6 +1733,17 @@ public class ProductController extends HttpServlet {
 
             // 2) Lấy product + images
             final Products product = productsdao.getById(productId);
+            final List<Products> list_pro = productsdao.getByType(productId);
+            
+            for (Products p : list_pro) {
+                List<Product_images> images = productImagesDAO.getByProductId(p.getId());
+                if (images.size() > 0) {
+                    p.setCoverImg(images.get(0).getImage_url());
+                } else {
+                    p.setCoverImg("");
+                }
+            }
+            
             if (product == null) {
                 request.setAttribute("checkErrorDeleteProduct", "Không tìm thấy sản phẩm");
                 return "productDetail.jsp";
@@ -1769,6 +1780,7 @@ public class ProductController extends HttpServlet {
 
             // 4) Gán attribute ra view
             request.setAttribute("productDetail", product);
+            request.setAttribute("list_pro", list_pro);
             request.setAttribute("guaranteeProduct", guaranteeProduct);
             request.setAttribute("memoryProduct", memoryProduct);
             request.setAttribute("checkErrorDeleteProduct", null);

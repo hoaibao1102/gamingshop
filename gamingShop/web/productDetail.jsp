@@ -417,6 +417,50 @@
                 }
             }
 
+            /* CSS cho layout 4 cột */
+            .featured-grid-4cols {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .grid-item-sb {
+                width: 100%;
+            }
+
+            .grid-item-sb .card {
+                width: 100%;
+                height: 100%;
+            }
+
+            .grid-item-sb .thumb-btn-sb {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Responsive cho màn hình nhỏ hơn */
+            @media (max-width: 1200px) {
+                .featured-grid-4cols {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+
+            @media (max-width: 768px) {
+                .featured-grid-4cols {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 10px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .featured-grid-4cols {
+                    grid-template-columns: 1fr;
+                }
+            }
+
         </style>
     </head>
 
@@ -459,7 +503,13 @@
                                             </c:if>
                                         </c:forEach>
                                     </div>
+
+
+                                    <!--                                    //===========================================================================-->
+
                                 </div>
+
+
 
                                 <!-- RIGHT: Info + Description (6 phần) -->
                                 <div class="pd-right">
@@ -517,6 +567,51 @@
                         </c:otherwise>
                     </c:choose>
                 </div>
+
+
+
+                <!--                                     >>> DIV MỚI CHÈN Ở ĐÂY <<< ===============================================-->
+                <div class="pd-left-extra">
+                    <h3 class="extra-title">NHỮNG SẢN PHẨM LIÊN QUAN </h3>
+                    <c:choose>
+                        <c:when test="${not empty list_pro}">
+                            <c:set var="shown" value="0"/>
+                            <div class="featured-grid-4cols">
+                                <c:forEach var="i" items="${list_pro}">
+                                    <c:if test="${ shown < 4}">
+                                        <div class="grid-item-sb">
+                                            <form action="MainController" method="get" class="card">
+                                                <input type="hidden" name="action" value="getProduct"/>
+                                                <input type="hidden" name="idProduct" value="${i.id}"/>
+                                                <!-- Bấm vào cả card là submit -->
+                                                <button type="submit" class="thumb-btn-sb">
+                                                    <!-- Container cho ảnh và giá -->
+                                                    <div class="image-price-container-sb">
+                                                        <img class="thumb-sb" src="${i.coverImg}" alt="${i.name}"/>
+                                                        <div class="price-box-sb">
+                                                            <div class="price-text-sb"><fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" />
+                                                                VND</div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Tên sản phẩm ở dưới -->
+                                                    <div class="product-name">${i.name}</div>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <c:set var="shown" value="${shown + 1}"/>
+                                    </c:if>
+                                </c:forEach>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <p>Hiện danh sách đang trống!</p>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+
+
+
+
             </div>
         </div>
 

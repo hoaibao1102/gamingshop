@@ -28,6 +28,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
     private static final String GET_ALL = "SELECT * FROM dbo.Products";
     private static final String GET_BY_ID = "SELECT * FROM dbo.Products WHERE id = ?";
     private static final String GET_BY_STATUS = "SELECT * FROM dbo.Products WHERE status = ?";
+    private static final String GET_BY_TYPE = "SELECT * FROM dbo.Products WHERE product_type = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Products WHERE name LIKE ?";
 
     private static final String CREATE
@@ -577,6 +578,32 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
         where.put("model_id", String.valueOf(model_id));
         return getProductsByConditions(filter, where);
+    }
+
+    public List<Products> getByType(int productId) {
+        Products pro = getById(productId);
+//        lay type cua product de lay ra ca san pham có cung type lien quan
+        String pro_type = pro.getProduct_type();
+        
+        
+        List<Products> list = new ArrayList<>();
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        try {
+            c = DBUtils.getConnection();
+            st = c.prepareStatement(GET_BY_TYPE);
+            st.setString(1, pro_type);
+            rs = st.executeQuery();
+            while (rs.next()) {
+                list.add(map(rs));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(c, st, rs);
+        }
+        return list;
     }
 
 }

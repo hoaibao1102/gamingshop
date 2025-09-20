@@ -267,7 +267,7 @@
             /* Ảnh chiếm 7 phần */
             .thumb-sb{
                 flex: 7;
-                height:80px;
+                width: 80px;
                 object-fit:cover;
                 border-radius:10px;
                 box-shadow:0 2px 8px rgba(0,0,0,.1);
@@ -406,10 +406,7 @@
                     <span>Trang chủ</span>
                 </a>
 
-                <form action="MainController" method="post" class="nav-form">
-                    <input type="hidden" name="action" value="searchPosts">
-                    <input class="nav-item" type="submit" value="📰 Bài đăng gần đây">
-                </form>
+                
 
                 <c:if test="${not empty user}">
                     <form action="MainController" method="post" class="nav-form">
