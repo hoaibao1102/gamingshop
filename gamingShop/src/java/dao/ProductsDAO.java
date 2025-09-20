@@ -218,8 +218,6 @@ public class ProductsDAO implements IDAO<Products, Integer> {
             close(c, st, rs);
         }
 
-        System.out.println(totalCount);
-        System.out.println(filter.getPageSize());
         return new Page<>(products, filter.getPage(), filter.getPageSize(), totalCount);
     }
 
@@ -352,7 +350,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
     }
 
     private void addFilterConditions(StringBuilder queryBuilder, StringBuilder countQueryBuilder,
-        ProductFilter filter, List<Object> params) {
+            ProductFilter filter, List<Object> params) {
         String conditions = "";
 
         // Lọc theo tên

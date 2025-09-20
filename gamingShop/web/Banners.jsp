@@ -10,7 +10,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Gaming Shop — Quản lý Banners</title>
-
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <!-- Swiper CSS (nếu cần, đồng bộ với trang chủ) -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
         <!-- Main CSS đồng bộ với trang chủ -->

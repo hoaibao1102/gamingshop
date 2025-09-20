@@ -9,7 +9,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>${empty editBanner ? 'Thêm banner' : 'Sửa banner'}</title>
-
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <!-- App CSS đồng bộ -->
         <link rel="stylesheet" href="assets/css/maincss.css"/>
 

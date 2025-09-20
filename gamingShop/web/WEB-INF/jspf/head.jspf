@@ -1,0 +1,21 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sgv38 Store - Máy chơi game & Phụ kiện</title>
+    <meta name="description" content="Sgv38 Store - Chuyên cung cấp máy chơi game và phụ kiện giá tốt.">
+
+    <link rel="icon" href="${pageContext.request.contextPath}/assets/img/logo/logo.png" type="image/png">
+
+    <!-- Schema: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "url": "https://sgv38.vn",
+      "logo": "https://sgv38.vn/assets/img/logo/logo.png",
+      "name": "Sgv38 Store",
+      "description": "Sgv38 Store - Chuyên cung cấp máy chơi game và phụ kiện giá tốt."
+    }
+    </script>
+</head>

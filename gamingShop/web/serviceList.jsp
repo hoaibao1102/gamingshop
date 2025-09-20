@@ -12,6 +12,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>Services List</title>
         <style>
             body { font-family: Arial, sans-serif; margin: 20px; }

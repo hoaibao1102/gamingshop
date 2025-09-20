@@ -23,7 +23,7 @@ public class AdminAuthorizationFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("AdminAuthorizationFilter initialized");
+//        System.out.println("AdminAuthorizationFilter initialized");
     }
 
     @Override

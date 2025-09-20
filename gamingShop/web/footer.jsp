@@ -8,6 +8,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>footer</title>
         <style>

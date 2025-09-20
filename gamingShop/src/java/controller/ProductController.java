@@ -1093,8 +1093,7 @@ public class ProductController extends HttpServlet {
             Part imagePart = null;
             try {
                 imagePart = request.getPart("imageFile");
-//                System.out.println("DEBUG: Image part retrieved - "
-//                        + (imagePart != null ? "Size: " + imagePart.getSize() + ", FileName: " + imagePart.getSubmittedFileName() : "NULL"));
+//                
             } catch (Exception e) {
                 e.getMessage();
             }
@@ -2562,6 +2561,7 @@ public class ProductController extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("checkErrorServiceList", "Error loading service list: " + e.getMessage());
             return "serviceList.jsp";
+            
         }
     }
 
@@ -2642,10 +2642,6 @@ public class ProductController extends HttpServlet {
             // Lấy dữ liệu với phân trang
             Page<Products> pageResult = productsdao.getMayChoiGame(filter, condition);
             // ===== Gán ảnh cho từng sản phẩm =====
-            for (Products p : pageResult.getContent()) {
-//                    System.out.println(p.getId());
-            }
-
             // ===== Gán ảnh cho từng sản phẩm =====
             for (Products p : pageResult.getContent()) {
                 // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
@@ -2692,10 +2688,7 @@ public class ProductController extends HttpServlet {
             // Lấy dữ liệu với phân trang
             Page<Products> pageResult = productsdao.getListTheGame(filter);
             // ===== Gán ảnh cho từng sản phẩm =====
-            for (Products p : pageResult.getContent()) {
-//                    System.out.println(p.getId());
-            }
-
+            
             // ===== Gán ảnh cho từng sản phẩm =====
             for (Products p : pageResult.getContent()) {
                 // Lấy 1 ảnh cover (status=1) thay vì toàn bộ

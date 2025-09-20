@@ -4,6 +4,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>Login Page</title>
         <style>
             /* ====== Modern Login – Responsive, No HTML changes ====== */
