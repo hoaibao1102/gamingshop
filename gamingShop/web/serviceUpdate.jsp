@@ -107,9 +107,9 @@
                 position: relative;
             }
             .currency-symbol {
-                position: absolute;
+                position: relative;
                 left: 15px;
-                top: 50%;
+                top: auto;
                 transform: translateY(-50%);
                 color: #6b7280;
                 font-weight: 600;
@@ -332,13 +332,13 @@
                                     <div class="field">
                                         <label class="label required">Giá tiền</label>
                                         <div class="price-input">
-                                            <span class="currency-symbol">$</span>
                                             <input class="input" type="number" name="price" 
                                                    value="${not empty service ? service.price : ''}" 
                                                    placeholder="0.00" 
-                                                   step="0.01" min="0" max="999999999.99" required>
+                                                   step="1" min="0" max="999999999.99" required>
+                                            <span class="currency-symbol">VND</span>
                                         </div>
-                                        <div class="hint">Giá dịch vụ bằng USD (VD: 29.99)</div>
+                                        <div class="hint">Giá dịch vụ bằng VND</div>
                                     </div>
 
                                     <div class="field">
@@ -371,7 +371,7 @@
                                                 <div class="info-row">
                                                     <span class="info-label">Giá hiện tại:</span>
                                                     <span class="price-highlight">
-                                                        $<fmt:formatNumber value="${service.price}" type="number" minFractionDigits="2" maxFractionDigits="2"/>
+                                                        VND <fmt:formatNumber value="${service.price}" type="number" />
                                                     </span>
                                                 </div>
                                                 <div class="info-row">

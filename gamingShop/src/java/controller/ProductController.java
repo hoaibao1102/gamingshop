@@ -1714,15 +1714,15 @@ public class ProductController extends HttpServlet {
             }
 
             // 3. Check for duplicate service_type (UNIQUE constraint)
-//        try {
-//            boolean typeExists = servicesDAO.isServiceTypeExists(serviceType.trim());
-//            if (typeExists) {
-//                request.setAttribute("checkErrorAddService", "Service type '" + serviceType.trim() + "' already exists. Please choose a different service type.");
-//                return "serviceUpdate.jsp";
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+        try {
+            boolean typeExists = servicesDAO.isServiceTypeExists(serviceType.trim());
+            if (typeExists) {
+                request.setAttribute("checkErrorAddService", "Service type '" + serviceType.trim() + "' already exists. Please choose a different service type.");
+                return "serviceUpdate.jsp";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
             // 4. Validate price
             double price = 0.0;
             if (priceStr == null || priceStr.trim().isEmpty()) {
@@ -1827,16 +1827,16 @@ public class ProductController extends HttpServlet {
             }
 
             // Check duplicate service_type (exclude current record)
-//        try {
-//            boolean typeExists = servicesDAO.isServiceTypeExistsExcept(serviceType.trim(), serviceId);
-//            if (typeExists) {
-//                request.setAttribute("checkErrorEditService", "Service type '" + serviceType.trim() + "' already exists. Please choose a different service type.");
-//                request.setAttribute("service", existingService);
-//                return "serviceUpdate.jsp";
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+            try {
+            boolean typeExists = servicesDAO.isServiceTypeExistsExcept(serviceType.trim(), serviceId);
+                if (typeExists) {
+                    request.setAttribute("checkErrorEditService", "Service type '" + serviceType.trim() + "' already exists. Please choose a different service type.");
+                    request.setAttribute("service", existingService);
+                  return "serviceUpdate.jsp";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             // Validate price
             double price = 0.0;
             if (priceStr == null || priceStr.trim().isEmpty()) {
@@ -1889,6 +1889,9 @@ public class ProductController extends HttpServlet {
 
             // Update database
             boolean success = servicesDAO.update(existingService);
+            
+            System.out.println("===DEBUG====");
+            System.out.println("GET SERVICE"+ existingService.getId() + existingService.getDescription_html() + existingService.getService_type() + existingService.getStatus() + existingService.getPrice());
             if (success) {
                 HttpSession session = request.getSession();
                 session.removeAttribute("cachedServiceList");

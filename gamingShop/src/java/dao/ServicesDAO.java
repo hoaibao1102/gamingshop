@@ -32,7 +32,7 @@ public class ServicesDAO implements IDAO<Services, Integer> {
     private static final String CHECK_SERVICE_TYPE_EXISTS = "SELECT COUNT(*) FROM dbo.Services WHERE service_type = ?";
     private static final String GET_ALL_ACTIVE = "SELECT * FROM dbo.Services WHERE status = 'active'";
     private static final String CHECK_SERVICES_TYPE_EXISTS_EXCEPT = "SELECT COUNT(*) FROM dbo.Services WHERE service_type = ? AND id != ?";
-    private static final String UPDATE = "UPDATE dbo.Services SET service_type = ?, description_html = ?, status = ?, updated_at = GETDATE() WHERE id = ?";
+    private static final String UPDATE = "UPDATE dbo.Services SET service_type = ?, description_html = ?, price = ?, status = ?, updated_at = GETDATE() WHERE id = ?";
 
     @Override
     public boolean create(Services e) {
@@ -191,8 +191,9 @@ public class ServicesDAO implements IDAO<Services, Integer> {
             ps = c.prepareStatement(UPDATE);
             ps.setString(1, existingService.getService_type());
             ps.setString(2, existingService.getDescription_html());
-            ps.setString(3, existingService.getStatus());
-            ps.setInt(4, existingService.getId());
+            ps.setDouble(3, existingService.getPrice());
+            ps.setString(4, existingService.getStatus());
+            ps.setInt(5, existingService.getId());
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -411,7 +412,7 @@ public class ServicesDAO implements IDAO<Services, Integer> {
         }
 
         // Status active
-        conditions += " AND status = 'Active'";
+        conditions += " AND status = 'active'";
 
         q.append(conditions);
         cq.append(conditions);
@@ -461,30 +462,6 @@ public class ServicesDAO implements IDAO<Services, Integer> {
             close(c, st, rs);
         }
         return service;
-    }
-
-    // ===== Tạo service mới =====
-    public boolean createService(Services service) {
-        Connection c = null;
-        PreparedStatement st = null;
-        boolean success = false;
-
-        try {
-            c = DBUtils.getConnection();
-            String sql = "INSERT INTO dbo.Services (service_type, description_html, price, created_at, updated_at, status) VALUES (?, ?, ?, GETDATE(), GETDATE(), ?)";
-            st = c.prepareStatement(sql);
-            st.setString(1, service.getService_type());
-            st.setString(2, service.getDescription_html());
-            st.setDouble(3, service.getPrice());
-            st.setString(4, service.getStatus() != null ? service.getStatus() : "Active");
-            
-            success = st.executeUpdate() > 0;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            close(c, st, null);
-        }
-        return success;
     }
 
     // ===== Lấy tất cả services không phân trang =====
