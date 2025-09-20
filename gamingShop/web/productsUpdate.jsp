@@ -8,6 +8,7 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>Gaming Shop — Quản lý sản phẩm</title>
 
         <!-- Swiper CSS (nếu cần dùng cho UI khác) -->

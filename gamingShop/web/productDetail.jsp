@@ -12,6 +12,7 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8" />
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>Gaming Shop</title>
 
         <style>

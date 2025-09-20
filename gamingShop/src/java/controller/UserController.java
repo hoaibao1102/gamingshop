@@ -11,11 +11,6 @@ import dao.AccountsDAO;
 import dao.ProductImagesDAO;
 import dao.ProductsDAO;
 import dto.Accounts;
-import dto.Page;
-import dto.ProductFilter;
-import dto.Product_images;
-import dto.Products;
-import java.util.List;
 
 @WebServlet(name = "UserController", urlPatterns = {"/UserController"})
 public class UserController extends HttpServlet {

@@ -15,7 +15,7 @@
         <meta charset="UTF-8">
         <title>${empty requestScope['javax.servlet.error.status_code'] ? 'Có lỗi xảy ra' : 'Lỗi ' += requestScope['javax.servlet.error.status_code']}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <!-- App CSS (nếu có) -->
         <link rel="stylesheet" href="<%=ctx%>/assets/css/maincss.css"/>
 

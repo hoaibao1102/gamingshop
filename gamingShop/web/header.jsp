@@ -10,6 +10,7 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>Header Mobile + Desktop</title>
         <style>

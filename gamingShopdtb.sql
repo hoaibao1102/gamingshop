@@ -234,8 +234,8 @@ CREATE TABLE dbo.Banners (
   title        NVARCHAR(255) NOT NULL,
   status NVARCHAR(50) NOT NULL 
     CONSTRAINT CK_Banners_Status CHECK (status IN (N'active', N'inactive')),
-  created_at   DATETIME2(3) NOT NULL CONSTRAINT DF_posts_created_at DEFAULT SYSDATETIME(),
-  updated_at   DATETIME2(3) NOT NULL CONSTRAINT DF_posts_updated_at DEFAULT SYSDATETIME()
+  created_at   DATETIME2(3) NOT NULL CONSTRAINT DF_banner_created_at DEFAULT SYSDATETIME(),
+  updated_at   DATETIME2(3) NOT NULL CONSTRAINT DF_banner_updated_at DEFAULT SYSDATETIME()
 );
 GO
 CREATE INDEX IX_posts_publish_date ON dbo.Posts(publish_date);

@@ -20,6 +20,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>Gaming Shop — Quản lý sản phẩm</title>
 
         <!-- Swiper CSS (nếu cần cho banner nội bộ) -->

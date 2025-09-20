@@ -10,7 +10,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Gaming Shop - Trang chủ</title>
-
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <!-- Swiper CSS -->
         <link
             rel="stylesheet"
