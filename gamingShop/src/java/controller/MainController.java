@@ -98,12 +98,6 @@ public class MainController extends HttpServlet {
                 || "editMainProduct".equals(action)
                 || "editImageProduct".equals(action)
                 || "deleteProduct".equals(action)
-                || "viewAllAccessories".equals(action)
-                || "searchAccessory".equals(action)
-                || "showAddAccessoryForm".equals(action)
-                || "addAccessory".equals(action)
-                || "editAccessory".equals(action)
-                || "deleteAccessory".equals(action)
                 || "searchPosts".equals(action)
                 || "viewAllPost".equals(action)
                 || "addPosts".equals(action)
@@ -129,7 +123,10 @@ public class MainController extends HttpServlet {
                 || "listTheGame".equals(action)
                 || "viewAllProducts".equals(action)
                 || "showAddPosts".equals(action)
-                || "viewPost".equals(action);
+                || "viewPost".equals(action)
+                || "getService".equals(action)
+                || "listDichVu".equals(action)
+                ;
     }
 
     private boolean isBannersAction(String action) {
@@ -144,7 +141,16 @@ public class MainController extends HttpServlet {
     }
     
     private boolean isAccessoryAction(String action) {
-        return "listPhuKien".equals(action);
+        return "listPhuKien".equals(action)
+                || "viewAllAccessories".equals(action)
+                || "searchAccessory".equals(action)
+                || "showAddAccessoryForm".equals(action)
+                || "addAccessory".equals(action)
+                || "editAccessory".equals(action)
+                || "showEditAccessoryForm".equals(action)
+                || "deleteAccessory".equals(action)
+                || "getAccessory".equals(action)
+                ;
     }
 
 }

@@ -87,8 +87,6 @@ public class Accessories {
         this.coverImg = coverImg;
     }
 
-    
-
     public Date getCreated_at() {
         return created_at;
     }
