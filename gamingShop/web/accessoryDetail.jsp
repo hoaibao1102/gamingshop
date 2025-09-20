@@ -59,8 +59,6 @@
                 color:#fff;
                 border-radius:20px;
                 padding:24px;
-                box-shadow:var(--card-shadow);
-                position: sticky;
                 top:20px;
                 height: fit-content;
             }
@@ -68,7 +66,6 @@
                 flex:7;
                 background:#fff;
                 border-radius:20px;
-                box-shadow:var(--card-shadow);
                 display:flex;
                 flex-direction:column;
                 overflow:auto;
@@ -110,12 +107,10 @@
             .ad-left{
                 background:#fff;
                 border-radius:16px;
-                box-shadow:var(--card-shadow);
                 padding:20px;
             }
             .ad-main{
                 width:100%;
-                height: clamp(400px, 50vh, 600px);
                 border:1px solid #eee;
                 border-radius:12px;
                 overflow:hidden;
@@ -136,11 +131,9 @@
 
             /* ---------- RIGHT: Info + Description ---------- */
             .ad-right{
-                position: sticky;
                 top:16px;
                 background:#fff;
                 border-radius:16px;
-                box-shadow:var(--card-shadow);
                 padding:24px;
                 height: fit-content;
             }
@@ -344,6 +337,9 @@
                 .ad-main{
                     height: clamp(350px, 45vh, 500px);
                 }
+                .sidebar{
+                    display:none !important;
+                }
             }
             @media (max-width: 1024px){
                 .accessory-detail{
@@ -402,7 +398,7 @@
                 <div class="container">
                     <!-- Breadcrumb -->
                     <div class="breadcrumb">
-                        <a href="MainController?action=viewAllAccessories">Danh sách phụ kiện</a>
+                        <a href="MainController?action=listPhuKien">Danh sách phụ kiện</a>
                         <span>/</span>
                         <span>Chi tiết phụ kiện</span>
                     </div>

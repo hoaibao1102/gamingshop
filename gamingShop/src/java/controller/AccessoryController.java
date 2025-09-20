@@ -30,7 +30,7 @@ import java.util.List;
 @WebServlet(name = "AccessoryController", urlPatterns = {"/AccessoryController"})
 public class AccessoryController extends HttpServlet {
 
-    String INDEX_PAGE = "index.jsp";
+    private final String INDEX_PAGE = "index.jsp";
     private final AccessoriesDAO accessoriesDAO = new AccessoriesDAO();
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -712,34 +712,34 @@ public class AccessoryController extends HttpServlet {
     }
 
     private String handleGetAccessory(HttpServletRequest request, HttpServletResponse response) {
-    try {
-        String idParam = request.getParameter("idAccessory");
-        System.out.println("===============DEBUG=============");
-        System.out.println("idPram: ===" + idParam);
-        // Kiểm tra parameter có tồn tại không
-        if (idParam == null || idParam.trim().isEmpty()) {
-            request.setAttribute("checkError", "Invalid accessory ID");
-            return "accessoryDetail.jsp";
+        try {
+            String idParam = request.getParameter("idAccessory");
+            System.out.println("===============DEBUG=============");
+            System.out.println("idPram: ===" + idParam);
+            // Kiểm tra parameter có tồn tại không
+            if (idParam == null || idParam.trim().isEmpty()) {
+                request.setAttribute("checkError", "Invalid accessory ID");
+                return "accessoryDetail.jsp";
+            }
+
+            Integer intParam = Integer.parseInt(idParam);
+            Accessories accessory = accessoriesDAO.getById(intParam);
+            System.out.println("IDPRAM AFTER CHUAN HOA:===" + idParam);
+            if (accessory != null) {
+                request.setAttribute("accessory", accessory);
+            } else {
+                request.setAttribute("checkError", "No accessories found with ID: " + intParam);
+            }
+
+        } catch (NumberFormatException e) {
+            request.setAttribute("checkError", "Invalid accessory ID format");
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error loading accessory: " + e.getMessage());
         }
-        
-        Integer intParam = Integer.parseInt(idParam);
-        Accessories accessory = accessoriesDAO.getById(intParam);
-        System.out.println("IDPRAM AFTER CHUAN HOA:===" + idParam);
-        if (accessory != null) {
-            request.setAttribute("accessory", accessory);
-        } else {
-            request.setAttribute("checkError", "No accessories found with ID: " + intParam);
-        }
-        
-    } catch (NumberFormatException e) {
-        request.setAttribute("checkError", "Invalid accessory ID format");
-    } catch (Exception e) {
-        e.printStackTrace();
-        request.setAttribute("checkError", "Error loading accessory: " + e.getMessage());
+
+        return "accessoryDetail.jsp";
     }
-    
-    return "accessoryDetail.jsp";
-}
 
 
 }

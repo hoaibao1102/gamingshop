@@ -144,7 +144,10 @@ public class ProductController extends HttpServlet {
                 url = handleListMayChoiGame(request, response);
             } else if (action.equals("listTheGame")) {
                 url = handleListTheGame(request, response);
-
+            } else if (action.equals("getService")) {
+                url = handleGetService(request, response);
+            } else if (action.equals("listDichVu")) {
+                url = handleListServices(request, response);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -2116,6 +2119,70 @@ public class ProductController extends HttpServlet {
             request.setAttribute("checkErrorViewPost", "Có lỗi xảy ra khi tải bài viết.");
             return "MainController?action=searchPosts";
         }
+    }
+
+    private String handleGetService(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String idParam = request.getParameter("idService");
+            System.out.println("===============DEBUG=============");
+            System.out.println("idPram: ===" + idParam);
+            // Kiểm tra parameter có tồn tại không
+            if (idParam == null || idParam.trim().isEmpty()) {
+                request.setAttribute("checkErrorService", "Invalid accessory ID");
+                return "serviceDetail.jsp";
+            }
+
+            Integer intParam = Integer.parseInt(idParam);
+            Services service = servicesDAO.getById(intParam);
+            System.out.println("IDPRAM AFTER CHUAN HOA:===" + idParam);
+            if (service != null) {
+                request.setAttribute("serviceDetail", service);
+            } else {
+                request.setAttribute("checkErrorService", "No accessories found with ID: " + intParam);
+            }
+
+        } catch (NumberFormatException e) {
+            request.setAttribute("checkErrorService", "Invalid accessory ID format");
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkErrorService", "Error loading accessory: " + e.getMessage());
+        }
+
+        return "serviceDetail.jsp";
+    }
+
+    private String handleListServices(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            request.setCharacterEncoding("UTF-8");
+            // Tạo filter mặc định
+            ProductFilter filter = new ProductFilter();
+
+            // Lấy tham số page nếu có
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.isEmpty()) {
+                try {
+                    int page = Integer.parseInt(pageParam);
+                    if (page > 0) {
+                        filter.setPage(page);
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore, use default page
+                }
+            }
+
+            // Lấy dữ liệu với phân trang
+            Page<Services> pageResult = servicesDAO.getAllActiveServices(filter);
+
+            request.setAttribute("listServices", pageResult);
+            //request.setAttribute("getService", "true");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error loading products: " + e.getMessage());
+        }
+        
+        return "serviceHome.jsp";
+       
     }
 
 }

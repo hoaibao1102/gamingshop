@@ -316,7 +316,7 @@
                 <div class="container">
                     <div class="admin-toolbar">
                         <div class="title">Danh sách phụ kiện</div>
-                        <form action="MainController" method="get" class="search-form" autocomplete="off">
+                        <form action="MainController" method="post" class="search-form" autocomplete="off">
                             <input type="hidden" name="action" value="searchAccessory"/>
                             <input type="text" name="keyword" value="${keyword != null ? keyword : ''}" placeholder="Nhập tên phụ kiện..." />
                             <button type="submit" class="btn btn-primary">Tìm kiếm</button>
