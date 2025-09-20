@@ -8,6 +8,7 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>Gaming Shop — Quản lý sản phẩm</title>
 
         <!-- Swiper CSS (nếu cần dùng cho UI khác) -->
@@ -378,7 +379,7 @@
                                                 <input class="input" type="number" step="0.01" min="0" name="price" value="${not empty product ? product.price : ''}" required style="flex:1;">
                                                 <span style="color:#6b7280; font-weight:600;">VND</span>
                                             </div>
-                                            <div class="hint">Nhập số, hệ thống sẽ format khi hiển thị.</div>
+                                            <div class="hint">Nhập số nguyên, hệ thống sẽ format khi hiển thị.</div>
                                         </div>
 
                                         <div class="field">
@@ -434,6 +435,24 @@
                                                 <option value="inactive" ${not empty product && product.status == 'inactive' ? 'selected' : ''}>Ngừng hoạt động</option>
                                                 <option value="prominent" ${not empty product && product.status == 'prominent' ? 'selected' : ''}>Nổi bật sản phẩm</option>
                                             </select>
+                                        </div>
+
+                                        <div class="section" style="margin-top:16px;">
+                                            <div class="section-hd">Phụ kiện tặng kèm</div>
+                                            <div class="section-bd">
+                                                <div class="grid grid-2">
+                                                    <c:forEach var="acc" items="${giftAccessories}">
+                                                        <div class="field" style="border:1px solid #e5e7eb; border-radius:10px; padding:10px;">
+                                                            <label class="label">
+                                                                <input type="checkbox" name="accessoryIds" value="${acc.id}"/>
+                                                                ${acc.name}
+                                                            </label>
+                                                            <input class="input" type="number" name="accessoryQty_${acc.id}" min="1" value="1"/>
+                                                        </div>
+                                                    </c:forEach>
+                                                </div>
+                                                <div class="hint">Chọn phụ kiện tặng kèm cho sản phẩm này.</div>
+                                            </div>
                                         </div>
                                     </div>
 

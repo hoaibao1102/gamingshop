@@ -5,7 +5,9 @@
 package controller;
 
 import dao.AccessoriesDAO;
+import dao.BannersDAO;
 import dto.Accessories;
+import dto.Banners;
 import dto.Page;
 import dto.ProductFilter;
 import dto.Product_images;
@@ -30,16 +32,19 @@ import java.util.List;
 @WebServlet(name = "AccessoryController", urlPatterns = {"/AccessoryController"})
 public class AccessoryController extends HttpServlet {
 
+
     private final String INDEX_PAGE = "index.jsp";
     private final AccessoriesDAO accessoriesDAO = new AccessoriesDAO();
+    private final BannersDAO bannersDAO = new BannersDAO();
     
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = INDEX_PAGE;
         String action = request.getParameter("action");
         try {
-            if("listPhuKien".equals(action)){
+            if ("listPhuKien".equals(action)) {
                 url = handleListPhuKien(request, response);
             } else if (action.equals("viewAllAccessories")) {
                 url = handleViewAllAccessories(request, response);
@@ -62,8 +67,7 @@ public class AccessoryController extends HttpServlet {
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
-        
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -125,7 +129,11 @@ public class AccessoryController extends HttpServlet {
             }
 
             // Lấy dữ liệu với phân trang
+
             Page<Accessories> pageResult = accessoriesDAO.getListAccessotiesBuy(filter);
+            List<Banners> listBanner = bannersDAO.getTop5Active();
+            request.setAttribute("topBanners", listBanner);
+
 
             request.setAttribute("listProductsByCategory", pageResult);
             request.setAttribute("isListProductsByCategory", "true");

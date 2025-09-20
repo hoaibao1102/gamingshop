@@ -1,190 +1,406 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.util.*, dto.Banners" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<fmt:setLocale value="vi_VN"/>
+
 <!DOCTYPE html>
 <html lang="vi">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Quản lý Banners</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <title>${empty editBanner ? 'Thêm banner' : 'Sửa banner'}</title>
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
+        <!-- App CSS đồng bộ -->
+        <link rel="stylesheet" href="assets/css/maincss.css"/>
+
         <style>
-            body {
-                background: #f6f7fb;
+            /* ===== Layout giống trang Post ===== */
+            .wrapper{
+                display:grid;
+                grid-template-columns:260px 1fr;
+                min-height:100vh
             }
-            .card {
-                border: 0;
-                box-shadow: 0 10px 18px rgba(22,28,45,.06);
+            .sidebar{
+                background:#111827
             }
-            .thumb {
-                width:100px;
-                height:60px;
-                object-fit:cover;
-                border-radius:.25rem;
-                border:1px solid #eee;
+            .Main_content{
+                background:#f5f7fb;
+                overflow-x:hidden
             }
-            .preview {
-                max-width:320px;
-                max-height:180px;
-                border:1px dashed #ddd;
-                border-radius:.5rem;
+            .container{
+                padding:16px
             }
-            .required::after {
+
+            .page-title{
+                font-weight:700;
+                letter-spacing:.2px;
+                margin:0
+            }
+            .badge-soft{
+                background:#eef2ff;
+                color:#3b5bdb;
+                padding:4px 10px;
+                border-radius:999px;
+                font-size:.85rem
+            }
+
+            .section{
+                background:#fff;
+                border:1px solid #e5e7eb;
+                border-radius:14px
+            }
+            .section-hd{
+                padding:14px 16px;
+                border-bottom:1px solid #e5e7eb;
+                font-weight:600;
+                background:#f9fafb
+            }
+            .section-bd{
+                padding:16px
+            }
+
+            .grid{
+                display:grid;
+                gap:12px
+            }
+            .grid-2{
+                grid-template-columns:repeat(2,minmax(0,1fr))
+            }
+            .field{
+                display:flex;
+                flex-direction:column;
+                gap:6px
+            }
+            .label{
+                font-weight:600
+            }
+            .required::after{
                 content:" *";
-                color:#d6336c;
+                color:#dc2626
             }
-            .badge-active{
-                background:#198754;
+            .hint{
+                font-size:.875rem;
+                color:#6b7280
             }
-            .badge-inactive{
-                background:#6c757d;
+            .input,.select,.textarea,.file{
+                border:1px solid #d1d5db;
+                border-radius:10px;
+                padding:10px 12px;
+                background:#fff;
+                outline:none
             }
-            .table td,.table th{
-                vertical-align: middle;
+
+            .actions{
+                position:sticky;
+                bottom:0;
+                background:#fff;
+                border-top:1px solid #e5e7eb;
+                padding:12px;
+                display:flex;
+                justify-content:flex-end;
+                gap:8px;
+                border-bottom-left-radius:14px;
+                border-bottom-right-radius:14px
+            }
+
+            .btn{
+                border:1px solid transparent;
+                padding:10px 14px;
+                border-radius:10px;
+                cursor:pointer;
+                font-weight:600
+            }
+            .btn.primary{
+                background:#1d4ed8;
+                color:#fde68a
+            }
+            .btn.line{
+                background:#fff;
+                border-color:#e5e7eb;
+                color:#111827
+            }
+            .btn.ghost{
+                background:#fff;
+                border-color:#6b7280;
+                color:#374151
+            }
+            .btn.ghost:hover{
+                background:#ef4444;
+                border-color:#ef4444;
+                color:#fff
+            }
+            .btn.danger{
+                background:#ef4444;
+                color:#fff
+            }
+
+            .toast-stack{
+                position:fixed;
+                top:12px;
+                right:12px;
+                display:flex;
+                flex-direction:column;
+                gap:8px;
+                z-index:1080
+            }
+            .toast{
+                padding:12px 14px;
+                border-radius:12px;
+                box-shadow:0 6px 20px rgba(0,0,0,.08);
+                display:flex;
+                align-items:center;
+                gap:10px
+            }
+            .toast.success{
+                background:#ecfdf5;
+                color:#065f46;
+                border:1px solid #a7f3d0
+            }
+            .toast.error{
+                background:#fef2f2;
+                color:#991b1b;
+                border:1px solid #fecaca
+            }
+
+            .breadcrumbs{
+                display:flex;
+                gap:8px;
+                font-size:.95rem;
+                color:#6b7280;
+                margin-bottom:8px
+            }
+            .breadcrumbs a{
+                color:inherit;
+                text-decoration:none
+            }
+            .breadcrumbs .sep{
+                color:#9ca3af
+            }
+
+            .img-row{
+                display:flex;
+                gap:16px;
+                flex-wrap:wrap
+            }
+            .img-slot{
+                width:320px;
+                height:180px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                background:#f3f4f6;
+                border:1px dashed #d1d5db;
+                border-radius:12px
+            }
+            .thumb{
+                width:320px;
+                height:180px;
+                object-fit:cover;
+                border-radius:12px;
+                display:none
+            }
+
+            @media (max-width:1024px){
+                .grid-2{
+                    grid-template-columns:1fr
+                }
             }
         </style>
     </head>
     <body>
-        <%
-            String ctx = request.getContextPath();
-            String messageAddBanner = (String) request.getAttribute("messageAddBanner");
-            String messageUpdateBanner = (String) request.getAttribute("messageUpdateBanner");
-            String checkErrorAddBanner = (String) request.getAttribute("checkErrorAddBanner");
-            String checkErrorUpdateBanner = (String) request.getAttribute("checkErrorUpdateBanner");
-
-            // Banner đang edit (nếu có)
-            Banners editBanner = (Banners) request.getAttribute("editBanner");
-
-            @SuppressWarnings("unchecked")
-            List<Banners> banners = (List<Banners>) request.getAttribute("banners");
-        %>
-
-        <div class="container py-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 class="h3 m-0">Quản lý Banners</h1>
+        <!-- ===== Toasts ===== -->
+        <div class="toast-stack">
+            <c:if test="${not empty messageAddBanner}"><div class="toast success">${messageAddBanner}</div></c:if>
+            <c:if test="${not empty messageUpdateBanner}"><div class="toast success">${messageUpdateBanner}</div></c:if>
+            <c:if test="${not empty checkErrorAddBanner}"><div class="toast error">${checkErrorAddBanner}</div></c:if>
+            <c:if test="${not empty checkErrorUpdateBanner}"><div class="toast error">${checkErrorUpdateBanner}</div></c:if>
             </div>
 
-            <% if (messageAddBanner != null) { %>
-            <div class="alert alert-success alert-dismissible fade show"><%= messageAddBanner %>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <% } %>
-            <% if (messageUpdateBanner != null) { %>
-            <div class="alert alert-success alert-dismissible fade show"><%= messageUpdateBanner %>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <% } %>
-            <% if (checkErrorAddBanner != null) { %>
-            <div class="alert alert-danger alert-dismissible fade show"><%= checkErrorAddBanner %>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <% } %>
-            <% if (checkErrorUpdateBanner != null) { %>
-            <div class="alert alert-danger alert-dismissible fade show"><%= checkErrorUpdateBanner %>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <% } %>
+            <div class="wrapper">
+                <div class="sidebar"><jsp:include page="sidebar.jsp"/></div>
 
-            <div class="row g-4">
-                <!-- Form thêm/cập nhật -->
-                <div class="col-lg-5">
-                    <div class="card">
-                        <div class="card-header bg-white">
-                            <strong><%= (editBanner != null ? "Cập nhật banner" : "Thêm banner") %></strong>
+            <div class="Main_content">
+                <jsp:include page="header.jsp"/>
+
+                <div class="container">
+                    <!-- Header title + back -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px;flex-wrap:wrap;">
+                        <div>
+                            <div class="breadcrumbs">
+                                <a href="MainController?action=getAllBanner">Banners</a><span class="sep">›</span>
+                                <span>${empty editBanner ? 'Thêm' : 'Chỉnh sửa'}</span>
+                            </div>
+                            <h2 class="page-title">
+                                ${empty editBanner ? 'Thêm banner mới' : 'Chỉnh sửa banner'}
+                                <span class="badge-soft" style="margin-left:8px;">Banner Management</span>
+                            </h2>
                         </div>
-                        <div class="card-body">
-                            <form method="post"
-                                  action="BannerController?action=<%= (editBanner != null ? "updateBanner" : "addBanner") %>"
-                                  enctype="multipart/form-data"
-                                  id="bannerForm">
-
-                                <% if (editBanner != null) { %>
-                                <input type="hidden" name="id" value="<%= editBanner.getId() %>" />
-                                <% } %>
-
-                                <div class="mb-3">
-                                    <label class="form-label required" for="title">Tiêu đề</label>
-                                    <input type="text" class="form-control" id="title" name="title"
-                                           value="<%= (editBanner != null 
-                                                       ? editBanner.getTitle() 
-                                                       : (request.getParameter("title") != null 
-                                                            ? request.getParameter("title") 
-                                                            : "")) %>"
-                                           placeholder="Nhập tiêu đề" required />
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label required" for="status">Trạng thái</label>
-                                    <select class="form-select" id="status" name="status" required>
-                                        <option value="active"
-                                                <%= (editBanner != null && "active".equals(editBanner.getStatus())) 
-                                                    || (editBanner == null && "active".equals(request.getParameter("status"))) 
-                                                    ? "selected" : "" %>>
-                                            active
-                                        </option>
-
-                                        <option value="inactive"
-                                                <%= (editBanner != null && "inactive".equals(editBanner.getStatus())) 
-                                                    || (editBanner == null && "inactive".equals(request.getParameter("status"))) 
-                                                    ? "selected" : "" %>>
-                                            inactive
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label" for="imageFile">Ảnh (tùy chọn)</label>
-                                    <input class="form-control" type="file" id="imageFile" name="imageFile" accept="image/*" />
-                                    <small class="text-muted">Hỗ trợ JPG, PNG, GIF...</small>
-                                </div>
-
-                                <div class="mb-3">
-                                    <% if (editBanner != null && editBanner.getImage_url() != null) { %>
-                                    <img src="<%= ctx + "/" + editBanner.getImage_url() %>" class="preview" id="preview" alt="Preview" />
-                                    <% } else { %>
-                                    <img id="preview" class="preview d-none" alt="Preview" />
-                                    <% } %>
-                                </div>
-
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary"><%= (editBanner != null ? "Cập nhật" : "Thêm mới") %></button>
-                                    <button type="reset" class="btn btn-outline-secondary">Làm lại</button>
-                                    <a class="btn btn-outline-secondary" href="MainController?action=getAllBannerActive">Danh sách banner</a>
-                                </div>
-                            </form>
-                        </div>
+                        <form action="MainController" method="post" autocomplete="off">
+                            <input type="hidden" name="action" value="getAllBanner"/>
+                            <button class="btn line" type="submit">Quay lại danh sách</button>
+                        </form>
                     </div>
+
+                    <!-- ===== Form ===== -->
+                    <form id="bannerForm"
+                          action="BannerController?action=${empty editBanner ? 'addBanner' : 'updateBanner'}"
+                          method="post" enctype="multipart/form-data" autocomplete="off">
+
+                        <c:if test="${not empty editBanner}">
+                            <input type="hidden" name="id" value="${editBanner.id}"/>
+                        </c:if>
+
+                        <section class="section" style="margin-bottom:12px;">
+                            <div class="section-hd">Thông tin banner</div>
+                            <div class="section-bd">
+                                <div class="grid grid-2">
+                                    <div class="field">
+                                        <label class="label required">Tiêu đề</label>
+                                        <input class="input" type="text" name="title"
+                                               value="${not empty editBanner.title ? editBanner.title : (not empty param.title ? param.title : '')}"
+                                               placeholder="Nhập tiêu đề" required>
+                                    </div>
+
+                                    <div class="field">
+                                        <label class="label required">Trạng thái</label>
+                                        <select class="select" name="status" required>
+                                            <option value="active"
+                                                    ${ (not empty editBanner and editBanner.status eq 'active')
+                                                       or (empty editBanner and param.status eq 'active') ? 'selected' : '' }>active</option>
+                                            <option value="inactive"
+                                                    ${ (not empty editBanner and editBanner.status eq 'inactive')
+                                                       or (empty editBanner and param.status eq 'inactive') ? 'selected' : '' }>inactive</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="field" style="grid-column:1/-1;">
+                                        <label class="label">Ảnh (tùy chọn)</label>
+                                        <input class="file" type="file" id="imageFile" name="imageFile" accept="image/*"/>
+                                        <div class="hint">Khuyên dùng 1000×450 hoặc 1100×450. &lt; 2MB.</div>
+
+                                        <div class="img-row" style="margin-top:8px;">
+                                            <c:choose>
+                                                <c:when test="${not empty editBanner.image_url}">
+                                                    <div id="placeholder" class="img-slot" style="display:none;"><span class="hint">Chưa có ảnh</span></div>
+                                                    <img id="preview" class="thumb" style="display:block;"
+                                                         src="${pageContext.request.contextPath}/${editBanner.image_url}" alt="Ảnh hiện tại"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <div id="placeholder" class="img-slot"><span class="hint">Chưa có ảnh</span></div>
+                                                    <img id="preview" class="thumb" alt="Preview"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
+
+                                        <c:if test="${not empty editBanner}">
+                                            <div style="display:flex;gap:8px;margin-top:10px;">
+                                                <button type="button" class="btn danger" onclick="deleteBannerImage('${editBanner.id}')">Xoá ảnh</button>
+                                            </div>
+                                        </c:if>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Actions -->
+                        <div class="actions">
+                            <button class="btn primary" type="submit">${empty editBanner ? 'Thêm banner' : 'Cập nhật banner'}</button>
+                            <button class="btn line" type="reset">Làm mới</button>
+                            <a class="btn ghost" href="MainController?action=getAllBanner">Hủy</a>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
 
+        <jsp:include page="footer.jsp"/>
+
         <script>
-            // Preview ảnh trước khi upload
-            const imageInput = document.getElementById('imageFile');
-            const previewImg = document.getElementById('preview');
-            if (imageInput) {
-                imageInput.addEventListener('change', function () {
+            // Preview ảnh + ẩn/hiện placeholder
+            (function () {
+                const input = document.getElementById('imageFile');
+                const img = document.getElementById('preview');
+                const placeholder = document.getElementById('placeholder');
+                const form = document.getElementById('bannerForm');
+
+                let lastURL = null;
+                if (!input || !img || !placeholder)
+                    return;
+
+                const showPlaceholder = () => {
+                    placeholder.style.display = 'flex';
+                    img.style.display = 'none';
+                    img.removeAttribute('src');
+                };
+                const showImage = (url) => {
+                    placeholder.style.display = 'none';
+                    img.src = url;
+                    img.style.display = 'block';
+                };
+
+                input.addEventListener('change', function () {
                     const file = this.files && this.files[0];
-                    if (!file) {
-                        previewImg.classList.add('d-none');
-                        previewImg.src = '';
-                        return;
+
+                    if (lastURL) {
+                        URL.revokeObjectURL(lastURL);
+                        lastURL = null;
                     }
-                    if (!file.type.startsWith('image/')) {
-                        alert('Vui lòng chọn đúng định dạng ảnh.');
-                        this.value = '';
-                        previewImg.classList.add('d-none');
-                        previewImg.src = '';
-                        return;
+
+                    if (file) {
+                        if (!file.type.startsWith('image/')) {
+                            alert('Vui lòng chọn đúng định dạng ảnh.');
+                            this.value = '';
+                            showPlaceholder();
+                            return;
+                        }
+                        const url = URL.createObjectURL(file);
+                        lastURL = url;
+                        showImage(url);
+                    } else {
+                        // Không chọn file
+                        if (!img.getAttribute('src'))
+                            showPlaceholder();
+                        else {
+                            placeholder.style.display = 'none';
+                            img.style.display = 'block';
+                        }
                     }
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        previewImg.src = e.target.result;
-                        previewImg.classList.remove('d-none');
-                    };
-                    reader.readAsDataURL(file);
                 });
-            }
+
+                // Reset về trạng thái ban đầu
+                form.addEventListener('reset', function () {
+                    setTimeout(() => {
+                        const hasInitImg = ${empty editBanner || empty editBanner.image_url ? 'false' : 'true'};
+                        if (!hasInitImg) {
+                            if (lastURL) {
+                                URL.revokeObjectURL(lastURL);
+                                lastURL = null;
+                            }
+                            showPlaceholder();
+                        } else {
+                            placeholder.style.display = 'none';
+                            img.style.display = 'block';
+                            img.src = '${pageContext.request.contextPath}/${not empty editBanner.image_url ? editBanner.image_url : ""}';
+                                            }
+                                        }, 0);
+                                    });
+
+                                    window.addEventListener('beforeunload', () => {
+                                        if (lastURL)
+                                            URL.revokeObjectURL(lastURL);
+                                    });
+                                })();
+
+                                // Xoá ảnh banner (gợi ý endpoint)
+                                function deleteBannerImage(id) {
+                                    if (!confirm('Xoá ảnh của banner #' + id + '?'))
+                                        return;
+                                    fetch('BannerController?action=deleteBannerImage', {
+                                        method: 'POST',
+                                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                        body: 'id=' + encodeURIComponent(id)
+                                    }).then(r => r.text()).then(() => location.reload()).catch(() => alert('Có lỗi xảy ra khi xoá ảnh.'));
+                                }
         </script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

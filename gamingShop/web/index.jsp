@@ -10,7 +10,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Gaming Shop - Trang chủ</title>
-
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <!-- Swiper CSS -->
         <link
             rel="stylesheet"
@@ -42,22 +42,13 @@
                 <div class="hero-wrap">
                     <div class="swiper hero-slider">
                         <div class="swiper-wrapper">
-                            <!-- Thay ảnh & link theo banner của bạn -->
-                            <div class="swiper-slide">
-                                <a href="#"><img src="https://i.pinimg.com/1200x/02/0b/b4/020bb4b5afb678cd58829cf05c04cced.jpg" alt="Khuyến mãi 1"></a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="#"><img src="https://i.pinimg.com/1200x/f3/8d/c6/f38dc68007559c8ea03dcb2546bc1ab8.jpg" alt="Khuyến mãi 2"></a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="#"><img src="https://i.pinimg.com/1200x/6a/4c/eb/6a4ceb3f4a5cd6da10507decea99381c.jpg" alt="Khuyến mãi 3"></a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="#"><img src="https://i.pinimg.com/1200x/0c/49/db/0c49dbfd037a955d2bc9b4a4a55387d6.jpg" alt="Khuyến mãi 4"></a>
-                            </div>
-                            <div class="swiper-slide">
-                                <a href="#"><img src="https://i.pinimg.com/1200x/a6/9f/bd/a69fbdf9416aec95d80a1281d44e025f.jpg" alt="Khuyến mãi 5"></a>
-                            </div>
+                            <c:forEach var="b" items="${topBanners}">
+                                <div class="swiper-slide">
+                                    <a href="#">
+                                        <img src="${b.image_url}" alt="${fn:escapeXml(b.title)}" />
+                                    </a>
+                                </div>
+                            </c:forEach>
                         </div>
 
                         <!-- Dots -->
@@ -73,7 +64,7 @@
                     <jsp:include page="filter-form.jsp"/>
                 </c:if>
 
-                
+
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
                     <h3>${nameProductsByCategory}</h3>

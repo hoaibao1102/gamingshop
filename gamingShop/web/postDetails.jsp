@@ -11,6 +11,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>${post.title} — Bài viết</title>
         <link rel="stylesheet" href="assets/css/maincss.css" />
 
@@ -415,6 +416,11 @@
                                             onclick="return confirm('Xoá bài viết #${post.id}?');">🗑️ Xoá</button>
                                 </form>
                             </c:if>
+                            <!-- Nút quay lại danh sách (ai cũng thấy) -->
+                            <form action="MainController" method="post" autocomplete="off" style="display:flex">
+                                <input type="hidden" name="action" value="searchPosts"/>
+                                <button class="btn ghost" type="submit">Quay lại danh sách</button>
+                            </form>
                         </div><br>
 
                         <div class="pub-date">

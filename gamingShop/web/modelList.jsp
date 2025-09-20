@@ -12,8 +12,10 @@
 <!DOCTYPE html>
 <html lang="vi">
     <head>
+
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>Gaming Shop — Quản Lý Models</title>
 
         <!-- Swiper CSS (nếu cần cho banner nội bộ) -->
@@ -269,10 +271,12 @@
                 .table-wrap {
                     border-radius: 0;
                 }
+
             }
         </style>
     </head>
     <body>
+
         <div class="wrapper">
             <div class="sidebar">
                 <jsp:include page="sidebar.jsp"/>

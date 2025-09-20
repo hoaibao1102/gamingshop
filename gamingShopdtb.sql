@@ -101,8 +101,10 @@ CREATE TABLE dbo.Accessories (
   image_url        NVARCHAR(1024) NULL,
   created_at       DATETIME2(3) NOT NULL CONSTRAINT DF_accessories_created_at DEFAULT SYSDATETIME(),
   updated_at       DATETIME2(3) NOT NULL CONSTRAINT DF_accessories_updated_at DEFAULT SYSDATETIME(),
-  status NVARCHAR(50) NOT NULL 
+  status NVARCHAR(50) NOT NULL
     CONSTRAINT CK_Accessories_Status CHECK (status IN (N'active', N'inactive')),
+  gift NVARCHAR(50) NOT NULL
+	CONSTRAINT CK_Accessories_Gift  CHECK (gift IN (N'Phụ kiện tặng kèm', N'Phụ kiện bán')),
   CONSTRAINT UK_accessories_name UNIQUE (name)
 );
 GO
@@ -186,7 +188,7 @@ IF OBJECT_ID(N'dbo.Services', N'U') IS NOT NULL DROP TABLE dbo.Services;
 GO
 CREATE TABLE dbo.Services (
   id               INT IDENTITY(1,1) PRIMARY KEY,
-  service_type     NVARCHAR(50) NOT NULL,
+  service_type     NVARCHAR(255) NOT NULL,
   description_html NVARCHAR(MAX) NULL,
   price            DECIMAL(10,2) NOT NULL CONSTRAINT CK_services_price CHECK (price >= 0),
   created_at       DATETIME2(3) NOT NULL CONSTRAINT DF_services_created_at DEFAULT SYSDATETIME(),
@@ -228,16 +230,12 @@ IF OBJECT_ID(N'dbo.Banners', N'U') IS NOT NULL DROP TABLE dbo.Banners;
 GO
 CREATE TABLE dbo.Banners (
   id           INT IDENTITY(1,1) PRIMARY KEY,
-  image_url1   NVARCHAR(255) NULL,
-  image_url2   NVARCHAR(255) NULL,
-  image_url3   NVARCHAR(255) NULL,
-  image_url4   NVARCHAR(255) NULL,
-  image_url5   NVARCHAR(255) NULL,
+  image_url   NVARCHAR(255) NULL,
   title        NVARCHAR(255) NOT NULL,
   status NVARCHAR(50) NOT NULL 
     CONSTRAINT CK_Banners_Status CHECK (status IN (N'active', N'inactive')),
-  created_at   DATETIME2(3) NOT NULL CONSTRAINT DF_posts_created_at DEFAULT SYSDATETIME(),
-  updated_at   DATETIME2(3) NOT NULL CONSTRAINT DF_posts_updated_at DEFAULT SYSDATETIME()
+  created_at   DATETIME2(3) NOT NULL CONSTRAINT DF_banner_created_at DEFAULT SYSDATETIME(),
+  updated_at   DATETIME2(3) NOT NULL CONSTRAINT DF_banner_updated_at DEFAULT SYSDATETIME()
 );
 GO
 CREATE INDEX IX_posts_publish_date ON dbo.Posts(publish_date);

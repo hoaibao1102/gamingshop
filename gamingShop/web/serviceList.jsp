@@ -11,14 +11,17 @@
 <!DOCTYPE html>
 <html lang="vi">
     <head>
+
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>Gaming Shop — Quản Lý Services</title>
 
         <!-- Swiper CSS (nếu cần cho banner nội bộ) -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
         <!-- Main CSS đồng bộ với trang chủ -->
         <link rel="stylesheet" href="assets/css/maincss.css" />
+
 
         <style>
             /* --- Chỉ bổ sung vài style cho trang quản trị (không phá vỡ maincss.css) --- */
