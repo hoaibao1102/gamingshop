@@ -566,7 +566,7 @@
                                             <c:out value="${checkError}"/>
                                         </p>
                                     </c:if>
-                                    <a href="MainController?action=viewAllAccessories" class="btn btn-primary">
+                                    <a href="MainController?action=listPhuKien" class="btn btn-primary">
                                         Xem tất cả phụ kiện
                                     </a>
                                 </div>
