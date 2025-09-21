@@ -42,7 +42,7 @@
                 position:relative;
                 width:64px;
                 height:64px;
-                border-radius:999px;
+                border-radius:20px;
                 display:grid;
                 place-items:center;
                 text-decoration:none;
@@ -60,21 +60,24 @@
                 box-shadow: inset 0 0 0 2px #e5e7eb;
                 z-index:0;
             }
-            .sf-btn svg{
-                width:28px;
-                height:28px;
+            /* Cải thiện CSS cho img logo */
+            .sf-btn img{
+                height: 100%;
+                width: 100%;
                 z-index:1;
-                fill:#555;
-                transition: transform .2s ease, filter .2s ease, fill .2s ease;
+                transition: transform .2s ease, filter .2s ease;
+                object-fit: contain;
+                border-radius: 4px;
+            }
+            .sf-btn:hover img{
+                transform: scale(1.05);
+                filter: brightness(1.1);
             }
             .sf-fb .ring{
                 box-shadow: inset 0 0 0 2px #1778F2;
             }
             .sf-fb:hover .ring{
                 box-shadow: inset 0 0 0 2px #0b5fd8, 0 0 0 6px rgba(23,120,242,.12);
-            }
-            .sf-fb svg{
-                fill:#1778F2;
             }
             .sf-ig .ring{
                 box-shadow: inset 0 0 0 2px #E1306C;
@@ -87,17 +90,11 @@
             .sf-ig:hover .ring{
                 box-shadow: inset 0 0 0 2px #DD2A7B, 0 0 0 6px rgba(221,42,123,.12);
             }
-            .sf-ig svg{
-                fill:#DD2A7B;
-            }
             .sf-yt .ring{
                 box-shadow: inset 0 0 0 2px #FF0000;
             }
             .sf-yt:hover .ring{
                 box-shadow: inset 0 0 0 2px #CC0000, 0 0 0 6px rgba(255,0,0,.12);
-            }
-            .sf-yt svg{
-                fill:#FF0000;
             }
             .sf-tt .ring{
                 box-shadow: inset 0 0 0 2px #69C9D0;
@@ -105,9 +102,6 @@
             }
             .sf-tt:hover .ring{
                 box-shadow: inset 0 0 0 2px #FF4056, 0 0 0 6px rgba(105,201,208,.12);
-            }
-            .sf-tt svg{
-                fill:#FF0050;
             }
             @media (max-width: 680px){
                 .sf-inner{
@@ -121,9 +115,9 @@
                     width:56px;
                     height:56px;
                 }
-                .sf-btn svg{
-                    width:24px;
-                    height:24px;
+                .sf-btn img{
+                    width:28px;
+                    height:28px;
                 }
             }
 
@@ -181,7 +175,7 @@
                 border-radius:10px;
                 transition: background .2s ease, transform .06s ease, color .2s ease;
             }
-            
+
             .contact-item:hover{
                 background: rgba(120,173,219,.18);
                 color:#fff;
@@ -211,7 +205,7 @@
             }
             .about > p{
                 text-align: left;
-                
+
             }
             @media (min-width:576px){
                 .footer-inner{
@@ -230,34 +224,85 @@
                     grid-column: auto;
                 }
             }
+
+            /* === SOCIAL: icon-only (no background/no border) === */
+            .social-follow .sf-btn {
+                background: transparent !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;      /* bỏ bo góc nếu icon là PNG trong suốt */
+            }
+
+            .social-follow .sf-btn .ring {
+                display: none !important;         /* tắt lớp nền/viền */
+            }
+
+            /* vô hiệu hóa các màu riêng của từng mạng */
+            .social-follow .sf-fb .ring,
+            .social-follow .sf-ig .ring,
+            .social-follow .sf-yt .ring,
+            .social-follow .sf-tt .ring {
+                box-shadow: none !important;
+                background: transparent !important;
+            }
+
+            /* icon ảnh giữ hiệu ứng scale nhẹ, không đổi màu */
+            .social-follow .sf-btn img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                filter: none !important;
+            }
+
+            .social-follow .sf-btn:hover img {
+                transform: scale(1.05);           /* giữ cảm giác hover */
+                filter: none !important;          /* không làm sáng màu */
+            }
+
+
+            /* tuỳ chọn: icon nhỏ trong khung 64px */
+            .social-follow .sf-btn img {
+                width: 100%;
+                height: 100%;
+            }
+            @media (max-width: 680px){
+                .social-follow .sf-btn {
+                    width: 56px;
+                    height: 56px;
+                }
+                .social-follow .sf-btn img {
+                    width: 70%;
+                    height: 70%;
+                }
+            }
+
         </style>
     </head>
     <body>
 
-    <!-- SOCIAL FOLLOW -->
-    <section class="social-follow">
-      <div class="sf-inner">
-        <h3 class="sf-title">Theo dõi thông tin tại</h3>
-        <nav class="sf-icons">
-          <a class="sf-btn sf-fb" href="https://facebook.com/" target="_blank">
-            <span class="ring"></span>
-            <svg viewBox="0 0 24 24"><path d="M22 12.06C22 6.49 17.52 2 12 2S2 6.49 2 12.06c0 4.99 3.66 9.13 8.44 9.94v-7.03H7.9v-2.91h2.54V9.41c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.2 2.23.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22c4.78-.81 8.44-4.95 8.44-9.94Z"/></svg>
-          </a>
-          <a class="sf-btn sf-ig" href="https://instagram.com/" target="_blank">
-            <span class="ring"></span>
-            <svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5Zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5Zm5.75-3.25a1.25 1.25 0 1 1-1.25 1.25 1.25 1.25 0 0 1 1.25-1.25Z"/></svg>
-          </a>
-          <a class="sf-btn sf-yt" href="https://youtube.com/" target="_blank">
-            <span class="ring"></span>
-            <svg viewBox="0 0 24 24"><path d="M23.5 7.2a3.2 3.2 0 0 0-2.24-2.27C19.6 4.5 12 4.5 12 4.5s-7.6 0-9.26.43A3.2 3.2 0 0 0 .5 7.2 33 33 0 0 0 .5 12a33 33 0 0 0 .24 4.8 3.2 3.2 0 0 0 2.24 2.27C4.6 19.5 12 19.5 12 19.5s7.6 0 9.26-.43a3.2 3.2 0 0 0 2.24-2.27A33 33 0 0 0 23.5 12a33 33 0 0 0 0-4.8ZM9.75 15.02v-6L15.5 12l-5.75 3.02Z"/></svg>
-          </a>
-          <a class="sf-btn sf-tt" href="https://tiktok.com/" target="_blank">
-            <span class="ring"></span>
-            <svg viewBox="0 0 24 24"><path d="M21 8.13a7.3 7.3 0 0 1-4.26-1.36v7.3A6.93 6.93 0 1 1 9.9 7.2v2.6a3.87 3.87 0 1 0 2.65 3.67V2h2.58a4.7 4.7 0 0 0 4.07 4.2V8.1Z"/></svg>
-          </a>
-        </nav>
-      </div>
-    </section>
+        <!-- SOCIAL FOLLOW -->
+        <section class="social-follow">
+            <div class="sf-inner">
+                <h3 class="sf-title">Theo dõi thông tin tại</h3>
+                <nav class="sf-icons">
+                    <a class="sf-btn sf-fb" href="https://www.facebook.com/shopgameviet38" target="_blank">
+                        <span class="ring"></span>
+                        <img style="height:44px  !important" src="assets/img/icon_social/facebook.png" alt="Facebook"/>
+                    </a>
+                    <a class="sf-btn sf-ig" href="https://shopee.vn/shopgameviet38" target="_blank" >
+                        <span class="ring"></span>
+                        <img style="height:51px  !important" src="assets/img/icon_social/shopee.png" alt="Shopee"/>
+                    </a>
+                    <a class="sf-btn sf-yt" href="https://www.youtube.com/@shopgameviet38" target="_blank">
+                        <span class="ring"></span>
+                        <img style="height:45px  !important" src="assets/img/icon_social/youtube.png" alt="YouTube"/>
+                    </a>
+                    <a class="sf-btn sf-tt" href="https://www.tiktok.com/@shopgameviet38" target="_blank">
+                        <span class="ring"></span>
+                        <img style="height:51px  !important" src="assets/img/icon_social/tiktok.png" alt="TikTok"/>
+                    </a>
+                </nav>
+            </div>
+        </section>
 
 
         <!-- FOOTER -->
