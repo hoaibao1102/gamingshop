@@ -1,4 +1,4 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -15,6 +15,8 @@
         <link
             rel="stylesheet"
             href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+        <!--        Font chu-->
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap&subset=vietnamese" rel="stylesheet">
 
         <!-- Custom CSS -->
         <link rel="stylesheet" href="assets/css/maincss.css">
@@ -84,7 +86,7 @@
                                 <c:forEach var="product" items="${products}">
                                     <c:if test="${product.status ne 'inactive'}">
                                         <li class="item">
-                                            <form action="MainController" method="get" class="product-form">
+                                            <form action="MainController" method="post" class="product-form">
                                                 <c:choose>
                                                     <c:when test="${not empty isListProductsByCategory}">
                                                         <input type="hidden" name="idAccessory" value="${product.id}">

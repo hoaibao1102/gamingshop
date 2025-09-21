@@ -14,7 +14,7 @@
 
     <!-- Ẩn mặc định bằng class 'collapsed' -->
     <div class="filter-content collapsed" id="filterContent" aria-hidden="true">
-        <form action="ProductController" method="GET" class="filter-form" onsubmit="applyFilter(event)">
+        <form action="ProductController" method="post" class="filter-form" onsubmit="applyFilter(event)">
             <input type="hidden" name="action" value="filterProducts">
 
             <div class="filter-row">

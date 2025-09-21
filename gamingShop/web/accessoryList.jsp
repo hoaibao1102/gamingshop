@@ -362,7 +362,7 @@
                                                 <th>Trạng thái</th>
                                                 <th>Loại</th>
                                                 <th>Cập nhật</th>
-                                                <th>Thao tác</th>
+                                                <th style="text-align: center;">Thao tác</th>
                                             </tr>
                                         </thead>
                                         <tbody>

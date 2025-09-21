@@ -497,7 +497,7 @@ public class AccessoryController extends HttpServlet {
 
             request.setAttribute("messageAddAccessory", "New accessory added successfully.");
             request.setAttribute("accessory", newAccessory);
-            return handleViewAllAccessories(request, response);
+            return "accessoryUpdate.jsp";
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -703,7 +703,7 @@ public class AccessoryController extends HttpServlet {
                         "Accessory '" + existingAccessory.getName() + "' has been deactivated successfully.");
 
                 // Có thể redirect về danh sách hoặc return view
-                return handleViewAllAccessories(request, response);
+                return "accessoryUpdate.jsp";
 
             } else {
                 request.setAttribute("checkError",

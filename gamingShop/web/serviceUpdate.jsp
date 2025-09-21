@@ -20,12 +20,12 @@
                 <c:otherwise>Add New Service</c:otherwise>
             </c:choose>
         </title>
-      <!-- Swiper CSS -->
+        <!-- Swiper CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
         <!-- App CSS -->
         <link rel="stylesheet" href="assets/css/maincss.css"/>
-  
+
         <style>
             /* Utilities matching model style */
             .page-title {
@@ -253,7 +253,96 @@
                 font-weight:700;
                 font-size:1.1rem;
             }
+            /* ===== Mobile trigger ===== */
+            .btn.icon.only {
+                padding: 8px 10px;
+                border-radius: 10px;
+            }
+            .mobile-toggle {
+                display: none;
+            }
 
+            /* ≤1024px: sidebar off-canvas + form 1 cột */
+            @media (max-width: 1024px) {
+                .wrapper {
+                    grid-template-columns: 1fr;
+                }
+                .sidebar {
+                    position: fixed;
+                    inset: 0 auto 0 0;
+                    width: 260px;
+                    transform: translateX(-100%);
+                    transition: transform .25s ease;
+                    z-index: 1200;
+                    box-shadow: 6px 0 20px rgba(0,0,0,.15);
+                }
+                .sidebar.is-open {
+                    transform: translateX(0);
+                }
+
+                .sidebar-backdrop {
+                    position: fixed;
+                    inset: 0;
+                    background: rgba(0,0,0,.25);
+                    z-index: 1100;
+                    display: none;
+                }
+                .sidebar-backdrop.show {
+                    display: block;
+                }
+
+                .mobile-toggle {
+                    display: inline-block;
+                    border: 1px solid #e5e7eb;
+                    background: #fff;
+                    margin-right: 8px;
+                }
+
+                .grid-2, .grid-3 {
+                    grid-template-columns: 1fr;
+                }
+                .container {
+                    padding: 12px;
+                }
+                .section .section-hd, .section .section-bd {
+                    padding: 12px;
+                }
+            }
+
+            /* ≤768px: giảm chữ, padding */
+            @media (max-width: 768px) {
+                .page-title {
+                    font-size: 1.1rem;
+                }
+                .badge-soft {
+                    font-size: .78rem;
+                    padding: 3px 8px;
+                }
+                .input, .select, .textarea {
+                    padding: 9px 10px;
+                }
+                .btn {
+                    padding: 9px 12px;
+                }
+                .breadcrumbs {
+                    font-size: .9rem;
+                }
+            }
+
+            /* ≤480px: actions stack full width */
+            @media (max-width: 480px) {
+                .actions {
+                    flex-wrap: wrap;
+                    justify-content: stretch;
+                    gap: 6px;
+                }
+                .actions .btn {
+                    flex: 1 1 auto;
+                }
+                .container {
+                    padding: 10px 8px;
+                }
+            }
             @media (max-width: 1024px) {
                 .grid-2, .grid-3 {
                     grid-template-columns: 1fr;
@@ -293,14 +382,19 @@
 
                 <div class="container">
                     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:12px; flex-wrap:wrap;">
-                        <h2 class="page-title" style="margin:0;">
-                            <c:choose>
-                                <c:when test="${not empty service && service.id > 0}">Chỉnh sửa service</c:when>
-                                <c:otherwise>Thêm service mới</c:otherwise>
-                            </c:choose>
-                            <span class="badge-soft" style="margin-left:8px;">Service Management</span>
-                        </h2>
-
+                        <div>
+                            <div class="breadcrumbs">
+                                <a href="MainController?action=viewServiceList">Dịch vụ</a><span class="sep">›</span>
+                                <span>${empty service ? 'Thêm' : 'Chỉnh sửa'}</span>
+                            </div> 
+                            <h2 class="page-title" style="margin:0;">
+                                <c:choose>
+                                    <c:when test="${not empty service && service.id > 0}">Chỉnh sửa service</c:when>
+                                    <c:otherwise>Thêm service mới</c:otherwise>
+                                </c:choose>
+                                <span class="badge-soft" style="margin-left:8px;">Service Management</span>
+                            </h2>
+                        </div>
                         <a href="MainController?action=viewServiceList" class="btn ghost">Quay lại danh sách</a>
                     </div>
 
@@ -415,12 +509,12 @@
 
         <script>
             // Auto-hide toast messages sau 5 giây
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 const toasts = document.querySelectorAll('.toast[data-auto-hide="true"]');
-                toasts.forEach(function(toast) {
-                    setTimeout(function() {
+                toasts.forEach(function (toast) {
+                    setTimeout(function () {
                         toast.classList.add('fade-out');
-                        setTimeout(function() {
+                        setTimeout(function () {
                             toast.remove();
                         }, 300);
                     }, 5000); // 5 seconds
@@ -430,7 +524,7 @@
             // TinyMCE init cho description
             tinymce.init({
                 selector: '#editor',
-                height: 420,
+                height: 600,
                 plugins: 'image link lists table code media autoresize',
                 toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media | table | code',
                 menubar: 'file edit view insert format tools table help',
@@ -459,28 +553,28 @@
             });
 
             // Form validation
-            document.getElementById('serviceForm').addEventListener('submit', function(e) {
+            document.getElementById('serviceForm').addEventListener('submit', function (e) {
                 const serviceType = document.querySelector('input[name="service_type"]').value.trim();
                 const price = document.querySelector('input[name="price"]').value;
-                
+
                 if (!serviceType) {
                     alert('Tên service là bắt buộc.');
                     e.preventDefault();
                     return;
                 }
-                
+
                 if (serviceType.length > 100) {
                     alert('Tên service không được vượt quá 100 ký tự.');
                     e.preventDefault();
                     return;
                 }
-                
+
                 if (!price || parseFloat(price) < 0) {
                     alert('Vui lòng nhập giá hợp lệ.');
                     e.preventDefault();
                     return;
                 }
-                
+
                 if (parseFloat(price) > 999999999.99) {
                     alert('Giá quá lớn. Tối đa cho phép là $999,999,999.99');
                     e.preventDefault();
@@ -489,7 +583,7 @@
             });
 
             // Price input formatting
-            document.querySelector('input[name="price"]').addEventListener('blur', function() {
+            document.querySelector('input[name="price"]').addEventListener('blur', function () {
                 const value = parseFloat(this.value);
                 if (!isNaN(value) && value >= 0) {
                     this.value = value.toFixed(2);

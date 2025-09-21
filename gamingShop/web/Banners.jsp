@@ -290,7 +290,7 @@
                         <div class="title">Danh sách Banners</div>
 
                         <!-- Tìm kiếm -->
-                        <form action="BannerController" method="get" class="search-form" autocomplete="off">
+                        <form action="BannerController" method="post" class="search-form" autocomplete="off">
                             <input type="hidden" name="action" value="searchBanner"/>
                             <input type="text" name="keyword" value="${keyword != null ? keyword : ''}" placeholder="Nhập tiêu đề banner..." />
                             <button type="submit" class="btn btn-primary">Tìm kiếm</button>

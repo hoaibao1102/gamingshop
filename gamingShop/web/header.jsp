@@ -150,6 +150,8 @@
             .nav .link-button {
                 padding: 10px 6px;
                 border-radius: 8px;
+                display: flex;
+                flex-direction: column;
             }
 
             .nav .link-button.active {
@@ -474,7 +476,7 @@
                     position:absolute;
                     top:100%;
                     left:0;
-                    min-width:180px;
+                    min-width:286px;
                     background:#fff;
                     border:1px solid var(--ring);
                     border-radius:10px;
@@ -550,6 +552,9 @@
                     font-size:12px;
                     font-weight:700
                 }
+                .nav_icon{
+                    width: 50px;
+                }
                 .link{
                     font-weight:700;
                     color:var(--primary);
@@ -606,7 +611,7 @@
                     <label for="nav-toggle" class="hamburger" aria-label="Mở menu"><span></span></label>
                     <span class="brand-name"><a href="MainController?action=prepareHome"><img class="logoHeader" src="assets/img/logo/logo.png" alt="Logo cửa hàng"></a></span>
                 </div>
-                <form class="search" role="search" aria-label="Tìm kiếm" action="MainController" method="get">
+                <form class="search" role="search" aria-label="Tìm kiếm" action="MainController" method="post">
                     <button aria-label="Tìm" type="submit">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                     </button>
@@ -619,65 +624,63 @@
                 <div style="font-weight:800; margin-bottom:10px;">Danh mục</div>
                 <ul class="menu">
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
+                        <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listMayChoiGame"/>
                             <button class="mobile-link-button mobile-dropdown-toggle" type="button" onclick="toggleMobileDropdown(this)">Máy chơi game</button>
                         </form>
                         <div class="mobile-dropdown">
-                            <form class="mobile-link-form" action="MainController" method="get">
+                            <form class="mobile-link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
                                 <input type="hidden" name="condition" value="new"/>
-                                <button class="mobile-link-button" type="submit">New</button>
+                                <button class="mobile-link-button" type="submit">Nintendo</button>
                             </form>
-                            <form class="mobile-link-form" action="MainController" method="get">
+                            <form class="mobile-link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
                                 <input type="hidden" name="condition" value="likenew"/>
-                                <button class="mobile-link-button" type="submit">Like New</button>
+                                <button class="mobile-link-button" type="submit">Sony</button>
                             </form>
-                            <form class="mobile-link-form" action="MainController" method="get">
+                            <form class="mobile-link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
-                                <button class="mobile-link-button" type="submit">Tất cả</button>
+                                <button class="mobile-link-button" type="submit">Hãng khác</button>
                             </form>
                         </div>
                     </li>
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
+                        <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listSanPhamCongNghe"/>
                             <button class="mobile-link-button" type="submit">Sản phẩm công nghệ khác</button>
                         </form>
                     </li>
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
+                        <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listPhuKien"/>
                             <button class="mobile-link-button" type="submit">Phụ kiện</button>
                         </form>
                     </li>
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
+                        <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listTheGame"/>
                             <button class="mobile-link-button" type="submit">Thẻ game</button>
                         </form>
                     </li>
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
+                        <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listDichVu"/>
                             <button class="mobile-link-button" type="submit">Dịch vụ</button>
                         </form>
                     </li>
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
+                        <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="searchPosts"/>
-                            <button class="mobile-link-button" type="submit"> Bài đăng gần đây</button>
+                            <button class="mobile-link-button" type="submit"> Bài đăng</button>
                         </form>
                     </li>
-
-
-
                     <li>
-                        <form class="mobile-link-form" action="MainController" method="get">
-                            <input type="hidden" name="action" value="showLienHe"/>
-                            <button class="mobile-link-button" type="submit">Liên hệ</button>
-                        </form>
+                        <a class="link-button" 
+                           href="https://zalo.me/0943391235" 
+                           target="_blank" rel="noopener noreferrer">
+                            Liên hệ
+                        </a>
                     </li>
                 </ul>
                 <hr style="margin:14px 0; border:0; height:1px; background:var(--ring)">
@@ -709,7 +712,7 @@
                     <%
                       } else {
                     %>
-                    <form action="MainController" method="get" style="margin:0">
+                    <form action="MainController" method="post" style="margin:0">
                         <input type="hidden" name="action" value="goLoginForm"/>
                         <button class="btn primary" type="submit">Đăng nhập</button>
                     </form>
@@ -724,118 +727,99 @@
                 <nav class="nav" aria-label="Chính">
                     <ul>
                         <li class="has-dd">
-                            <form class="link-form" action="MainController" method="get">
+                            <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Máy chơi game -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="2" y="6" width="20" height="12" rx="3"/>
-                                    <circle cx="8" cy="12" r="2"/>
-                                    <circle cx="16" cy="10" r="1"/>
-                                    <circle cx="16" cy="14" r="1"/>
-                                    </svg>
+                                    <img class="nav_icon" src="assets/img/iconHeader/may_choi_game.png" alt="alt"/>
                                     Máy chơi game
                                 </button>
                             </form>
                             <ul class="dropdown" aria-label="Danh mục Máy chơi game">
                                 <li>
-                                    <form class="link-form" action="MainController" method="get">
+                                    <form class="link-form" action="MainController" method="post">
                                         <input type="hidden" name="action" value="listMayChoiGame"/>
                                         <input type="hidden" name="condition" value="new"/>
-                                        <button class="link-button" type="submit">New</button>
+                                        <button class="link-button" type="submit">Nintendo </button>
                                     </form>
                                 </li>
                                 <li>
-                                    <form class="link-form" action="MainController" method="get">
+                                    <form class="link-form" action="MainController" method="post">
                                         <input type="hidden" name="action" value="listMayChoiGame"/>
                                         <input type="hidden" name="condition" value="likenew"/>
-                                        <button class="link-button" type="submit">Like New</button>
+                                        <button class="link-button" type="submit">Sony </button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form class="link-form" action="MainController" method="post">
+                                        <input type="hidden" name="action" value="listMayChoiGame"/>
+                                        <input type="hidden" name="condition" value="likenew"/>
+                                        <button class="link-button" type="submit">Hãng khác </button>
                                     </form>
                                 </li>
                             </ul>
                         </li>
                         <li>
-                            <form class="link-form" action="MainController" method="get">
+                            <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listSanPhamCongNghe"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Sản phẩm công nghệ khác -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="4" width="18" height="12" rx="2"/>
-                                    <path d="M2 20h20"/>
-                                    </svg>
-                                    Sản phẩm công nghệ khác
+                                    
+                                    <img class="nav_icon" src="assets/img/iconHeader/san_pham_khac.png" alt="alt"/>
+                                    Sản phẩm khác
                                 </button>
                             </form>
                         </li>
                         <li>
-                            <form class="link-form" action="MainController" method="get">
+                            <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listPhuKien"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Phụ kiện -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path d="M4 12a8 8 0 0 1 16 0v6a2 2 0 0 1-2 2h-2v-6h4M6 14h4v6H8a2 2 0 0 1-2-2v-4z"/>
-                                    </svg>
+                                    <img class="nav_icon" src="assets/img/iconHeader/game-controller.png" alt="alt"/>
                                     Phụ kiện
                                 </button>
                             </form>
                         </li>
                         <li>
-                            <form class="link-form" action="MainController" method="get">
+                            <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listTheGame"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Thẻ game -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <rect x="2" y="5" width="20" height="14" rx="2"/>
-                                    <path d="M2 10h20"/>
-                                    </svg>
+                                    <img class="nav_icon" src="assets/img/iconHeader/the_game.png" alt="alt"/>
                                     Thẻ game
                                 </button>
                             </form>
                         </li>
                         <li>
-                            <form class="link-form" action="MainController" method="get">
+                            <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listDichVu"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Dịch vụ -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path d="M14.7 6.3a5 5 0 0 1-6.4 6.4l-4.3 4.3a1 1 0 0 0 1.4 1.4l4.3-4.3a5 5 0 0 1 6.4-6.4z"/>
-                                    </svg>
+                                    <img class="nav_icon" src="assets/img/iconHeader/dich_vu.png" alt="alt"/>
                                     Dịch vụ
                                 </button>
                             </form>
                         </li>
 
                         <li>
-                            <form class="link-form" action="MainController" method="get">
+                            <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="searchPosts"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Post -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" 
-                                         fill="none" viewBox="0 0 24 24" 
-                                         stroke="currentColor" stroke-width="2" 
-                                         class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" 
-                                          d="M7 8h10M7 12h10M7 16h6M5 4h14a2 2 0 0 1 2 2v12a2 
-                                          2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
-                                    </svg>
-                                    Post
+                                    <img class="nav_icon" src="assets/img/iconHeader/bai_dang.png" alt="alt"/>
+                                    Bài đăng
 
                                 </button>
                             </form>
                         </li>
 
                         <li>
-                            <form class="link-form" action="MainController" method="get">
-                                <input type="hidden" name="action" value="showLienHe"/>
-                                <button class="link-button" type="submit">
-                                    <!-- ICON Liên hệ -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H6l-4 2V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                    Liên hệ
-                                </button>
-                            </form>
+                            <a class="link-button" 
+                               href="https://zalo.me/0943391235" 
+                               target="_blank" rel="noopener noreferrer">
+                                <img class="nav_icon" src="assets/img/iconHeader/lien_hen.png" alt="alt"/>
+                                Liên hệ
+                            </a>
                         </li>
                     </ul>
                 </nav>
@@ -864,7 +848,7 @@
                     <%
                       } else {
                     %>
-                    <form action="MainController" method="get" style="margin:0">
+                    <form action="MainController" method="post" style="margin:0">
                         <input type="hidden" name="action" value="goLoginForm"/>
                         <button class="btn primary" type="submit" title="Đăng nhập">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

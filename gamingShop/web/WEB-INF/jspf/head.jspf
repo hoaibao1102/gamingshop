@@ -1,9 +1,9 @@
-
+<%--<%@page contentType="text/html" pageEncoding="UTF-8"%>--%>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sgv38 Store - M?y ch?i game & Ph? ki?n</title>
-    <meta name="description" content="Sgv38 Store - Chuy?n cung c?p m?y ch?i game v? ph? ki?n gi? t?t.">
+    <title>Sgv38 Store - Game consoles and accessories</title>
+    <meta name="description" content="Sgv38 Store - Specializing in providing game consoles and accessories at good prices.">
 
     <link rel="icon" href="${pageContext.request.contextPath}/assets/img/logo/logo.png" type="image/png">
 
@@ -15,7 +15,7 @@
       "url": "https://sgv38.vn",
       "logo": "https://sgv38.vn/assets/img/logo/logo.png",
       "name": "Sgv38 Store",
-      "description": "Sgv38 Store - Chuy?n cung c?p m?y ch?i game v? ph? ki?n gi? t?t."
+      "description": "Sgv38 Store - Specializing in providing game consoles and accessories at good prices."
     }
     </script>
 </head>

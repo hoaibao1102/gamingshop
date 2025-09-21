@@ -374,7 +374,7 @@
                                                 <th>Loại</th>
                                                 <th>Tồn kho</th>
                                                 <th>Trạng thái</th>
-                                                <th>Thao tác</th>
+                                                <th style="text-align: center;">Thao tác</th>
                                             </tr>
                                         </thead>
                                         <tbody>
