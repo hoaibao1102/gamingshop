@@ -399,7 +399,7 @@
                                                         </c:choose>
                                                     </td>
                                                     <td>
-                                                        $<fmt:formatNumber value="${accessory.price}" pattern="#,##0.00"/>
+                                                        <fmt:formatNumber value="${accessory.price}" pattern="#,##0.00"/><span style="margin-left:4px;">VND</span>
                                                     </td>
                                                     <td style="text-align: center; font-weight: bold;">${accessory.quantity}</td>
                                                     <td>

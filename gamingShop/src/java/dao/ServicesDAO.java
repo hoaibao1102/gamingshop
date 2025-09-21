@@ -45,7 +45,17 @@ public class ServicesDAO implements IDAO<Services, Integer> {
             st.setString(2, e.getDescription_html());
             st.setDouble(3, e.getPrice());
             st.setString(4, e.getStatus());
-            return st.executeUpdate() > 0;
+            int affectedRows = st.executeUpdate();
+            if (affectedRows > 0) {
+                try ( ResultSet rs = st.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int generatedId = rs.getInt(1);
+                        e.setId(generatedId);
+                    } 
+                }
+                return true;
+            }
+            return false;
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
