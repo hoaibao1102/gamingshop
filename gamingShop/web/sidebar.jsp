@@ -472,7 +472,7 @@
                         <c:set var="shown" value="0"/>
                         <ul class="featured-list-sb">
                             <c:forEach var="i" items="${listProductForSidebar}">
-                                <c:if test="${i.status eq 'prominent' and shown < 6}">
+                                <c:if test="${i.status eq 'prominent' and shown < 3}">
                                     <li class="item-sb">
                                         <form action="MainController" method="post" class="card">
                                             <input type="hidden" name="action" value="getProduct"/>
@@ -508,10 +508,12 @@
 
             <!-- Bài đăng gần đây -->
             <c:if test="${ not empty listPostForSidebar }">
+                <c:set var="shown" value="0"/>
                 <h3 class="sb-title">Bài đăng</h3>
                 <ul class="featured-list-sb">
                     <c:forEach var="p" items="${listPostForSidebar}">
-                        <c:if test="${p.status == 1}">
+                        <c:if test="${p.status == 1 and shown <3}">
+                            <c:set var="shown" value="${shown + 1}"/>
                             <li class="card">
                                 <a class="card-link" href="MainController?action=viewPost&id=${p.id}" aria-label="Xem chi tiết ${fn:escapeXml(p.title)}">
                                     <c:choose>
