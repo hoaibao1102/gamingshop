@@ -371,7 +371,6 @@
                                                 <th>Tên sản phẩm</th>
                                                 <th>SKU</th>
                                                 <th>Giá</th>
-                                                <th>Loại</th>
                                                 <th>Tồn kho</th>
                                                 <th>Trạng thái</th>
                                                 <th style="text-align: center;">Thao tác</th>
@@ -406,11 +405,9 @@
                                                     <td>
                                                         <fmt:formatNumber value="${p.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
                                                     </td>
-                                                    <td>
-                                                        <c:if test="${p.product_type == 'new'}">New</c:if>
-                                                        <c:if test="${p.product_type == 'used'}">Like new</c:if>
-                                                        </td>
-                                                        <td>${p.quantity}</td>
+
+
+                                                    <td>${p.quantity}</td>
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${p.status eq 'active'}">

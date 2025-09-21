@@ -216,11 +216,11 @@ public class ProductController extends HttpServlet {
 
         request.setAttribute("topBanners", listBanner);
         request.getSession().setAttribute("listProductForSidebar", list);
-        
+
         List<Posts> list2 = postsDAO.getAll();
         // Gán hình ảnh cho từng sản phẩm
         request.getSession().setAttribute("listPostForSidebar", list2);
-        
+
     }
 
     public String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
@@ -606,8 +606,13 @@ public class ProductController extends HttpServlet {
             }
 
             // Lấy các trường còn lại từ form
-            String productType = request.getParameter("product_type");
+            String productType;
             int model_id = Integer.parseInt(request.getParameter("model_id"));
+            if (model_id == 1) {
+                productType = request.getParameter("product_type");
+            } else {
+                productType = "game_card";
+            }
             int memory_id = Integer.parseInt(request.getParameter("memory_id"));
             int guarantee_id = Integer.parseInt(request.getParameter("guarantee_id"));
             String specHtml = request.getParameter("spec_html");
@@ -1719,15 +1724,15 @@ public class ProductController extends HttpServlet {
             }
 
             // 3. Check for duplicate service_type (UNIQUE constraint)
-        try {
-            boolean typeExists = servicesDAO.isServiceTypeExists(serviceType.trim());
-            if (typeExists) {
-                request.setAttribute("checkErrorAddService", "Service type '" + serviceType.trim() + "' already exists. Please choose a different service type.");
-                return "serviceUpdate.jsp";
+            try {
+                boolean typeExists = servicesDAO.isServiceTypeExists(serviceType.trim());
+                if (typeExists) {
+                    request.setAttribute("checkErrorAddService", "Service type '" + serviceType.trim() + "' already exists. Please choose a different service type.");
+                    return "serviceUpdate.jsp";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
             // 4. Validate price
             double price = 0.0;
             if (priceStr == null || priceStr.trim().isEmpty()) {
@@ -1833,11 +1838,11 @@ public class ProductController extends HttpServlet {
 
             // Check duplicate service_type (exclude current record)
             try {
-            boolean typeExists = servicesDAO.isServiceTypeExistsExcept(serviceType.trim(), serviceId);
+                boolean typeExists = servicesDAO.isServiceTypeExistsExcept(serviceType.trim(), serviceId);
                 if (typeExists) {
                     request.setAttribute("checkErrorEditService", "Service type '" + serviceType.trim() + "' already exists. Please choose a different service type.");
                     request.setAttribute("service", existingService);
-                  return "serviceUpdate.jsp";
+                    return "serviceUpdate.jsp";
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1894,9 +1899,9 @@ public class ProductController extends HttpServlet {
 
             // Update database
             boolean success = servicesDAO.update(existingService);
-            
+
             System.out.println("===DEBUG====");
-            System.out.println("GET SERVICE"+ existingService.getId() + existingService.getDescription_html() + existingService.getService_type() + existingService.getStatus() + existingService.getPrice());
+            System.out.println("GET SERVICE" + existingService.getId() + existingService.getDescription_html() + existingService.getService_type() + existingService.getStatus() + existingService.getPrice());
             if (success) {
                 HttpSession session = request.getSession();
                 session.removeAttribute("cachedServiceList");
@@ -2043,10 +2048,12 @@ public class ProductController extends HttpServlet {
         String condition = request.getParameter("condition");
         if (condition == null) {
             return handleListMayChoiGameWithCondition(request, response, "all");
-        } else if (condition.equals("new")) {
-            return handleListMayChoiGameWithCondition(request, response, "new");
-        } else if (condition.equals("likenew")) {
-            return handleListMayChoiGameWithCondition(request, response, "likenew");
+        } else if (condition.equals("nintendo")) {
+            return handleListMayChoiGameWithCondition(request, response, "nintendo");
+        } else if (condition.equals("sony")) {
+            return handleListMayChoiGameWithCondition(request, response, "sony");
+        } else if (condition.equals("others")) {
+            return handleListMayChoiGameWithCondition(request, response, "others");
         }
 
         List<Banners> listBanner = bannersDAO.getTop5Active();
@@ -2198,8 +2205,6 @@ public class ProductController extends HttpServlet {
     private String handleGetService(HttpServletRequest request, HttpServletResponse response) {
         try {
             String idParam = request.getParameter("idService");
-            System.out.println("===============DEBUG=============");
-            System.out.println("idPram: ===" + idParam);
             // Kiểm tra parameter có tồn tại không
             if (idParam == null || idParam.trim().isEmpty()) {
                 request.setAttribute("checkErrorService", "Invalid accessory ID");

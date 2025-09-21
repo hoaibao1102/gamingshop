@@ -556,15 +556,20 @@ public class ProductsDAO implements IDAO<Products, Integer> {
             Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
             where.put("model_id", String.valueOf(model_id));
             return getProductsByConditions(filter, where);
-        } else if (condition.equals("new")) {
+        } else if (condition.equals("nintendo")) {
             Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
             where.put("model_id", String.valueOf(model_id));
-            where.put("product_type", "new");
+            where.put("product_type", "nintendo");
             return getProductsByConditions(filter, where);
-        } else if (condition.equals("likenew")) {
+        } else if (condition.equals("sony")) {
             Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
             where.put("model_id", String.valueOf(model_id));
-            where.put("product_type", "used");
+            where.put("product_type", "sony");
+            return getProductsByConditions(filter, where);
+        }else if (condition.equals("others")) {
+            Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
+            where.put("model_id", String.valueOf(model_id));
+            where.put("product_type", "others");
             return getProductsByConditions(filter, where);
         }
         return null;

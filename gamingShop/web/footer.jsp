@@ -258,6 +258,38 @@
                 filter: none !important;          /* không làm sáng màu */
             }
 
+            /* === Address + Map link === */
+            .address .addr-row{
+                display:flex;
+                align-items:center;
+                gap:10px;
+                flex-wrap:wrap;
+                margin-top:4px;
+            }
+            .address .map-link{
+                display:inline-flex;
+                align-items:center;
+                gap:6px;
+                padding:6px 10px;
+                border-radius:10px;
+                font-weight:600;
+                font-size:13px;
+                text-decoration:none;
+                color:#eaf2ff;
+                background: rgba(120,173,219,.15);
+                border:1px solid rgba(120,173,219,.35);
+                transition: background .2s ease, transform .06s ease, border-color .2s ease;
+            }
+            .address .map-link:hover{
+                background: rgba(120,173,219,.28);
+                border-color: rgba(120,173,219,.55);
+                transform: translateY(-1px);
+            }
+            .address .map-link svg{
+                width:16px;
+                height:16px;
+                opacity:.95;
+            }
 
             /* tuỳ chọn: icon nhỏ trong khung 64px */
             .social-follow .sf-btn img {
@@ -312,9 +344,19 @@
                     <p><strong>SHOP GAME VIỆT 38</strong> Chuyên mua bán, sữa chữa, trao đổi máy chơi game Nintendo, Sony và các sản phẩm công nghệ khác</p>
                 </div>
                 <div class="footer-col address">
-                    <div class="label">Địa chỉ: </div>
-                    <div class="value">31 Võ Liêm Sơn, Phường Thành Sen, Tỉnh Hà Tĩnh</div>
+                    <div class="label">Địa chỉ:</div>
+                    <div class="value addr-row">
+                        <span>31 Võ Liêm Sơn, Phường Thành Sen, Tỉnh Hà Tĩnh</span>
+                        <a class="map-link" href="https://maps.app.goo.gl/3Qffry2uXK1Ranj18" target="_blank" rel="noopener">
+                            <!-- icon pin -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#eaf2ff" aria-hidden="true">
+                            <path d="M12 2a7 7 0 0 0-7 7c0 4.97 7 13 7 13s7-8.03 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+                            </svg>
+                            <span>Mở bản đồ</span>
+                        </a>
+                    </div>
                 </div>
+
                 <aside class="footer-col contact">
                     <a href="tel:0888223779" class="contact-item phone">
                         <span class="ico"></span><span>0357394235</span>

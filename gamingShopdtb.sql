@@ -141,6 +141,20 @@ CREATE INDEX IX_products_guarantee ON dbo.Products(guarantee_id);
 CREATE INDEX IX_products_name      ON dbo.Products(name);
 GO
 
+--update 21/09
+-- 1. Xóa ràng buộc cũ
+ALTER TABLE dbo.Products
+DROP CONSTRAINT CK_products_type;
+
+
+update dbo.Products set product_type = 'nintendo' 
+-- 2. Tạo ràng buộc mới
+ALTER TABLE dbo.Products
+ADD CONSTRAINT CK_products_type 
+CHECK (product_type IN ('nintendo','sony','others'));
+
+update dbo.Products set product_type = 'sony' where id between 20 and 24
+
 /* ============================================================
    8) product_accessories (N-N)
    ============================================================ */
