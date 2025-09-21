@@ -150,6 +150,8 @@
             .nav .link-button {
                 padding: 10px 6px;
                 border-radius: 8px;
+                display: flex;
+                flex-direction: column;
             }
 
             .nav .link-button.active {
@@ -474,7 +476,7 @@
                     position:absolute;
                     top:100%;
                     left:0;
-                    min-width:180px;
+                    min-width:286px;
                     background:#fff;
                     border:1px solid var(--ring);
                     border-radius:10px;
@@ -549,6 +551,9 @@
                     color:#166534;
                     font-size:12px;
                     font-weight:700
+                }
+                .nav_icon{
+                    width: 50px;
                 }
                 .link{
                     font-weight:700;
@@ -627,16 +632,16 @@
                             <form class="mobile-link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
                                 <input type="hidden" name="condition" value="new"/>
-                                <button class="mobile-link-button" type="submit">New</button>
+                                <button class="mobile-link-button" type="submit">Nintendo</button>
                             </form>
                             <form class="mobile-link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
                                 <input type="hidden" name="condition" value="likenew"/>
-                                <button class="mobile-link-button" type="submit">Like New</button>
+                                <button class="mobile-link-button" type="submit">Sony</button>
                             </form>
                             <form class="mobile-link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
-                                <button class="mobile-link-button" type="submit">Tất cả</button>
+                                <button class="mobile-link-button" type="submit">Hãng khác</button>
                             </form>
                         </div>
                     </li>
@@ -667,7 +672,7 @@
                     <li>
                         <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="searchPosts"/>
-                            <button class="mobile-link-button" type="submit"> Bài đăng gần đây</button>
+                            <button class="mobile-link-button" type="submit"> Bài đăng</button>
                         </form>
                     </li>
                     <li>
@@ -726,12 +731,7 @@
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Máy chơi game -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="2" y="6" width="20" height="12" rx="3"/>
-                                    <circle cx="8" cy="12" r="2"/>
-                                    <circle cx="16" cy="10" r="1"/>
-                                    <circle cx="16" cy="14" r="1"/>
-                                    </svg>
+                                    <img class="nav_icon" src="assets/img/iconHeader/may_choi_game.png" alt="alt"/>
                                     Máy chơi game
                                 </button>
                             </form>
@@ -740,14 +740,21 @@
                                     <form class="link-form" action="MainController" method="post">
                                         <input type="hidden" name="action" value="listMayChoiGame"/>
                                         <input type="hidden" name="condition" value="new"/>
-                                        <button class="link-button" type="submit">New</button>
+                                        <button class="link-button" type="submit">Nintendo </button>
                                     </form>
                                 </li>
                                 <li>
                                     <form class="link-form" action="MainController" method="post">
                                         <input type="hidden" name="action" value="listMayChoiGame"/>
                                         <input type="hidden" name="condition" value="likenew"/>
-                                        <button class="link-button" type="submit">Like New</button>
+                                        <button class="link-button" type="submit">Sony </button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form class="link-form" action="MainController" method="post">
+                                        <input type="hidden" name="action" value="listMayChoiGame"/>
+                                        <input type="hidden" name="condition" value="likenew"/>
+                                        <button class="link-button" type="submit">Hãng khác </button>
                                     </form>
                                 </li>
                             </ul>
@@ -757,11 +764,9 @@
                                 <input type="hidden" name="action" value="listSanPhamCongNghe"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Sản phẩm công nghệ khác -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="4" width="18" height="12" rx="2"/>
-                                    <path d="M2 20h20"/>
-                                    </svg>
-                                    Sản phẩm công nghệ khác
+                                    
+                                    <img class="nav_icon" src="assets/img/iconHeader/san_pham_khac.png" alt="alt"/>
+                                    Sản phẩm khác
                                 </button>
                             </form>
                         </li>
@@ -770,9 +775,7 @@
                                 <input type="hidden" name="action" value="listPhuKien"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Phụ kiện -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path d="M4 12a8 8 0 0 1 16 0v6a2 2 0 0 1-2 2h-2v-6h4M6 14h4v6H8a2 2 0 0 1-2-2v-4z"/>
-                                    </svg>
+                                    <img class="nav_icon" src="assets/img/iconHeader/game-controller.png" alt="alt"/>
                                     Phụ kiện
                                 </button>
                             </form>
@@ -782,10 +785,7 @@
                                 <input type="hidden" name="action" value="listTheGame"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Thẻ game -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <rect x="2" y="5" width="20" height="14" rx="2"/>
-                                    <path d="M2 10h20"/>
-                                    </svg>
+                                    <img class="nav_icon" src="assets/img/iconHeader/the_game.png" alt="alt"/>
                                     Thẻ game
                                 </button>
                             </form>
@@ -795,9 +795,7 @@
                                 <input type="hidden" name="action" value="listDichVu"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Dịch vụ -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path d="M14.7 6.3a5 5 0 0 1-6.4 6.4l-4.3 4.3a1 1 0 0 0 1.4 1.4l4.3-4.3a5 5 0 0 1 6.4-6.4z"/>
-                                    </svg>
+                                    <img class="nav_icon" src="assets/img/iconHeader/dich_vu.png" alt="alt"/>
                                     Dịch vụ
                                 </button>
                             </form>
@@ -808,15 +806,8 @@
                                 <input type="hidden" name="action" value="searchPosts"/>
                                 <button class="link-button" type="submit">
                                     <!-- ICON Post -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" 
-                                         fill="none" viewBox="0 0 24 24" 
-                                         stroke="currentColor" stroke-width="2" 
-                                         class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" 
-                                          d="M7 8h10M7 12h10M7 16h6M5 4h14a2 2 0 0 1 2 2v12a2 
-                                          2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
-                                    </svg>
-                                    Post
+                                    <img class="nav_icon" src="assets/img/iconHeader/bai_dang.png" alt="alt"/>
+                                    Bài đăng
 
                                 </button>
                             </form>
@@ -826,6 +817,7 @@
                             <a class="link-button" 
                                href="https://zalo.me/0943391235" 
                                target="_blank" rel="noopener noreferrer">
+                                <img class="nav_icon" src="assets/img/iconHeader/lien_hen.png" alt="alt"/>
                                 Liên hệ
                             </a>
                         </li>

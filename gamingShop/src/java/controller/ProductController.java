@@ -215,7 +215,12 @@ public class ProductController extends HttpServlet {
         List<Banners> listBanner = bannersDAO.getTop5Active();
 
         request.setAttribute("topBanners", listBanner);
-        request.getSession().setAttribute("listForSidebar", list);
+        request.getSession().setAttribute("listProductForSidebar", list);
+        
+        List<Posts> list2 = postsDAO.getAll();
+        // Gán hình ảnh cho từng sản phẩm
+        request.getSession().setAttribute("listPostForSidebar", list2);
+        
     }
 
     public String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {

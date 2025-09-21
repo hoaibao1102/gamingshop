@@ -181,6 +181,7 @@
                 border-radius:10px;
                 transition: background .2s ease, transform .06s ease, color .2s ease;
             }
+            
             .contact-item:hover{
                 background: rgba(120,173,219,.18);
                 color:#fff;
@@ -207,6 +208,10 @@
             }
             .contact-item.zalo .ico{
                 background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'><path d='M20 2H4a2 2 0 0 0-2 2v14l4-3h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z'/></svg>");
+            }
+            .about > p{
+                text-align: left;
+                
             }
             @media (min-width:576px){
                 .footer-inner{
@@ -259,21 +264,21 @@
         <footer class="site-footer">
             <div class="footer-inner">
                 <div class="footer-col about">
-                    <p><strong>CỬA GỖ VIỆT PHÁT</strong> chuyên sản xuất, thiết kế thi công nội thất và cửa gỗ công nghiệp, cửa nhựa vân gỗ, cửa chống cháy theo tiêu chuẩn Việt Nam.</p>
+                    <p><strong>SHOP GAME VIỆT 38</strong> Chuyên mua bán, sữa chữa, trao đổi máy chơi game Nintendo, Sony và các sản phẩm công nghệ khác</p>
                 </div>
                 <div class="footer-col address">
-                    <div class="label">Trụ sở:</div>
-                    <div class="value">130 Đại Lộ Bình Dương, phường Phú Lợi, Thành phố Hồ Chí Minh</div>
+                    <div class="label">Địa chỉ: </div>
+                    <div class="value">31 Võ Liêm Sơn, Phường Thành Sen, Tỉnh Hà Tĩnh</div>
                 </div>
                 <aside class="footer-col contact">
                     <a href="tel:0888223779" class="contact-item phone">
-                        <span class="ico"></span><span>0888.223.779</span>
+                        <span class="ico"></span><span>0357394235</span>
                     </a>
                     <a href="mailto:info@vietduchome.vn" class="contact-item mail">
-                        <span class="ico"></span><span>Info@vietduchome.vn</span>
+                        <span class="ico"></span><span>Info@gameviet.vn</span>
                     </a>
                     <a href="https://zalo.me/0888223779" class="contact-item zalo">
-                        <span class="ico"></span><span>zalo: 0888 223 779</span>
+                        <span class="ico"></span><span>zalo: 0357394235</span>
                     </a>
                 </aside>
             </div>
