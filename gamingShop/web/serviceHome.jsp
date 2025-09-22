@@ -15,9 +15,8 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <title>SHOP GAME VIỆT 38 - Dịch vụ</title>
         <%@ include file="/WEB-INF/jspf/head.jspf" %>
-        <title>Gaming Shop - Dịch vụ</title>
-
         <!-- Swiper CSS -->
         <link
             rel="stylesheet"

@@ -11,8 +11,8 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>${post.title} — Bài viết</title>
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <link rel="stylesheet" href="assets/css/maincss.css" />
 
         <style>

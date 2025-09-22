@@ -1,21 +1,29 @@
-<%--<%@page contentType="text/html" pageEncoding="UTF-8"%>--%>
+<%@page pageEncoding="UTF-8"%>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sgv38 Store - Game consoles and accessories</title>
-    <meta name="description" content="Sgv38 Store - Specializing in providing game consoles and accessories at good prices.">
+    <title>SHOP GAME VIỆT 38 - Chuyên mua bán, sữa chữa, trao đổi máy chơi game Nintendo, Sony và các sản phẩm công nghệ khác.</title>
+    <meta name="description" content="SHOP GAME VIỆT 38 - Chuyên mua bán, sữa chữa, trao đổi máy chơi game Nintendo, Sony và các sản phẩm công nghệ khác.">
 
-    <link rel="icon" href="${pageContext.request.contextPath}/assets/img/logo/logo.png" type="image/png">
+    <!-- favicon chu?n cho Google -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
+    <!-- favicon PNG cho tr�nh duy?t hi?n ??i -->
+    <link rel="icon" href="/assets/img/logo/logo-48.png" type="image/png" sizes="48x48">
+    <link rel="icon" href="/assets/img/logo/logo-192.png" type="image/png" sizes="192x192">
+
+    <!-- favicon cho Apple/Android -->
+    <link rel="apple-touch-icon" href="/assets/img/logo/logo-180.png" sizes="180x180">
+    
     <!-- Schema: Organization -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "url": "https://sgv38.vn",
-      "logo": "https://sgv38.vn/assets/img/logo/logo.png",
-      "name": "Sgv38 Store",
-      "description": "Sgv38 Store - Specializing in providing game consoles and accessories at good prices."
-    }
+        {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "url": "https://sgv38.vn",
+        "logo": "https://sgv38.vn/favicon.ico",
+        "name": "SHOP GAME VIỆT 38",
+        "description": "SHOP GAME VIỆT 38 - Chuyên mua bán, sữa chữa, trao đổi máy chơi game Nintendo, Sony và các sản phẩm công nghệ khác."
+        }
     </script>
 </head>

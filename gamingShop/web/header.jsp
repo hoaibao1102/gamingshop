@@ -10,9 +10,9 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>Header Mobile + Desktop</title>
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <style>
             :root{
                 --bg:#ffffff;
@@ -684,7 +684,7 @@
                         </form>
                     </li>
                     <li>
-                        <a class="link-button" href="https://zalo.me/0943391235" target="_blank" rel="noopener noreferrer">
+                        <a class="link-button" href="https://zalo.me/0357394235" target="_blank" rel="noopener noreferrer">
                             Liên hệ
                         </a>
                     </li>
@@ -810,7 +810,7 @@
                             </form>
                         </li>
                         <li>
-                            <a class="link-button" href="https://zalo.me/0943391235" target="_blank" rel="noopener noreferrer">
+                            <a class="link-button" href="https://zalo.me/0357394235" target="_blank" rel="noopener noreferrer">
                                 <img class="nav_icon" src="assets/img/iconHeader/lien_hen.png" alt="alt"/>
                                 Liên hệ
                             </a>

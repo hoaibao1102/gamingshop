@@ -8,9 +8,8 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>${empty post ? 'Thêm bài viết' : 'Sửa bài viết'}</title>
-
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <!-- App CSS đồng bộ -->
         <link rel="stylesheet" href="assets/css/maincss.css"/>
 

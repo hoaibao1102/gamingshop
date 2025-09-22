@@ -14,7 +14,7 @@
     <head>
 
         <meta charset="UTF-8">
-        <title>Gaming Shop — Quản lý model</title>
+        <title>SHOP GAME VIỆT 38 — Quản lý model</title>
         <%@ include file="/WEB-INF/jspf/head.jspf" %>
 
         <!-- Swiper CSS -->

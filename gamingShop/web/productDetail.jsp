@@ -12,9 +12,8 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8" />
+        <title>SHOP GAME VIỆT 38</title>
         <%@ include file="/WEB-INF/jspf/head.jspf" %>
-        <title>Gaming Shop</title>
-
         <style>
             /* =========================
    Base + Variables (giữ gọn)
@@ -732,9 +731,9 @@
 
             // ===== CONFIG - Thay đổi thông tin liên hệ ở đây =====
             const SHOP_CONFIG = {
-                zaloId: '0943391235', // Thay bằng Zalo ID thực tế
-                phoneNumber: '0943391235', // Thay bằng SĐT thực tế
-                shopName: 'SGV38 Shop'
+                zaloId: '0357394235', // Thay bằng Zalo ID thực tế
+                phoneNumber: '0357394235', // Thay bằng SĐT thực tế
+                shopName: 'SHOP GAME VIỆT'
             };
 
             // ===== MAIN FUNCTIONS =====
