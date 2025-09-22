@@ -316,6 +316,10 @@ public class ProductController extends HttpServlet {
                 }
             }
 
+            List<Banners> listBanner = bannersDAO.getTop5Active();
+
+            request.setAttribute("topBanners", listBanner);
+
             request.setAttribute("pageResult", pageResult);
             request.setAttribute("currentFilter", filter);
 
@@ -2248,6 +2252,10 @@ public class ProductController extends HttpServlet {
                     // Ignore, use default page
                 }
             }
+
+            List<Banners> listBanner = bannersDAO.getTop5Active();
+
+            request.setAttribute("topBanners", listBanner);
 
             // Lấy dữ liệu với phân trang
             Page<Services> pageResult = servicesDAO.getAllActiveServices(filter);

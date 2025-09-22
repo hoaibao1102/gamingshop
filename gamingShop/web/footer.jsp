@@ -8,9 +8,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>footer</title>
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <style>
             /* ========== SOCIAL FOLLOW styles ========== */
             .social-follow{
@@ -358,13 +358,13 @@
                 </div>
 
                 <aside class="footer-col contact">
-                    <a href="tel:0888223779" class="contact-item phone">
+                    <a href="tel:0357394235" class="contact-item phone">
                         <span class="ico"></span><span>0357394235</span>
                     </a>
-                    <a href="mailto:info@vietduchome.vn" class="contact-item mail">
-                        <span class="ico"></span><span>Info@gameviet.vn</span>
+                    <a href="#" class="contact-item mail">
+                        <span class="ico"></span><span>@shopgameviet38</span>
                     </a>
-                    <a href="https://zalo.me/0888223779" class="contact-item zalo">
+                    <a href="https://zalo.me/0357394235" class="contact-item zalo">
                         <span class="ico"></span><span>zalo: 0357394235</span>
                     </a>
                 </aside>

@@ -8,9 +8,8 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
+        <title>SHOP GAME VIỆT 38 — Quản lý sản phẩm</title>
         <%@ include file="/WEB-INF/jspf/head.jspf" %>
-        <title>Gaming Shop — Quản lý sản phẩm</title>
-
         <!-- Swiper CSS (nếu cần dùng cho UI khác) -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 

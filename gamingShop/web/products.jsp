@@ -20,9 +20,8 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>SHOP GAME VIỆT 38 — Quản lý sản phẩm</title>
         <%@ include file="/WEB-INF/jspf/head.jspf" %>
-        <title>Gaming Shop — Quản lý sản phẩm</title>
-
         <!-- Swiper CSS (nếu cần cho banner nội bộ) -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
         <!-- Main CSS đồng bộ với trang chủ -->

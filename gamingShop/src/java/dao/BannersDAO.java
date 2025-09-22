@@ -33,7 +33,7 @@ public class BannersDAO implements IDAO<Banners, Integer> {
             = "DELETE FROM dbo.Banners WHERE id = ?";
 
     private static final String GET_TOP5_ACTIVE
-            = "SELECT TOP 5 * "
+            = "SELECT TOP 10 * "
             + "FROM dbo.Banners "
             + "WHERE status = ? "
             + "ORDER BY ISNULL(updated_at, created_at) DESC, id DESC";

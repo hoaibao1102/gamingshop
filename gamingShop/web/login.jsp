@@ -4,8 +4,8 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>Login Page</title>
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <style>
             /* ====== Modern Login – Responsive, No HTML changes ====== */
             :root{
