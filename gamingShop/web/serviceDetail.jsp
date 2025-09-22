@@ -549,10 +549,11 @@
 
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
-                    <a href="MainController?action=getServices" class="back-link">
-                        ← Quay lại danh sách dịch vụ
-                    </a>
-                    
+                    <div class="breadcrumb">
+                        <a href="MainController?action=getServices">Danh sách dịch vụ</a>
+                        <span>/</span>
+                        <span>Chi tiết dịch vụ</span>
+                    </div><br>
                     <c:choose>
                         <c:when test="${not empty serviceDetail}">
                             <div class="service-detail">

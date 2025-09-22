@@ -352,7 +352,7 @@
                             <div class="breadcrumbs">
                                 <a href="MainController?action=searchPosts">Bài viết</a><span class="sep">›</span>
                                 <span>${empty post ? 'Thêm' : 'Chỉnh sửa'}</span>
-                            </div>
+                            </div><br>
                             <h2 class="page-title">
                                 ${empty post ? 'Thêm bài viết mới' : 'Chỉnh sửa bài viết'}
                                 <span class="badge-soft" style="margin-left:8px;">Post Management</span>

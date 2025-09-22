@@ -386,7 +386,7 @@
                             <div class="breadcrumbs">
                                 <a href="MainController?action=viewServiceList">Dịch vụ</a><span class="sep">›</span>
                                 <span>${empty service ? 'Thêm' : 'Chỉnh sửa'}</span>
-                            </div> 
+                            </div><br>
                             <h2 class="page-title" style="margin:0;">
                                 <c:choose>
                                     <c:when test="${not empty service && service.id > 0}">Chỉnh sửa service</c:when>

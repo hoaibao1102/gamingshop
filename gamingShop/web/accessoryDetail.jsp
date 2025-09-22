@@ -457,8 +457,7 @@
                         <a href="MainController?action=listPhuKien">Danh sách phụ kiện</a>
                         <span>/</span>
                         <span>Chi tiết phụ kiện</span>
-                    </div>
-
+                    </div><br>
                     <c:choose>
                         <c:when test="${not empty accessory}">
                             <div class="accessory-detail">
