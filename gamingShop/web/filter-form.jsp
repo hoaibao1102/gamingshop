@@ -31,8 +31,9 @@
                     <label for="productType">Loại sản phẩm:</label>
                     <select id="productType" name="productType">
                         <option value="all"  ${currentFilter.productType eq 'all'  ? 'selected' : ''}>Tất cả</option>
-                        <option value="new"  ${currentFilter.productType eq 'new'  ? 'selected' : ''}>Mới</option>
-                        <option value="used" ${currentFilter.productType eq 'used' ? 'selected' : ''}>Đã sử dụng</option>
+                        <option value="nintendo"  ${currentFilter.productType eq 'nintendo'  ? 'selected' : ''}>Nintendo</option>
+                        <option value="sony"  ${currentFilter.productType eq 'sony'  ? 'selected' : ''}>Sony</option>
+                        <option value="others" ${currentFilter.productType eq 'others' ? 'selected' : ''}>Hãng khác</option>
                     </select>
                 </div>
             </div>
@@ -239,6 +240,28 @@
     .btn-reset:hover {
         background: #e2e8f0;
         transform: translateY(-1px);
+    }
+    /* chỉ áp dụng cho nút có class btn-view-all */
+    .btn-view-all {
+        padding: 10px 22px;
+        background-color: #667eea; /* xanh lá */
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-view-all:hover {
+        background-color: #0069d9; /* xanh lá đậm hơn */
+        transform: translateY(-2px);
+    }
+
+    .btn-view-all:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(40,167,69,0.4);
     }
 
     /* Responsive */
