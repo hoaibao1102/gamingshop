@@ -13,13 +13,13 @@
 <html lang="vi">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>
             <c:choose>
                 <c:when test="${not empty service && service.id > 0}">Edit Service</c:when>
                 <c:otherwise>Add New Service</c:otherwise>
             </c:choose>
         </title>
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <!-- Swiper CSS -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
@@ -386,7 +386,7 @@
                             <div class="breadcrumbs">
                                 <a href="MainController?action=viewServiceList">Dịch vụ</a><span class="sep">›</span>
                                 <span>${empty service ? 'Thêm' : 'Chỉnh sửa'}</span>
-                            </div> 
+                            </div><br>
                             <h2 class="page-title" style="margin:0;">
                                 <c:choose>
                                     <c:when test="${not empty service && service.id > 0}">Chỉnh sửa service</c:when>

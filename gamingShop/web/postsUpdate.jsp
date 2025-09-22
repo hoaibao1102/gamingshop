@@ -8,9 +8,8 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <title>${empty post ? 'Thêm bài viết' : 'Sửa bài viết'}</title>
-
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <!-- App CSS đồng bộ -->
         <link rel="stylesheet" href="assets/css/maincss.css"/>
 
@@ -353,7 +352,7 @@
                             <div class="breadcrumbs">
                                 <a href="MainController?action=searchPosts">Bài viết</a><span class="sep">›</span>
                                 <span>${empty post ? 'Thêm' : 'Chỉnh sửa'}</span>
-                            </div>
+                            </div><br>
                             <h2 class="page-title">
                                 ${empty post ? 'Thêm bài viết mới' : 'Chỉnh sửa bài viết'}
                                 <span class="badge-soft" style="margin-left:8px;">Post Management</span>

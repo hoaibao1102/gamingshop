@@ -20,9 +20,8 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>SHOP GAME VIỆT 38 — Quản lý sản phẩm</title>
         <%@ include file="/WEB-INF/jspf/head.jspf" %>
-        <title>Gaming Shop — Quản lý sản phẩm</title>
-
         <!-- Swiper CSS (nếu cần cho banner nội bộ) -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
         <!-- Main CSS đồng bộ với trang chủ -->
@@ -371,7 +370,6 @@
                                                 <th>Tên sản phẩm</th>
                                                 <th>SKU</th>
                                                 <th>Giá</th>
-                                                <th>Loại</th>
                                                 <th>Tồn kho</th>
                                                 <th>Trạng thái</th>
                                                 <th style="text-align: center;">Thao tác</th>
@@ -406,11 +404,9 @@
                                                     <td>
                                                         <fmt:formatNumber value="${p.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
                                                     </td>
-                                                    <td>
-                                                        <c:if test="${p.product_type == 'new'}">New</c:if>
-                                                        <c:if test="${p.product_type == 'used'}">Like new</c:if>
-                                                        </td>
-                                                        <td>${p.quantity}</td>
+
+
+                                                    <td>${p.quantity}</td>
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${p.status eq 'active'}">

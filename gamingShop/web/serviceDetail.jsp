@@ -13,8 +13,8 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8" />
-        <title>Gaming Shop - Chi tiết dịch vụ</title>
-
+        <title>SHOP GAME VIỆT 38 - Chi tiết dịch vụ</title>
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <style>
             /* =========================
    Base + Variables (giữ gọn)
@@ -549,10 +549,11 @@
 
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
-                    <a href="MainController?action=getServices" class="back-link">
-                        ← Quay lại danh sách dịch vụ
-                    </a>
-                    
+                    <div class="breadcrumb">
+                        <a href="MainController?action=getServices">Danh sách dịch vụ</a>
+                        <span>/</span>
+                        <span>Chi tiết dịch vụ</span>
+                    </div><br>
                     <c:choose>
                         <c:when test="${not empty serviceDetail}">
                             <div class="service-detail">
@@ -672,9 +673,9 @@
         <script>
             // ===== CONFIG - Thay đổi thông tin liên hệ ở đây =====
             const SHOP_CONFIG = {
-                zaloId: '0943391235',        // Thay bằng Zalo ID thực tế
-                phoneNumber: '0943391235',   // Thay bằng SĐT thực tế
-                shopName: 'SGV38 Shop'
+                zaloId: '0357394235',        // Thay bằng Zalo ID thực tế
+                phoneNumber: '0357394235',   // Thay bằng SĐT thực tế
+                shopName: 'SHOP GAME VIỆT'
             };
 
             // ===== MAIN FUNCTIONS =====

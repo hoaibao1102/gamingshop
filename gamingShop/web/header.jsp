@@ -10,9 +10,9 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>Header Mobile + Desktop</title>
+        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <style>
             :root{
                 --bg:#ffffff;
@@ -42,153 +42,130 @@
                 text-decoration:none
             }
 
-            /* CSS cho form button để giống link */
+            /* Form button như link */
             .link-form {
-                display: inline;
-                margin: 0;
-                padding: 0;
+                display:inline;
+                margin:0;
+                padding:0;
+            }
+            .link-button{
+                background:none;
+                border:none;
+                padding:0;
+                margin:0;
+                font:inherit;
+                color:inherit;
+                text-decoration:none;
+                cursor:pointer;
+                display:inline-flex;
+                align-items:center;
+                gap:8px;
+                font-weight:600;
+                line-height:1;
+                white-space:nowrap;
+            }
+            .link-button:hover{
+                color:var(--primary);
+                background:#eff6ff;
             }
 
-            .link-button {
-                background: none;
-                border: none;
-                padding: 0;
-                margin: 0;
-                font: inherit;
-                color: inherit;
-                text-decoration: none;
-                cursor: pointer;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                font-weight: 600;
-                line-height: 1;
-                white-space: nowrap;
+            /* Mobile menu button */
+            .mobile-link-form{
+                width:100%;
+                margin:0;
+                padding:0;
+            }
+            .mobile-link-button{
+                width:100%;
+                background:none;
+                border:none;
+                padding:14px 6px;
+                margin:0;
+                font:inherit;
+                color:inherit;
+                cursor:pointer;
+                display:block;
+                font-weight:600;
+                border-bottom:1px solid var(--ring);
+                text-align:left;
+                position:relative;
             }
 
-            .link-button:hover {
-                color: var(--primary);
-                background: #eff6ff;
+            /* (GIỮ LẠI CLASS cho tương thích, nhưng dropdown luôn mở) */
+            .mobile-dropdown{
+                max-height:0;
+                overflow:hidden;
+                background:#f8fafc;
+                transition:max-height .3s ease;
+            }
+            .mobile-dropdown .mobile-link-form{
+                border-left:3px solid var(--primary);
+            }
+            .mobile-dropdown .mobile-link-button{
+                padding:12px 20px;
+                font-size:14px;
+                background:#f8fafc;
+                border-bottom:1px solid #e2e8f0;
+            }
+            .mobile-dropdown .mobile-link-button:hover{
+                background:#e2e8f0;
+                color:var(--primary);
             }
 
-            /* CSS cho mobile menu */
-            .mobile-link-form {
-                width: 100%;
-                margin: 0;
-                padding: 0;
+            /* Toggle caret (không dùng nữa) */
+            .mobile-dropdown-toggle{
+                position:relative;
+            }
+            .mobile-dropdown-toggle::after{
+                content:"▾";
+                position:absolute;
+                right:6px;
+                top:50%;
+                transform:translateY(-50%);
+                font-size:12px;
+                transition:transform .3s ease;
             }
 
-            .mobile-link-button {
-                width: 100%;
-                background: none;
-                border: none;
-                padding: 14px 6px;
-                margin: 0;
-                font: inherit;
-                color: inherit;
-                text-decoration: none;
-                cursor: pointer;
-                display: block;
-                font-weight: 600;
-                border-bottom: 1px solid var(--ring);
-                text-align: left;
-                position: relative;
+            /* Desktop nav */
+            .nav .link-form{
+                display:inline;
             }
-
-            /* CSS cho mobile dropdown */
-            .mobile-dropdown {
-                max-height: 0;
-                overflow: hidden;
-                background: #f8fafc;
-                transition: max-height 0.3s ease;
+            .nav .link-button{
+                padding:10px 6px;
+                border-radius:8px;
+                display:flex;
+                flex-direction:column;
             }
-
-            .mobile-dropdown.active {
-                max-height: 200px;
+            .nav .link-button.active{
+                color:var(--primary);
+                position:relative;
             }
-
-            .mobile-dropdown .mobile-link-form {
-                border-left: 3px solid var(--primary);
+            .nav .link-button.active::after{
+                content:"";
+                position:absolute;
+                left:0;
+                right:0;
+                bottom:-6px;
+                height:3px;
+                border-radius:999px;
+                background:var(--primary);
             }
-
-            .mobile-dropdown .mobile-link-button {
-                padding: 12px 20px;
-                font-size: 14px;
-                background: #f8fafc;
-                border-bottom: 1px solid #e2e8f0;
+            .nav .dropdown .link-form{
+                display:block;
+                width:100%;
             }
-
-            .mobile-dropdown .mobile-link-button:hover {
-                background: #e2e8f0;
-                color: var(--primary);
+            .nav .dropdown .link-button{
+                display:block;
+                width:100%;
+                padding:10px 12px;
+                border-radius:8px;
+                font-weight:600;
+                white-space:nowrap;
+                text-align:left;
             }
-
-            /* CSS cho dropdown toggle button */
-            .mobile-dropdown-toggle {
-                position: relative;
-            }
-
-            .mobile-dropdown-toggle::after {
-                content: "▾";
-                position: absolute;
-                right: 6px;
-                top: 50%;
-                transform: translateY(-50%);
-                font-size: 12px;
-                transition: transform 0.3s ease;
-            }
-
-            .mobile-dropdown-toggle.active::after {
-                transform: translateY(-50%) rotate(180deg);
-            }
-
-            /* CSS cho desktop navigation */
-            .nav .link-form {
-                display: inline;
-            }
-
-            .nav .link-button {
-                padding: 10px 6px;
-                border-radius: 8px;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .nav .link-button.active {
-                color: var(--primary);
-                position: relative;
-            }
-
-            .nav .link-button.active::after {
-                content: "";
-                position: absolute;
-                left: 0;
-                right: 0;
-                bottom: -6px;
-                height: 3px;
-                border-radius: 999px;
-                background: var(--primary);
-            }
-
-            /* CSS cho dropdown */
-            .nav .dropdown .link-form {
-                display: block;
-                width: 100%;
-            }
-
-            .nav .dropdown .link-button {
-                display: block;
-                width: 100%;
-                padding: 10px 12px;
-                border-radius: 8px;
-                font-weight: 600;
-                white-space: nowrap;
-                text-align: left;
-            }
-
-            .nav .dropdown .link-button:hover {
-                background: #f8fafc;
-                color: var(--primary);
+            .nav .dropdown .link-button:hover{
+                background:#f8fafc;
+                color:var(--primary);
             }
 
             .site-header{
@@ -196,7 +173,7 @@
                 top:0;
                 z-index:60;
                 background:var(--bg);
-                box-shadow:var(--shadow)
+                box-shadow:var(--shadow);
             }
             .topbar{
                 display:grid;
@@ -204,7 +181,7 @@
                 align-items:center;
                 gap:10px;
                 padding:10px 12px;
-                border-bottom:1px solid var(--ring)
+                border-bottom:1px solid var(--ring);
             }
             .left-group{
                 display:flex;
@@ -242,6 +219,7 @@
             .hamburger::after{
                 top:25px
             }
+
             .search{
                 position:relative
             }
@@ -252,7 +230,7 @@
                 border-radius:999px;
                 background:var(--soft);
                 padding:0 40px 0 38px;
-                outline:none
+                outline:none;
             }
             .search button{
                 position:absolute;
@@ -264,12 +242,13 @@
                 border:0;
                 background:transparent;
                 padding:0;
-                cursor:pointer
+                cursor:pointer;
             }
             .search svg{
                 width:20px;
                 height:20px
             }
+
             #nav-toggle{
                 display:none
             }
@@ -286,7 +265,7 @@
                 transform:translateX(-100%);
                 transition:transform .22s ease;
                 z-index:70;
-                overflow:auto
+                overflow:auto;
             }
             .drawer .menu{
                 list-style:none;
@@ -306,7 +285,7 @@
                 opacity:0;
                 pointer-events:none;
                 transition:.2s;
-                z-index:65
+                z-index:65;
             }
             #nav-toggle:checked ~ .topbar .hamburger::before{
                 transform:translateY(7px) rotate(45deg)
@@ -324,11 +303,12 @@
                 opacity:1;
                 pointer-events:auto
             }
+
             .desktopbar{
                 display:none
             }
 
-            /* Responsive button styles */
+            /* Responsive button */
             .btn{
                 display:inline-flex;
                 align-items:center;
@@ -340,9 +320,8 @@
                 padding:8px 14px;
                 font-weight:700;
                 font-size:14px;
-                transition:all 0.2s ease;
+                transition:all .2s ease;
             }
-
             .btn:hover{
                 background:#f9fafb
             }
@@ -360,54 +339,49 @@
             }
 
             .logoHeader{
-                width: 65px;
-                height: 100%;
+                width:65px;
+                height:100%;
             }
-            /* Mobile responsive adjustments */
-            @media (max-width: 768px) {
-                .btn {
-                    padding: 6px 12px;
-                    font-size: 13px;
-                    gap: 6px;
-                }
 
-                .btn svg {
-                    width: 16px;
-                    height: 16px;
+            /* Mobile tweaks */
+            @media (max-width:768px){
+                .btn{
+                    padding:6px 12px;
+                    font-size:13px;
+                    gap:6px;
                 }
-
-                .search input {
-                    font-size: 14px;
+                .btn svg{
+                    width:16px;
+                    height:16px;
                 }
-
+                .search input{
+                    font-size:14px;
+                }
                 .logoHeader{
-                    width: 65px;
-                    height: 100%;
+                    width:65px;
+                    height:100%;
+                }
+            }
+            @media (max-width:480px){
+                .btn{
+                    padding:8px 10px;
+                    font-size:12px;
+                }
+                .btn svg{
+                    width:14px;
+                    height:14px;
+                }
+                .topbar{
+                    padding:8px 10px;
+                }
+                .drawer{
+                    width:85%;
+                    max-width:280px;
                 }
             }
 
-            @media (max-width: 480px) {
-                .btn {
-                    padding: 8px 10px;
-                    font-size: 12px;
-                }
-
-                .btn svg {
-                    width: 14px;
-                    height: 14px;
-                }
-
-                .topbar {
-                    padding: 8px 10px;
-                }
-
-                .drawer {
-                    width: 85%;
-                    max-width: 280px;
-                }
-            }
-
-            @media (min-width: 1200px){
+            /* Desktop layout */
+            @media (min-width:1200px){
                 .topbar{
                     display:none
                 }
@@ -420,7 +394,7 @@
                     width:100%;
                     padding:10px 20px;
                     border-bottom:1px solid var(--ring);
-                    background:var(--bg)
+                    background:var(--bg);
                 }
                 .nav{
                     justify-self:center;
@@ -435,7 +409,7 @@
                     gap:7px;
                     list-style:none;
                     margin:0;
-                    padding:0
+                    padding:0;
                 }
                 .nav a{
                     display:inline-flex;
@@ -445,7 +419,7 @@
                     padding:10px 6px;
                     border-radius:8px;
                     white-space:nowrap;
-                    line-height:1
+                    line-height:1;
                 }
                 .nav a svg{
                     width:18px;
@@ -467,7 +441,7 @@
                     bottom:-6px;
                     height:3px;
                     border-radius:999px;
-                    background:var(--primary)
+                    background:var(--primary);
                 }
                 .nav li{
                     position:relative
@@ -488,7 +462,7 @@
                     visibility:hidden;
                     transform:translateY(6px);
                     transition:.16s ease;
-                    z-index:80
+                    z-index:80;
                 }
                 .nav li:hover > .dropdown{
                     opacity:1;
@@ -553,7 +527,7 @@
                     font-weight:700
                 }
                 .nav_icon{
-                    width: 50px;
+                    width:50px;
                 }
                 .link{
                     font-weight:700;
@@ -591,6 +565,30 @@
                     }
                 }
             }
+
+            /* ==== OVERRIDE: TẮT HẲN DROPDOWN TRÊN MOBILE (LUÔN MỞ) ==== */
+            @media (max-width:1199.98px){
+                /* luôn mở phần con */
+                .mobile-dropdown{
+                    max-height:none !important;
+                    overflow:visible !important;
+                    background:transparent !important;
+                }
+                /* bỏ mũi tên caret */
+                .mobile-dropdown-toggle::after{
+                    display:none !important;
+                }
+                /* căn lề nhẹ cho mục con */
+                .mobile-dropdown .mobile-link-form{
+                    border-left:3px solid #4f1964;
+                }
+                .mobile-dropdown .mobile-link-button{
+                    padding:10px 16px;
+                    font-size:14px;
+                    background:transparent;
+                    border-bottom:1px solid var(--ring);
+                }
+            }
         </style>
     </head>
     <body>
@@ -609,11 +607,17 @@
             <div class="topbar">
                 <div class="left-group">
                     <label for="nav-toggle" class="hamburger" aria-label="Mở menu"><span></span></label>
-                    <span class="brand-name"><a href="MainController?action=prepareHome"><img class="logoHeader" src="assets/img/logo/logo.png" alt="Logo cửa hàng"></a></span>
+                    <span class="brand-name">
+                        <a href="MainController?action=prepareHome">
+                            <img class="logoHeader" src="assets/img/logo/logo.png" alt="Logo cửa hàng">
+                        </a>
+                    </span>
                 </div>
                 <form class="search" role="search" aria-label="Tìm kiếm" action="MainController" method="post">
                     <button aria-label="Tìm" type="submit">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
                     </button>
                     <input type="search" name="searchKeyword" placeholder="Tìm sản phẩm...">
                     <input type="hidden" name="action" value="search">
@@ -624,27 +628,31 @@
                 <div style="font-weight:800; margin-bottom:10px;">Danh mục</div>
                 <ul class="menu">
                     <li>
+                        <!-- BỎ toggle, để nút gửi form bình thường -->
                         <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listMayChoiGame"/>
-                            <button class="mobile-link-button mobile-dropdown-toggle" type="button" onclick="toggleMobileDropdown(this)">Máy chơi game</button>
+                            <button class="mobile-link-button" type="submit">Máy chơi game</button>
                         </form>
+                        <!-- LUÔN MỞ: danh mục con -->
                         <div class="mobile-dropdown">
                             <form class="mobile-link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
-                                <input type="hidden" name="condition" value="new"/>
+                                <input type="hidden" name="condition" value="nintendo"/>
                                 <button class="mobile-link-button" type="submit">Nintendo</button>
                             </form>
                             <form class="mobile-link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
-                                <input type="hidden" name="condition" value="likenew"/>
+                                <input type="hidden" name="condition" value="sony"/>
                                 <button class="mobile-link-button" type="submit">Sony</button>
                             </form>
                             <form class="mobile-link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
+                                <input type="hidden" name="condition" value="others"/>
                                 <button class="mobile-link-button" type="submit">Hãng khác</button>
                             </form>
                         </div>
                     </li>
+
                     <li>
                         <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listSanPhamCongNghe"/>
@@ -672,13 +680,11 @@
                     <li>
                         <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="searchPosts"/>
-                            <button class="mobile-link-button" type="submit"> Bài đăng</button>
+                            <button class="mobile-link-button" type="submit">Bài đăng</button>
                         </form>
                     </li>
                     <li>
-                        <a class="link-button" 
-                           href="https://zalo.me/0943391235" 
-                           target="_blank" rel="noopener noreferrer">
+                        <a class="link-button" href="https://zalo.me/0357394235" target="_blank" rel="noopener noreferrer">
                             Liên hệ
                         </a>
                     </li>
@@ -730,7 +736,6 @@
                             <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listMayChoiGame"/>
                                 <button class="link-button" type="submit">
-                                    <!-- ICON Máy chơi game -->
                                     <img class="nav_icon" src="assets/img/iconHeader/may_choi_game.png" alt="alt"/>
                                     Máy chơi game
                                 </button>
@@ -739,22 +744,22 @@
                                 <li>
                                     <form class="link-form" action="MainController" method="post">
                                         <input type="hidden" name="action" value="listMayChoiGame"/>
-                                        <input type="hidden" name="condition" value="new"/>
-                                        <button class="link-button" type="submit">Nintendo </button>
+                                        <input type="hidden" name="condition" value="nintendo"/>
+                                        <button class="link-button" type="submit">Nintendo</button>
                                     </form>
                                 </li>
                                 <li>
                                     <form class="link-form" action="MainController" method="post">
                                         <input type="hidden" name="action" value="listMayChoiGame"/>
-                                        <input type="hidden" name="condition" value="likenew"/>
-                                        <button class="link-button" type="submit">Sony </button>
+                                        <input type="hidden" name="condition" value="sony"/>
+                                        <button class="link-button" type="submit">Sony</button>
                                     </form>
                                 </li>
                                 <li>
                                     <form class="link-form" action="MainController" method="post">
                                         <input type="hidden" name="action" value="listMayChoiGame"/>
-                                        <input type="hidden" name="condition" value="likenew"/>
-                                        <button class="link-button" type="submit">Hãng khác </button>
+                                        <input type="hidden" name="condition" value="others"/>
+                                        <button class="link-button" type="submit">Hãng khác</button>
                                     </form>
                                 </li>
                             </ul>
@@ -763,8 +768,6 @@
                             <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listSanPhamCongNghe"/>
                                 <button class="link-button" type="submit">
-                                    <!-- ICON Sản phẩm công nghệ khác -->
-                                    
                                     <img class="nav_icon" src="assets/img/iconHeader/san_pham_khac.png" alt="alt"/>
                                     Sản phẩm khác
                                 </button>
@@ -774,7 +777,6 @@
                             <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listPhuKien"/>
                                 <button class="link-button" type="submit">
-                                    <!-- ICON Phụ kiện -->
                                     <img class="nav_icon" src="assets/img/iconHeader/game-controller.png" alt="alt"/>
                                     Phụ kiện
                                 </button>
@@ -784,7 +786,6 @@
                             <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listTheGame"/>
                                 <button class="link-button" type="submit">
-                                    <!-- ICON Thẻ game -->
                                     <img class="nav_icon" src="assets/img/iconHeader/the_game.png" alt="alt"/>
                                     Thẻ game
                                 </button>
@@ -794,29 +795,22 @@
                             <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="listDichVu"/>
                                 <button class="link-button" type="submit">
-                                    <!-- ICON Dịch vụ -->
                                     <img class="nav_icon" src="assets/img/iconHeader/dich_vu.png" alt="alt"/>
                                     Dịch vụ
                                 </button>
                             </form>
                         </li>
-
                         <li>
                             <form class="link-form" action="MainController" method="post">
                                 <input type="hidden" name="action" value="searchPosts"/>
                                 <button class="link-button" type="submit">
-                                    <!-- ICON Post -->
                                     <img class="nav_icon" src="assets/img/iconHeader/bai_dang.png" alt="alt"/>
                                     Bài đăng
-
                                 </button>
                             </form>
                         </li>
-
                         <li>
-                            <a class="link-button" 
-                               href="https://zalo.me/0943391235" 
-                               target="_blank" rel="noopener noreferrer">
+                            <a class="link-button" href="https://zalo.me/0357394235" target="_blank" rel="noopener noreferrer">
                                 <img class="nav_icon" src="assets/img/iconHeader/lien_hen.png" alt="alt"/>
                                 Liên hệ
                             </a>
@@ -865,37 +859,9 @@
             </div>
         </header>
 
+        <!-- Không cần JS dropdown nữa -->
         <script>
-            function toggleMobileDropdown(button) {
-                const dropdown = button.parentElement.nextElementSibling;
-                const isActive = dropdown.classList.contains('active');
-
-                // Close all other dropdowns
-                document.querySelectorAll('.mobile-dropdown').forEach(dd => {
-                    dd.classList.remove('active');
-                });
-                document.querySelectorAll('.mobile-dropdown-toggle').forEach(toggle => {
-                    toggle.classList.remove('active');
-                });
-
-                // Toggle current dropdown
-                if (!isActive) {
-                    dropdown.classList.add('active');
-                    button.classList.add('active');
-                }
-            }
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function (e) {
-                if (!e.target.closest('.mobile-dropdown-toggle') && !e.target.closest('.mobile-dropdown')) {
-                    document.querySelectorAll('.mobile-dropdown').forEach(dd => {
-                        dd.classList.remove('active');
-                    });
-                    document.querySelectorAll('.mobile-dropdown-toggle').forEach(toggle => {
-                        toggle.classList.remove('active');
-                    });
-                }
-            });
+            // Dropdown mobile đã vô hiệu hoá hoàn toàn bằng CSS.
         </script>
     </body>
 </html>

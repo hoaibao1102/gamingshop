@@ -338,7 +338,7 @@
                             <div class="breadcrumbs">
                                 <a href="MainController?action=getAllBanner">Banners</a><span class="sep">›</span>
                                 <span>${empty editBanner ? 'Thêm' : 'Chỉnh sửa'}</span>
-                            </div>
+                            </div><br>
                             <h2 class="page-title">
                                 ${empty editBanner ? 'Thêm banner mới' : 'Chỉnh sửa banner'}
                                 <span class="badge-soft" style="margin-left:8px;">Banner Management</span>

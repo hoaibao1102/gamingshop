@@ -14,7 +14,7 @@
     <head>
 
         <meta charset="UTF-8">
-        <title>Gaming Shop — Quản lý model</title>
+        <title>SHOP GAME VIỆT 38 — Quản lý model</title>
         <%@ include file="/WEB-INF/jspf/head.jspf" %>
 
         <!-- Swiper CSS -->
@@ -415,7 +415,7 @@
                             <div class="breadcrumbs">
                                 <a href="MainController?action=viewModelList">Models</a><span class="sep">›</span>
                                 <span>${empty model ? 'Thêm' : 'Chỉnh sửa'}</span>
-                            </div>
+                            </div><br>
                             <h2 class="page-title" style="margin:0;">
                                 <c:choose>
                                     <c:when test="${not empty model && model.id > 0}">Chỉnh sửa model</c:when>

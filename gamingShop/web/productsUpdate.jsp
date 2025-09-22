@@ -8,9 +8,8 @@
 <html lang="vi">
     <head>
         <meta charset="UTF-8">
+        <title>SHOP GAME VIỆT 38 — Quản lý sản phẩm</title>
         <%@ include file="/WEB-INF/jspf/head.jspf" %>
-        <title>Gaming Shop — Quản lý sản phẩm</title>
-
         <!-- Swiper CSS (nếu cần dùng cho UI khác) -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 
@@ -425,7 +424,7 @@
                             <div class="breadcrumbs">
                                 <a href="MainController?action=searchProduct">Danh sách sản phẩm</a><span class="sep">›</span>
                                 <span>${empty product ? 'Thêm' : 'Chỉnh sửa'}</span>
-                            </div>
+                            </div><br>
 
                             <h2 class="page-title" style="margin:0;">
                                 <c:choose>
@@ -473,6 +472,15 @@
                                         </div>
 
                                         <div class="field">
+                                            <label class="label required">Model</label>
+                                            <select class="select" name="model_id" required>
+                                                <c:forEach var="m" items="${modelTypes}">
+                                                    <option value="${m.id}" ${not empty product && m.id == product.model_id ? 'selected' : ''}>${m.model_type}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+
+                                        <div class="field">
                                             <label class="label required">Giá bán</label>
                                             <div style="display:flex; gap:8px; align-items:center;">
                                                 <input class="input" type="number" step="0.01" min="0" name="price" value="${not empty product ? product.price : ''}" required style="flex:1;">
@@ -486,21 +494,23 @@
                                             <input class="input" type="number" min="0" name="quantity" value="${not empty product ? product.quantity : ''}" required>
                                         </div>
 
-                                        <div class="field">
-                                            <label class="label required">Loại hàng</label>
-                                            <select class="select" name="product_type" required>
-                                                <option value="new" ${not empty product && product.product_type == 'new' ? 'selected' : ''}>Hàng mới</option>
-                                                <option value="used" ${not empty product && (product.product_type == 'used' || product.product_type == 'old') ? 'selected' : ''}>Hàng đã qua sử dụng</option>
-                                            </select>
-                                        </div>
+                                        <!-- Loại hàng / Hãng máy chơi game -->
+                                        <div class="field" id="productTypeField">
+                                            <label class="label required">Hãng</label>
 
-                                        <div class="field">
-                                            <label class="label required">Model</label>
-                                            <select class="select" name="model_id" required>
-                                                <c:forEach var="m" items="${modelTypes}">
-                                                    <option value="${m.id}" ${not empty product && m.id == product.model_id ? 'selected' : ''}>${m.model_type}</option>
-                                                </c:forEach>
+                                            <!-- Select chỉ hiện khi model là "máy chơi game" -->
+                                            <select class="select" id="productTypeSelect" name="product_type" aria-hidden="true" style="display:none;">
+                                                <option value="nintendo" ${not empty product && product.product_type == 'nintendo' ? 'selected' : ''}>Nintendo</option>
+                                                <option value="sony"     ${not empty product && product.product_type == 'sony' ? 'selected' : ''}>Sony</option>
+                                                <option value="others"   ${not empty product && product.product_type == 'others' ? 'selected' : ''}>Loại khác</option>
                                             </select>
+
+                                            <!-- Input ẩn luôn có name=product_type để submit -->
+                                            <input type="hidden" name="product_type"
+                                                   id="productTypeHidden"
+                                                   value="${not empty product ? product.product_type : 'game_card'}"/>
+
+                                            <div class="hint" id="productTypeHint"></div>
                                         </div>
 
                                         <div class="field">
@@ -675,6 +685,74 @@
             </div>
         </div>
         <jsp:include page="footer.jsp"/>
+
+        <script>
+            const form = document.getElementById('mainForm');
+            const modelSelect = document.querySelector('select[name="model_id"]');
+            const ptField = document.getElementById('productTypeField');
+            const ptSelect = document.getElementById('productTypeSelect');
+            const ptHidden = document.getElementById('productTypeHidden');
+
+            // Nhận diện model "máy chơi game" theo text option (không phân biệt hoa/thường)
+            function isGamingModel() {
+                if (!modelSelect)
+                    return false;
+                const opt = modelSelect.options[modelSelect.selectedIndex];
+                const label = (opt?.text || '').toLowerCase().trim();
+                return label.includes('máy chơi game');
+            }
+
+            // Ép product_type = game_card nếu KHÔNG phải máy chơi game
+            function forceGameCardIfNotGaming() {
+                if (!isGamingModel()) {
+                    // Ẩn toàn bộ field & ép hidden
+                    ptField.style.display = 'none';
+                    ptSelect.style.display = 'none';
+                    ptSelect.setAttribute('aria-hidden', 'true');
+                    ptHidden.value = 'game_card';
+                } else {
+                    // Hiện field + 3 option, đồng bộ giá trị submit theo chọn
+                    ptField.style.display = '';
+                    ptSelect.style.display = '';
+                    ptSelect.setAttribute('aria-hidden', 'false');
+                    const allowed = ['nintendo', 'sony', 'others'];
+                    // Nếu hidden hiện không hợp lệ thì set mặc định nintendo
+                    if (!allowed.includes(ptHidden.value)) {
+                        ptHidden.value = 'nintendo';
+                    }
+                    ptSelect.value = allowed.includes(ptHidden.value) ? ptHidden.value : 'nintendo';
+                }
+            }
+
+            // Khi user đổi model → ép lại logic ngay
+            if (modelSelect) {
+                modelSelect.addEventListener('change', () => {
+                    // Ngay khi chọn model khác, nếu model không phải máy chơi game → đặt game_card
+                    forceGameCardIfNotGaming();
+                });
+            }
+
+            // Nếu user chọn Hãng (khi là máy chơi game) → cập nhật giá trị submit
+            if (ptSelect) {
+                ptSelect.addEventListener('change', () => {
+                    ptHidden.value = ptSelect.value;
+                });
+            }
+
+            // Trước khi submit form (kể cả update), kiểm tra lần nữa
+            if (form) {
+                form.addEventListener('submit', () => {
+                    forceGameCardIfNotGaming();
+                });
+            }
+
+            // Lúc load trang (TRƯỜNG HỢP UPDATE): nếu model hiện tại không phải máy chơi game,
+            // nhưng sản phẩm cũ đang có product_type khác → ép về game_card và ẩn field.
+            document.addEventListener('DOMContentLoaded', () => {
+                forceGameCardIfNotGaming();
+            });
+        </script>
+        
         <!-- Swiper JS (nếu dùng nơi khác) -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
@@ -682,102 +760,102 @@
         <script src="https://cdn.tiny.cloud/1/9q1kybnxbgq2f5l3c8palpboawfgsnqsdd53b7gk5ny3dh19/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 
         <script>
-                                                                    // Tabs logic (thuần JS, không phụ thuộc Bootstrap)
-                                                                    const tabButtons = document.querySelectorAll('.tab-btn');
-                                                                    const panels = document.querySelectorAll('[role="tabpanel"]');
-                                                                    tabButtons.forEach(btn => {
-                                                                        btn.addEventListener('click', () => {
-                                                                            tabButtons.forEach(b => b.classList.remove('active'));
-                                                                            btn.classList.add('active');
-                                                                            const target = btn.getAttribute('data-tab-target');
-                                                                            panels.forEach(p => {
-                                                                                if ('#' + p.id === target) {
-                                                                                    p.hidden = false;
-                                                                                } else {
-                                                                                    p.hidden = true;
-                                                                                }
-                                                                            });
-                                                                        });
-                                                                    });
+            // Tabs logic (thuần JS, không phụ thuộc Bootstrap)
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const panels = document.querySelectorAll('[role="tabpanel"]');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const target = btn.getAttribute('data-tab-target');
+                    panels.forEach(p => {
+                        if ('#' + p.id === target) {
+                            p.hidden = false;
+                        } else {
+                            p.hidden = true;
+                        }
+                    });
+                });
+            });
 
-                                                                    // Preview hình ảnh cho input file
-                                                                    function bindPreview(inputId, imgId) {
-                                                                        const input = document.getElementById(inputId);
-                                                                        const img = document.getElementById(imgId);
-                                                                        let lastURL = null;
-                                                                        if (!input || !img)
-                                                                            return;
-                                                                        input.addEventListener('change', function () {
-                                                                            const file = this.files && this.files[0];
-                                                                            if (lastURL) {
-                                                                                URL.revokeObjectURL(lastURL);
-                                                                                lastURL = null;
-                                                                            }
-                                                                            if (file) {
-                                                                                const url = URL.createObjectURL(file);
-                                                                                lastURL = url;
-                                                                                img.src = url;
-                                                                                img.style.display = 'inline-block';
-                                                                            } else {
-                                                                                img.removeAttribute('src');
-                                                                                img.style.display = 'none';
-                                                                            }
-                                                                        });
-                                                                        window.addEventListener('beforeunload', function () {
-                                                                            if (lastURL)
-                                                                                URL.revokeObjectURL(lastURL);
-                                                                        });
-                                                                    }
-                                                                    ['1', '2', '3', '4'].forEach(n => {
-                                                                        bindPreview('imageFile' + n, 'preview' + n);
-                                                                        // vùng tab ảnh và vùng thêm mới dùng cùng id preview (theo số), vẫn ổn vì không đồng thời hiển thị
-                                                                        bindPreview('imageFile' + n, 'preview' + n);
-                                                                    });
+            // Preview hình ảnh cho input file
+            function bindPreview(inputId, imgId) {
+                const input = document.getElementById(inputId);
+                const img = document.getElementById(imgId);
+                let lastURL = null;
+                if (!input || !img)
+                    return;
+                input.addEventListener('change', function () {
+                    const file = this.files && this.files[0];
+                    if (lastURL) {
+                        URL.revokeObjectURL(lastURL);
+                        lastURL = null;
+                    }
+                    if (file) {
+                        const url = URL.createObjectURL(file);
+                        lastURL = url;
+                        img.src = url;
+                        img.style.display = 'inline-block';
+                    } else {
+                        img.removeAttribute('src');
+                        img.style.display = 'none';
+                    }
+                });
+                window.addEventListener('beforeunload', function () {
+                    if (lastURL)
+                        URL.revokeObjectURL(lastURL);
+                });
+            }
+            ['1', '2', '3', '4'].forEach(n => {
+                bindPreview('imageFile' + n, 'preview' + n);
+                // vùng tab ảnh và vùng thêm mới dùng cùng id preview (theo số), vẫn ổn vì không đồng thời hiển thị
+                bindPreview('imageFile' + n, 'preview' + n);
+            });
 
-                                                                    // Xóa ảnh qua controller
-                                                                    function deleteImage(imgId, productId) {
-                                                                        if (!confirm('Bạn có chắc muốn xoá ảnh này không?'))
-                                                                            return;
-                                                                        fetch('MainController?action=deleteImageProduct', {
-                                                                            method: 'POST',
-                                                                            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                                                                            body: 'deleteImgId=' + encodeURIComponent(imgId) + '&product_id=' + encodeURIComponent(productId)
-                                                                        })
-                                                                                .then(res => res.text())
-                                                                                .then(() => location.reload())
-                                                                                .catch(err => console.error(err));
-                                                                    }
+            // Xóa ảnh qua controller
+            function deleteImage(imgId, productId) {
+                if (!confirm('Bạn có chắc muốn xoá ảnh này không?'))
+                    return;
+                fetch('MainController?action=deleteImageProduct', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'deleteImgId=' + encodeURIComponent(imgId) + '&product_id=' + encodeURIComponent(productId)
+                })
+                        .then(res => res.text())
+                        .then(() => location.reload())
+                        .catch(err => console.error(err));
+            }
 
-                                                                    // TinyMCE init
-                                                                    tinymce.init({
-                                                                        selector: '#editor',
-                                                                        height: 600,
-                                                                        plugins: 'image link lists table code media autoresize',
-                                                                        toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media | table | code',
-                                                                        menubar: 'file edit view insert format tools table help',
-                                                                        automatic_uploads: true,
-                                                                        file_picker_types: 'file image media',
-                                                                        file_picker_callback: function (callback, value, meta) {
-                                                                            let input = document.createElement('input');
-                                                                            input.type = 'file';
-                                                                            if (meta.filetype === 'image')
-                                                                                input.accept = 'image/*';
-                                                                            else if (meta.filetype === 'media')
-                                                                                input.accept = 'video/mp4';
-                                                                            input.onchange = function () {
-                                                                                let file = this.files[0];
-                                                                                let formData = new FormData();
-                                                                                formData.append('file', file);
-                                                                                let uploadUrl = '${pageContext.request.contextPath}/UploadImageController';
-                                                                                if (meta.filetype === 'media')
-                                                                                    uploadUrl = '${pageContext.request.contextPath}/UploadVideoController';
-                                                                                fetch(uploadUrl, {method: 'POST', body: formData})
-                                                                                        .then(response => response.json())
-                                                                                        .then(json => callback(json.location));
-                                                                            };
-                                                                            input.click();
-                                                                        }
-                                                                    });
+            // TinyMCE init
+            tinymce.init({
+                selector: '#editor',
+                height: 600,
+                plugins: 'image link lists table code media autoresize',
+                toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist | link image media | table | code',
+                menubar: 'file edit view insert format tools table help',
+                automatic_uploads: true,
+                file_picker_types: 'file image media',
+                file_picker_callback: function (callback, value, meta) {
+                    let input = document.createElement('input');
+                    input.type = 'file';
+                    if (meta.filetype === 'image')
+                        input.accept = 'image/*';
+                    else if (meta.filetype === 'media')
+                        input.accept = 'video/mp4';
+                    input.onchange = function () {
+                        let file = this.files[0];
+                        let formData = new FormData();
+                        formData.append('file', file);
+                        let uploadUrl = '${pageContext.request.contextPath}/UploadImageController';
+                        if (meta.filetype === 'media')
+                            uploadUrl = '${pageContext.request.contextPath}/UploadVideoController';
+                        fetch(uploadUrl, {method: 'POST', body: formData})
+                                .then(response => response.json())
+                                .then(json => callback(json.location));
+                    };
+                    input.click();
+                }
+            });
         </script>
     </body>
 </html>
