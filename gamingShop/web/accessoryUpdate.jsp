@@ -424,7 +424,7 @@
                             <div class="breadcrumbs">
                                 <a href="MainController?action=viewAllAccessories">Phụ kiện</a><span class="sep">›</span>
                                 <span>${empty accessory ? 'Thêm' : 'Chỉnh sửa'}</span>
-                            </div>
+                            </div><br>
 
                             <h2 class="page-title" style="margin:0;">
                                 <c:choose>

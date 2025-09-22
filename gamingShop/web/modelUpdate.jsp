@@ -415,7 +415,7 @@
                             <div class="breadcrumbs">
                                 <a href="MainController?action=viewModelList">Models</a><span class="sep">›</span>
                                 <span>${empty model ? 'Thêm' : 'Chỉnh sửa'}</span>
-                            </div>
+                            </div><br>
                             <h2 class="page-title" style="margin:0;">
                                 <c:choose>
                                     <c:when test="${not empty model && model.id > 0}">Chỉnh sửa model</c:when>

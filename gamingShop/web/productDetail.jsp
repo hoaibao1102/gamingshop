@@ -549,7 +549,7 @@
                         <a href="MainController?action=listMayChoiGame">Danh sách sản phẩm</a>
                         <span>/</span>
                         <span>Chi tiết sản phẩm</span>
-                    </div>
+                    </div><br>
                     <c:choose>
                         <c:when test="${not empty productDetail}">
                             <div class="product-detail">

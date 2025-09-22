@@ -424,7 +424,7 @@
                             <div class="breadcrumbs">
                                 <a href="MainController?action=searchProduct">Danh sách sản phẩm</a><span class="sep">›</span>
                                 <span>${empty product ? 'Thêm' : 'Chỉnh sửa'}</span>
-                            </div>
+                            </div><br>
 
                             <h2 class="page-title" style="margin:0;">
                                 <c:choose>
