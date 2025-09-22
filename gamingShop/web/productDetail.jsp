@@ -592,7 +592,17 @@
                                         <div class="pd-row">
                                             <b>Loại</b>
                                             <span>
-                                                ${productDetail.product_type == 'new' ? 'New' : (productDetail.product_type == 'used' ? 'Link New' : productDetail.product_type)}
+                                                <c:choose>
+                                                    <c:when test="${productDetail.product_type == 'nintendo'}">
+                                                        Nintendo
+                                                    </c:when>
+                                                    <c:when test="${productDetail.product_type == 'sony'}">
+                                                        Sony
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        Hãng khác
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </span>
                                         </div>
                                         <div class="pd-row pd-row-price">

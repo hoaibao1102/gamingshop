@@ -131,9 +131,12 @@
                             <div class="empty-state">
                                 <h3>Không tìm thấy sản phẩm</h3>
                                 <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí tìm kiếm của bạn.</p>
-                                <button class="sb-title" onclick="resetFilter()" class="btn-filter">
-                                    Xem tất cả sản phẩm
-                                </button>
+                                <form class="sb-title" action="MainController" method="post">
+                                    <input type="hidden" name="action" value="listMayChoiGame"/>
+                                    <button class="btn-view-all">
+                                        Xem tất cả sản phẩm
+                                    </button>
+                                </form>
                             </div>
                         </c:otherwise>
                     </c:choose>
@@ -146,19 +149,19 @@
         <!-- Swiper JS -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
         <script>
-                                    const heroSwiper = new Swiper('.hero-slider', {
-                                        loop: true,
-                                        autoplay: {delay: 3000, disableOnInteraction: false},
-                                        speed: 700,
-                                        spaceBetween: 16,
-                                        pagination: {el: '.hero-slider .swiper-pagination', clickable: true},
-                                        navigation: {
-                                            nextEl: '.hero-slider .swiper-button-next',
-                                            prevEl: '.hero-slider .swiper-button-prev'
-                                        },
-                                        grabCursor: true,
-                                        effect: 'slide'
-                                    });
+            const heroSwiper = new Swiper('.hero-slider', {
+                loop: true,
+                autoplay: {delay: 3000, disableOnInteraction: false},
+                speed: 700,
+                spaceBetween: 16,
+                pagination: {el: '.hero-slider .swiper-pagination', clickable: true},
+                navigation: {
+                    nextEl: '.hero-slider .swiper-button-next',
+                    prevEl: '.hero-slider .swiper-button-prev'
+                },
+                grabCursor: true,
+                effect: 'slide'
+            });
         </script>
     </body>
 </html>
