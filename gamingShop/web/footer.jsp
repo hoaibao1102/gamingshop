@@ -10,7 +10,6 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>footer</title>
-        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <style>
             /* ========== SOCIAL FOLLOW styles ========== */
             .social-follow{

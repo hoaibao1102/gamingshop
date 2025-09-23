@@ -1,11 +1,10 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ include file="/WEB-INF/jspf/head.jspf" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!-- Filter Section -->
 <div class="filter-section" id="productFilter">
     <div class="filter-header" onclick="toggleFilter()" role="button" aria-controls="filterContent">
-        <h3>SHOP GAME VIỆT 38 - Lọc & Sắp xếp sản phẩm</h3>
+        <h3>Lọc & Sắp xếp sản phẩm</h3>
         <button type="button" class="filter-toggle" aria-expanded="false">
             <span class="filter-icon">🔍</span>
             <span class="toggle-text">Mở rộng</span>

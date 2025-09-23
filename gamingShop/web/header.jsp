@@ -12,7 +12,6 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>Header Mobile + Desktop</title>
-        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <style>
             :root{
                 --bg:#ffffff;
@@ -628,6 +627,10 @@
                 <div style="font-weight:800; margin-bottom:10px;">Danh mục</div>
                 <ul class="menu">
                     <li>
+                        <form class="mobile-link-form" action="MainController" method="post">
+                            <input type="hidden" name="action" value="prepareHome"/>
+                            <button class="mobile-link-button" type="submit">Trang chủ</button>
+                        </form>
                         <!-- BỎ toggle, để nút gửi form bình thường -->
                         <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listMayChoiGame"/>
@@ -656,7 +659,7 @@
                     <li>
                         <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listSanPhamCongNghe"/>
-                            <button class="mobile-link-button" type="submit">Sản phẩm công nghệ khác</button>
+                            <button class="mobile-link-button" type="submit">Sản phẩm khác</button>
                         </form>
                     </li>
                     <li>
