@@ -6,7 +6,7 @@
 <fmt:setLocale value="vi_VN" />
 
 <!DOCTYPE html>
-<html>
+<html lang="vi">
     <head>
         <meta charset="UTF-8">
         <title>SHOP GAME VIỆT 38 - Trang chủ</title>
@@ -69,7 +69,9 @@
 
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
-                    <h3>${nameProductsByCategory}</h3>
+                    <h1 style="font-size:2rem; font-weight:700; color:#222; text-align:center; margin:20px 0; padding:10px; border-bottom:2px solid #f0f0f0; font-family:'Segoe UI', Arial, sans-serif;">
+                        ${nameProductsByCategory}
+                    </h1>
                     <c:choose>
                         <c:when test="${not empty listProductsByCategory}">
                             <c:set var="products" value="${listProductsByCategory.content}" />

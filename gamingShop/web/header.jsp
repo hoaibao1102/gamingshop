@@ -12,7 +12,6 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <title>Header Mobile + Desktop</title>
-        <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <style>
             :root{
                 --bg:#ffffff;
