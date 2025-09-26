@@ -70,7 +70,7 @@ VALUES
  N'<p>MÁY CHƠI GAME PSP 2000.</p>','active'),
 (N'MÁY CHƠI GAME PSP 3000', N'SP24', 1400000, 'sony', 10, 1, 3, NULL,
  N'<p>MÁY CHƠI GAME PSP 3000.</p>','active'),
-(N'THẺ GAME ABC…XZY 2ND', N'SP25', 850000, 'game_card', 10, 1, NULL, NULL,
+(N'THẺ GAME ABC…XZY 2ND', N'SP25', 850000, 'game_card', 10, 2, NULL, NULL,
  N'<p>THẺ GAME ABC…XZY 2ND.</p>','active');
  
 -- 5) services
