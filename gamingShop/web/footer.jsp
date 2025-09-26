@@ -9,7 +9,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>footer</title>
+        <!--<title>footer</title>-->
         <style>
             /* ========== SOCIAL FOLLOW styles ========== */
             .social-follow{
@@ -360,8 +360,8 @@
                     <a href="tel:0357394235" class="contact-item phone">
                         <span class="ico"></span><span>0357394235</span>
                     </a>
-                    <a href="#" class="contact-item mail">
-                        <span class="ico"></span><span>@shopgameviet38</span>
+                    <a href="https://www.facebook.com/messages/t/106869742356166" class="contact-item mail">
+                        <span class="ico"></span><span>SHOP GAME VIỆT 38</span>
                     </a>
                     <a href="https://zalo.me/0357394235" class="contact-item zalo">
                         <span class="ico"></span><span>zalo: 0357394235</span>
