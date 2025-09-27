@@ -58,7 +58,7 @@ public class PasswordUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println(encryptSHA256("U.Tx.ak5rENG3dM"));
+        System.out.println(encryptSHA256("VuMinhQuang_TranGiaBao_DoanDinhHuy_PhamThiAnh_LePhamHoaiBao"));
 //        AccountsDAO udao = new AccountsDAO();
 //        List<Accounts> list = udao.getAll();
 //        for (Accounts u : list) {

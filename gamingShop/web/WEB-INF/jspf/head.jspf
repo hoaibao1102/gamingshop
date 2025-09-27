@@ -2,7 +2,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHOP GAME VIỆT 38 - Chuyên mua bán, sữa chữa, trao đổi máy chơi game Nintendo, Sony và các sản phẩm công nghệ khác.</title>
     <meta name="description" content="SHOP GAME VIỆT 38 - Chuyên mua bán, sữa chữa, trao đổi máy chơi game Nintendo, Sony và các sản phẩm công nghệ khác.">
 
     <!-- favicon chu?n cho Google -->
@@ -14,7 +13,7 @@
 
     <!-- favicon cho Apple/Android -->
     <link rel="apple-touch-icon" href="/assets/img/logo/logo-180.png" sizes="180x180">
-    
+
     <!-- Schema: Organization -->
     <script type="application/ld+json">
         {
@@ -23,7 +22,13 @@
         "url": "https://sgv38.vn",
         "logo": "https://sgv38.vn/favicon.ico",
         "name": "SHOP GAME VIỆT 38",
-        "description": "SHOP GAME VIỆT 38 - Chuyên mua bán, sữa chữa, trao đổi máy chơi game Nintendo, Sony và các sản phẩm công nghệ khác."
-        }
+        "description": "SHOP GAME VIỆT 38 - Chuyên mua bán, sữa chữa, trao đổi máy chơi game Nintendo, Sony và các sản phẩm công nghệ khác.",
+        "sameAs": [
+          "https://www.facebook.com/shopgameviet38",
+          "https://shopee.vn/shopgameviet38",
+          "https://www.youtube.com/@shopgameviet38",
+          "https://www.tiktok.com/@shopgameviet38"
+        ]
+    }
     </script>
 </head>

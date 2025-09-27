@@ -11,8 +11,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
-        <title>Header Mobile + Desktop</title>
-        <%@ include file="/WEB-INF/jspf/head.jspf" %>
+        <!--<title>Header Mobile + Desktop</title>-->
         <style>
             :root{
                 --bg:#ffffff;
@@ -43,10 +42,10 @@
             }
 
             /* Form button như link */
-            .link-form {
+            .link-form{
                 display:inline;
                 margin:0;
-                padding:0;
+                padding:0
             }
             .link-button{
                 background:none;
@@ -66,14 +65,14 @@
             }
             .link-button:hover{
                 color:var(--primary);
-                background:#eff6ff;
+                background:#eff6ff
             }
 
-            /* Mobile menu button */
+            /* Mobile menu */
             .mobile-link-form{
                 width:100%;
                 margin:0;
-                padding:0;
+                padding:0
             }
             .mobile-link-button{
                 width:100%;
@@ -90,16 +89,14 @@
                 text-align:left;
                 position:relative;
             }
-
-            /* (GIỮ LẠI CLASS cho tương thích, nhưng dropdown luôn mở) */
             .mobile-dropdown{
                 max-height:0;
                 overflow:hidden;
                 background:#f8fafc;
-                transition:max-height .3s ease;
+                transition:max-height .3s ease
             }
             .mobile-dropdown .mobile-link-form{
-                border-left:3px solid var(--primary);
+                border-left:3px solid var(--primary)
             }
             .mobile-dropdown .mobile-link-button{
                 padding:12px 20px;
@@ -109,12 +106,10 @@
             }
             .mobile-dropdown .mobile-link-button:hover{
                 background:#e2e8f0;
-                color:var(--primary);
+                color:var(--primary)
             }
-
-            /* Toggle caret (không dùng nữa) */
             .mobile-dropdown-toggle{
-                position:relative;
+                position:relative
             }
             .mobile-dropdown-toggle::after{
                 content:"▾";
@@ -126,19 +121,19 @@
                 transition:transform .3s ease;
             }
 
-            /* Desktop nav */
+            /* Nav */
             .nav .link-form{
-                display:inline;
+                display:inline
             }
             .nav .link-button{
                 padding:10px 6px;
                 border-radius:8px;
                 display:flex;
-                flex-direction:column;
+                flex-direction:column
             }
             .nav .link-button.active{
                 color:var(--primary);
-                position:relative;
+                position:relative
             }
             .nav .link-button.active::after{
                 content:"";
@@ -152,7 +147,7 @@
             }
             .nav .dropdown .link-form{
                 display:block;
-                width:100%;
+                width:100%
             }
             .nav .dropdown .link-button{
                 display:block;
@@ -161,11 +156,11 @@
                 border-radius:8px;
                 font-weight:600;
                 white-space:nowrap;
-                text-align:left;
+                text-align:left
             }
             .nav .dropdown .link-button:hover{
                 background:#f8fafc;
-                color:var(--primary);
+                color:var(--primary)
             }
 
             .site-header{
@@ -173,7 +168,7 @@
                 top:0;
                 z-index:60;
                 background:var(--bg);
-                box-shadow:var(--shadow);
+                box-shadow:var(--shadow)
             }
             .topbar{
                 display:grid;
@@ -307,8 +302,6 @@
             .desktopbar{
                 display:none
             }
-
-            /* Responsive button */
             .btn{
                 display:inline-flex;
                 align-items:center;
@@ -337,10 +330,9 @@
                 width:18px;
                 height:18px
             }
-
             .logoHeader{
                 width:65px;
-                height:100%;
+                height:100%
             }
 
             /* Mobile tweaks */
@@ -348,35 +340,35 @@
                 .btn{
                     padding:6px 12px;
                     font-size:13px;
-                    gap:6px;
+                    gap:6px
                 }
                 .btn svg{
                     width:16px;
-                    height:16px;
+                    height:16px
                 }
                 .search input{
-                    font-size:14px;
+                    font-size:14px
                 }
                 .logoHeader{
                     width:65px;
-                    height:100%;
+                    height:100%
                 }
             }
             @media (max-width:480px){
                 .btn{
                     padding:8px 10px;
-                    font-size:12px;
+                    font-size:12px
                 }
                 .btn svg{
                     width:14px;
-                    height:14px;
+                    height:14px
                 }
                 .topbar{
-                    padding:8px 10px;
+                    padding:8px 10px
                 }
                 .drawer{
                     width:85%;
-                    max-width:280px;
+                    max-width:280px
                 }
             }
 
@@ -419,11 +411,7 @@
                     padding:10px 6px;
                     border-radius:8px;
                     white-space:nowrap;
-                    line-height:1;
-                }
-                .nav a svg{
-                    width:18px;
-                    height:18px
+                    line-height:1
                 }
                 .nav a:hover{
                     color:var(--primary);
@@ -441,45 +429,67 @@
                     bottom:-6px;
                     height:3px;
                     border-radius:999px;
-                    background:var(--primary);
+                    background:var(--primary)
                 }
                 .nav li{
                     position:relative
                 }
+
+                /* Dropdown Desktop ngang */
                 .nav .dropdown{
                     position:absolute;
                     top:100%;
                     left:0;
-                    min-width:286px;
                     background:#fff;
                     border:1px solid var(--ring);
                     border-radius:10px;
                     box-shadow:var(--shadow);
-                    padding:8px;
+                    padding:12px;                /* giảm padding */
                     list-style:none;
-                    margin:8px 0 0 0;
+                    margin:5px 0 0 0;
                     opacity:0;
                     visibility:hidden;
                     transform:translateY(6px);
                     transition:.16s ease;
                     z-index:80;
+
+                    display:grid;
+                    grid-template-columns:repeat(3,1fr); /* 3 item ngang */
+                    gap:6px;                  /* giảm khoảng cách */
+                    min-width:285px;           /* nhỏ hơn bản cũ */
+                    text-align:center;
                 }
                 .nav li:hover > .dropdown{
                     opacity:1;
                     visibility:visible;
                     transform:translateY(0)
                 }
-                .nav .dropdown a{
-                    display:block;
-                    padding:10px 12px;
+                .nav .dropdown li{
+                    display:flex;
+                    justify-content:center
+                }
+                .nav .dropdown .link-button{
+                    display:flex;
+                    flex-direction:column;
+                    align-items:center;
+                    justify-content:center;
+                    gap:4px;                   /* giảm khoảng cách icon & chữ */
+                    padding:8px;               /* nhỏ hơn */
                     border-radius:8px;
                     font-weight:600;
-                    white-space:nowrap
+                    white-space:nowrap;
+                    font-size:14px;             /* chữ nhỏ hơn */
                 }
-                .nav .dropdown a:hover{
+                .nav .dropdown .link-button img{
+                    width:30px;                /* icon nhỏ lại */
+                    height:auto;
+                }
+                .nav .dropdown .link-button:hover{
                     background:#f8fafc;
-                    color:var(--primary)
+                    color:var(--primary);
                 }
+
+
                 .nav li.has-dd > a::after{
                     content:"▾";
                     margin-left:6px;
@@ -527,7 +537,7 @@
                     font-weight:700
                 }
                 .nav_icon{
-                    width:50px;
+                    width:50px
                 }
                 .link{
                     font-weight:700;
@@ -538,55 +548,26 @@
                 .link:hover{
                     background:#eff6ff
                 }
-                @media (max-width:1250px){
-                    .nav .link-button{
-                        padding:8px 4px;
-                        font-size:14px
-                    }
-                    .nav ul{
-                        gap:14px 18px
-                    }
-                    .nav .link-button svg{
-                        width:16px;
-                        height:16px
-                    }
-                }
-                @media (max-width:1100px){
-                    .desktopbar{
-                        grid-template-columns:1fr;
-                        grid-auto-rows:auto;
-                        row-gap:8px
-                    }
-                    .nav{
-                        justify-self:center
-                    }
-                    .actions{
-                        justify-self:end
-                    }
-                }
             }
 
-            /* ==== OVERRIDE: TẮT HẲN DROPDOWN TRÊN MOBILE (LUÔN MỞ) ==== */
+            /* Mobile override */
             @media (max-width:1199.98px){
-                /* luôn mở phần con */
                 .mobile-dropdown{
                     max-height:none !important;
                     overflow:visible !important;
-                    background:transparent !important;
+                    background:transparent !important
                 }
-                /* bỏ mũi tên caret */
                 .mobile-dropdown-toggle::after{
-                    display:none !important;
+                    display:none !important
                 }
-                /* căn lề nhẹ cho mục con */
                 .mobile-dropdown .mobile-link-form{
-                    border-left:3px solid #4f1964;
+                    border-left:3px solid #4f1964
                 }
                 .mobile-dropdown .mobile-link-button{
                     padding:10px 16px;
                     font-size:14px;
                     background:transparent;
-                    border-bottom:1px solid var(--ring);
+                    border-bottom:1px solid var(--ring)
                 }
             }
         </style>
@@ -628,6 +609,10 @@
                 <div style="font-weight:800; margin-bottom:10px;">Danh mục</div>
                 <ul class="menu">
                     <li>
+                        <form class="mobile-link-form" action="MainController" method="post">
+                            <input type="hidden" name="action" value="prepareHome"/>
+                            <button class="mobile-link-button" type="submit">Trang chủ</button>
+                        </form>
                         <!-- BỎ toggle, để nút gửi form bình thường -->
                         <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listMayChoiGame"/>
@@ -656,7 +641,7 @@
                     <li>
                         <form class="mobile-link-form" action="MainController" method="post">
                             <input type="hidden" name="action" value="listSanPhamCongNghe"/>
-                            <button class="mobile-link-button" type="submit">Sản phẩm công nghệ khác</button>
+                            <button class="mobile-link-button" type="submit">Sản phẩm khác</button>
                         </form>
                     </li>
                     <li>
@@ -745,21 +730,30 @@
                                     <form class="link-form" action="MainController" method="post">
                                         <input type="hidden" name="action" value="listMayChoiGame"/>
                                         <input type="hidden" name="condition" value="nintendo"/>
-                                        <button class="link-button" type="submit">Nintendo</button>
+                                        <button class="link-button" type="submit">
+                                            <img src="assets/img/iconHeader/nintendo-switch.png" alt="alt"/>
+                                            Nintendo
+                                        </button>
                                     </form>
                                 </li>
                                 <li>
                                     <form class="link-form" action="MainController" method="post">
                                         <input type="hidden" name="action" value="listMayChoiGame"/>
                                         <input type="hidden" name="condition" value="sony"/>
-                                        <button class="link-button" type="submit">Sony</button>
+                                        <button class="link-button" type="submit">
+                                            <img src="assets/img/iconHeader/sony.png" alt="alt"/>
+                                            Sony
+                                        </button>
                                     </form>
                                 </li>
                                 <li>
                                     <form class="link-form" action="MainController" method="post">
                                         <input type="hidden" name="action" value="listMayChoiGame"/>
                                         <input type="hidden" name="condition" value="others"/>
-                                        <button class="link-button" type="submit">Hãng khác</button>
+                                        <button class="link-button" type="submit">
+                                            <img src="assets/img/iconHeader/hang_khac.png" alt="alt"/>
+                                            Hãng khác
+                                        </button>
                                     </form>
                                 </li>
                             </ul>
