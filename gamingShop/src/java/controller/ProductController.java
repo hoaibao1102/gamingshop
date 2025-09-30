@@ -2217,7 +2217,6 @@ public class ProductController extends HttpServlet {
 
             Integer intParam = Integer.parseInt(idParam);
             Services service = servicesDAO.getById(intParam);
-            System.out.println("IDPRAM AFTER CHUAN HOA:===" + idParam);
             if (service != null) {
                 request.setAttribute("serviceDetail", service);
             } else {

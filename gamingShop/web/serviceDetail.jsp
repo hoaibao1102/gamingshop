@@ -550,7 +550,7 @@
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
                     <div class="breadcrumb">
-                        <a href="MainController?action=getServices">Danh sách dịch vụ</a>
+                        <a href="MainController?action=listDichVu">Danh sách dịch vụ</a>
                         <span>/</span>
                         <span>Chi tiết dịch vụ</span>
                     </div><br>
