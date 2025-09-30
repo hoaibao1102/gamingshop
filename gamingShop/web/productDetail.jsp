@@ -546,7 +546,7 @@
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
                     <div class="breadcrumb">
-                        <a href="MainController?action=listMayChoiGame">Danh sách sản phẩm</a>
+                        <a href="MainController?action=listSanPhamCongNghe">Danh sách sản phẩm</a>
                         <span>/</span>
                         <span>Chi tiết sản phẩm</span>
                     </div><br>
