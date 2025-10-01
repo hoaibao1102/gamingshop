@@ -582,6 +582,14 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         where.put("model_id", String.valueOf(model_id));
         return getProductsByConditions(filter, where);
     }
+    
+    public Page<Products> getListSanPhamKhac(ProductFilter filter) {
+        ModelsDAO mdao = new ModelsDAO();
+        int model_id = mdao.getIdByType("Sản phẩm khác");
+        Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
+        where.put("model_id", String.valueOf(model_id));
+        return getProductsByConditions(filter, where);
+    }
 
     public List<Products> getByType(int productId) {
         Products pro = getById(productId);

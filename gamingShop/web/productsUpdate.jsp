@@ -16,6 +16,8 @@
         <!-- App CSS (đồng bộ tông với trang chủ) -->
         <link rel="stylesheet" href="assets/css/maincss.css"/>
 
+        <!-- Breadcrumbs CSS -->
+        <link rel="stylesheet" href="assets/css/breadcrumbs.css"/>
         <style>
             /* Các tiện ích nhỏ phù hợp với maincss.css */
             .page-title {
@@ -200,20 +202,47 @@
                 border-radius: 10px;
             }
 
-            /* Pills cho điều hướng nhỏ */
+            /* Breadcrumbs hiện đại */
             .breadcrumbs {
-                display:flex;
-                gap:8px;
-                font-size:.95rem;
-                color:#6b7280;
-                margin-bottom:8px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.9rem;
+                color: #6b7280;
+                margin-bottom: 16px;
+                padding: 12px 16px;
+                background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             }
             .breadcrumbs a {
-                color:inherit;
-                text-decoration:none;
+                color: #3b82f6;
+                text-decoration: none;
+                font-weight: 500;
+                padding: 4px 8px;
+                border-radius: 6px;
+                transition: all 0.2s ease;
+                position: relative;
+            }
+            .breadcrumbs a:hover {
+                background: rgba(59, 130, 246, 0.1);
+                color: #1d4ed8;
+                transform: translateY(-1px);
             }
             .breadcrumbs .sep {
-                color:#9ca3af;
+                color: #9ca3af;
+                font-weight: 600;
+                font-size: 1rem;
+                margin: 0 2px;
+            }
+            .breadcrumbs .current {
+                color: #111827;
+                font-weight: 600;
+                background: rgba(255, 255, 255, 0.8);
+                padding: 4px 8px;
+                border-radius: 6px;
+                border: 1px solid #e5e7eb;
             }
 
             .btn.danger {
@@ -288,7 +317,12 @@
                     font-size:.9rem;
                 }
                 .breadcrumbs{
-                    font-size:.9rem;
+                    font-size:.85rem;
+                    padding: 8px 12px;
+                    flex-wrap: wrap;
+                }
+                .breadcrumbs a {
+                    padding: 3px 6px;
                 }
                 .tabs{
                     flex-wrap:wrap;
@@ -422,8 +456,16 @@
                     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:12px; flex-wrap:wrap;">
                         <div>
                             <div class="breadcrumbs">
-                                <a href="MainController?action=searchProduct">Danh sách sản phẩm</a><span class="sep">›</span>
-                                <span>${empty product ? 'Thêm' : 'Chỉnh sửa'}</span>
+                                <a href="MainController?action=viewModelList">Loại sản phẩm</a><span class="sep">›</span>
+                                <c:if test="${not empty product}">
+                                    <a href="MainController?action=searchProduct&model_id=${product.model_id}">
+                                        <c:if test="${product.model_id == 1}">Máy chơi game</c:if>
+                                        <c:if test="${product.model_id == 2}">Thẻ game</c:if>
+                                        <c:if test="${product.model_id == 3}">Sản phẩm khác</c:if>
+                                        </a><span class="sep">›</span>
+                                </c:if>
+
+                                <span class="current">${empty product ? 'Thêm' : 'Chỉnh sửa'}</span>
                             </div><br>
 
                             <h2 class="page-title" style="margin:0;">
@@ -434,10 +476,7 @@
                                 <span class="badge-soft" style="margin-left:8px;">Product Management</span>
                             </h2>
                         </div>
-                        <form action="MainController" method="post" autocomplete="off">
-                            <input type="hidden" name="action" value="searchProduct"/>
-                            <button class="btn ghost" type="submit">Quay lại danh sách</button>
-                        </form>
+
                     </div>
 
                     <!-- Tabs -->
@@ -472,7 +511,7 @@
                                         </div>
 
                                         <div class="field">
-                                            <label class="label required">Model</label>
+                                            <label class="label required">Loại</label>
                                             <select class="select" name="model_id" required>
                                                 <c:forEach var="m" items="${modelTypes}">
                                                     <option value="${m.id}" ${not empty product && m.id == product.model_id ? 'selected' : ''}>${m.model_type}</option>
@@ -752,7 +791,7 @@
                 forceGameCardIfNotGaming();
             });
         </script>
-        
+
         <!-- Swiper JS (nếu dùng nơi khác) -->
         <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 

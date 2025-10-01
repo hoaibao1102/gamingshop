@@ -12,6 +12,8 @@
         <%@ include file="/WEB-INF/jspf/head.jspf" %>
         <!-- App CSS đồng bộ -->
         <link rel="stylesheet" href="assets/css/maincss.css"/>
+        <!-- Breadcrumbs CSS -->
+        <link rel="stylesheet" href="assets/css/breadcrumbs.css"/>
 
         <style>
             /* ===== Layout giống trang Post ===== */
@@ -162,19 +164,70 @@
                 border:1px solid #fecaca
             }
 
-            .breadcrumbs{
-                display:flex;
-                gap:8px;
-                font-size:.95rem;
-                color:#6b7280;
-                margin-bottom:8px
+            /* Breadcrumbs hiện đại */
+            .breadcrumbs {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.9rem;
+                color: #6b7280;
+                margin-bottom: 16px;
+                padding: 12px 16px;
+                background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             }
-            .breadcrumbs a{
-                color:inherit;
-                text-decoration:none
+            .breadcrumbs a {
+                color: #3b82f6;
+                text-decoration: none;
+                font-weight: 500;
+                padding: 4px 8px;
+                border-radius: 6px;
+                transition: all 0.2s ease;
+                position: relative;
             }
-            .breadcrumbs .sep{
-                color:#9ca3af
+            .breadcrumbs a:hover {
+                background: rgba(59, 130, 246, 0.1);
+                color: #1d4ed8;
+                transform: translateY(-1px);
+            }
+            .breadcrumbs .sep {
+                color: #9ca3af;
+                font-weight: 600;
+                font-size: 1rem;
+                margin: 0 2px;
+            }
+            .breadcrumbs .current {
+                color: #111827;
+                font-weight: 600;
+                background: rgba(255, 255, 255, 0.8);
+                padding: 4px 8px;
+                border-radius: 6px;
+                border: 1px solid #e5e7eb;
+            }
+            
+            /* Breadcrumbs animations và micro-interactions */
+            .breadcrumbs a::before {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                width: 0;
+                height: 2px;
+                background: #3b82f6;
+                transition: all 0.3s ease;
+                transform: translateX(-50%);
+            }
+            .breadcrumbs a:hover::before {
+                width: 80%;
+            }
+            .breadcrumbs .sep {
+                transition: all 0.2s ease;
+            }
+            .breadcrumbs a:hover + .sep {
+                color: #3b82f6;
+                transform: scale(1.1);
             }
 
             .img-row{
@@ -288,7 +341,12 @@
                     padding: 9px 12px;
                 }
                 .breadcrumbs {
-                    font-size: .9rem;
+                    font-size: .85rem;
+                    padding: 8px 12px;
+                    flex-wrap: wrap;
+                }
+                .breadcrumbs a {
+                    padding: 3px 6px;
                 }
             }
 
@@ -306,6 +364,18 @@
                 }
                 .section-hd, .section-bd {
                     padding: 12px;
+                }
+                .breadcrumbs {
+                    padding: 6px 10px;
+                    font-size: 0.8rem;
+                    margin-bottom: 10px;
+                }
+                .breadcrumbs a {
+                    padding: 2px 4px;
+                    font-size: 0.8rem;
+                }
+                .breadcrumbs .sep {
+                    font-size: 0.9rem;
                 }
             }
 
@@ -337,8 +407,8 @@
                         <div>
                             <div class="breadcrumbs">
                                 <a href="MainController?action=getAllBanner">Banners</a><span class="sep">›</span>
-                                <span>${empty editBanner ? 'Thêm' : 'Chỉnh sửa'}</span>
-                            </div><br>
+                                <span class="current">${empty editBanner ? 'Thêm' : 'Chỉnh sửa'}</span>
+                            </div>
                             <h2 class="page-title">
                                 ${empty editBanner ? 'Thêm banner mới' : 'Chỉnh sửa banner'}
                                 <span class="badge-soft" style="margin-left:8px;">Banner Management</span>

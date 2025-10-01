@@ -26,6 +26,8 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
         <!-- Main CSS đồng bộ với trang chủ -->
         <link rel="stylesheet" href="assets/css/maincss.css" />
+        <!-- Breadcrumbs CSS -->
+        <link rel="stylesheet" href="assets/css/breadcrumbs.css" />
 
         <style>
             /* --- Chỉ bổ sung vài style cho trang quản trị (không phá vỡ maincss.css) --- */
@@ -283,6 +285,49 @@
                 background: #f5f5f5;
             }
 
+            /* Breadcrumbs hiện đại */
+            .breadcrumbs {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.9rem;
+                color: #6b7280;
+                margin-bottom: 16px;
+                padding: 12px 16px;
+                background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+            .breadcrumbs a {
+                color: #3b82f6;
+                text-decoration: none;
+                font-weight: 500;
+                padding: 4px 8px;
+                border-radius: 6px;
+                transition: all 0.2s ease;
+                position: relative;
+            }
+            .breadcrumbs a:hover {
+                background: rgba(59, 130, 246, 0.1);
+                color: #1d4ed8;
+                transform: translateY(-1px);
+            }
+            .breadcrumbs .sep {
+                color: #9ca3af;
+                font-weight: 600;
+                font-size: 1rem;
+                margin: 0 2px;
+            }
+            .breadcrumbs .current {
+                color: #111827;
+                font-weight: 600;
+                background: rgba(255, 255, 255, 0.8);
+                padding: 4px 8px;
+                border-radius: 6px;
+                border: 1px solid #e5e7eb;
+            }
+
             /* Responsive */
             @media (max-width: 768px){
                 .admin-toolbar .search-form {
@@ -294,6 +339,14 @@
                 }
                 .table-wrap {
                     border-radius: 0;
+                }
+                .breadcrumbs {
+                    padding: 8px 12px;
+                    font-size: 0.85rem;
+                    flex-wrap: wrap;
+                }
+                .breadcrumbs a {
+                    padding: 3px 6px;
                 }
             }
         </style>
@@ -317,11 +370,22 @@
                 </div>
 
                 <div class="container">
-                    <div class="admin-toolbar">
-                        <div class="title">Danh sách sản phẩm</div>
-                        <form action="MainController" method="post" class="search-form" autocomplete="off">
-                            <input type="hidden" name="action" value="searchProduct"/>
-                            <input type="text" name="keyword" value="${keyword != null ? keyword : ''}" placeholder="Nhập tên sản phẩm..." />
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:12px; flex-wrap:wrap;">
+                        <div>
+                            <div class="breadcrumbs">
+                                <a href="MainController?action=viewModelList">Loại sản phẩm</a><span class="sep">›</span>
+                                <c:if test="${model_id == 1}"><span class="current">Máy chơi game</span></c:if>
+                                <c:if test="${model_id == 2}"><span class="current">Thẻ game</span></c:if>
+                                <c:if test="${model_id == 3}"><span class="current">Sản phẩm khác</span></c:if>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-toolbar">
+                            <div class="title">Danh sách sản phẩm</div>
+                            <form action="MainController" method="post" class="search-form" autocomplete="off">
+                                <input type="hidden" name="action" value="searchProduct"/>
+                                <input type="text" name="keyword" value="${keyword != null ? keyword : ''}" placeholder="Nhập tên sản phẩm..." />
                             <button type="submit" class="btn btn-primary">Tìm kiếm</button>
                         </form>
 

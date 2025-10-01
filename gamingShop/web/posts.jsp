@@ -475,7 +475,7 @@
                         <c:if test="${isLoggedIn}">
                             <div class="products-meta">
                                 <span class="meta-pill"><span class="dot"></span><b>Từ khóa:</b>&nbsp;${keyword != null && fn:length(keyword) > 0 ? keyword : '—'}</span>
-                                <span class="meta-pill"><b>Tổng:</b>&nbsp;<c:choose><c:when test="${not empty list}">${fn:length(list)}</c:when><c:otherwise>0</c:otherwise></c:choose> sản phẩm</span>
+                                <span class="meta-pill"><b>Tổng:</b>&nbsp;<c:choose><c:when test="${not empty list}">${fn:length(list)}</c:when><c:otherwise>0</c:otherwise></c:choose> bài đăng</span>
                                     </div><br>
                         </c:if>
 

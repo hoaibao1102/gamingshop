@@ -92,9 +92,11 @@
                                                 <c:choose>
                                                     <c:when test="${not empty isListProductsByCategory}">
                                                         <input type="hidden" name="idAccessory" value="${product.id}">
+                                                        <input type="hidden" name="breadCrumbs" value="${action}">
                                                         <input type="hidden" name="action" value="getAccessory">
                                                     </c:when>
                                                     <c:otherwise>
+                                                        <input type="hidden" name="breadCrumbs" value="${action}">
                                                         <input type="hidden" name="idProduct" value="${product.id}">
                                                         <input type="hidden" name="action" value="getProduct">
                                                     </c:otherwise>
@@ -135,6 +137,7 @@
                                 <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí tìm kiếm của bạn.</p>
                                 <form class="sb-title" action="MainController" method="post">
                                     <input type="hidden" name="action" value="listMayChoiGame"/>
+                                    
                                     <button class="btn-view-all">
                                         Xem tất cả sản phẩm
                                     </button>
