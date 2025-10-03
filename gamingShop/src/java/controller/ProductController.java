@@ -1923,8 +1923,6 @@ public class ProductController extends HttpServlet {
             // Update database
             boolean success = servicesDAO.update(existingService);
 
-            System.out.println("===DEBUG====");
-            System.out.println("GET SERVICE" + existingService.getId() + existingService.getDescription_html() + existingService.getService_type() + existingService.getStatus() + existingService.getPrice());
             if (success) {
                 HttpSession session = request.getSession();
                 session.removeAttribute("cachedServiceList");

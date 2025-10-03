@@ -376,8 +376,6 @@ public class AccessoryController extends HttpServlet {
             Part imagePart = null;
             try {
                 imagePart = request.getPart("imageFile");
-//                System.out.println("DEBUG: Image part retrieved - "
-//                        + (imagePart != null ? "Size: " + imagePart.getSize() + ", FileName: " + imagePart.getSubmittedFileName() : "NULL"));
             } catch (Exception e) {
                 e.getMessage();
             }
@@ -730,8 +728,6 @@ public class AccessoryController extends HttpServlet {
     private String handleGetAccessory(HttpServletRequest request, HttpServletResponse response) {
         try {
             String idParam = request.getParameter("idAccessory");
-            System.out.println("===============DEBUG=============");
-            System.out.println("idPram: ===" + idParam);
             // Kiểm tra parameter có tồn tại không
             if (idParam == null || idParam.trim().isEmpty()) {
                 request.setAttribute("checkError", "Invalid accessory ID");
@@ -740,7 +736,6 @@ public class AccessoryController extends HttpServlet {
 
             Integer intParam = Integer.parseInt(idParam);
             Accessories accessory = accessoriesDAO.getById(intParam);
-            System.out.println("IDPRAM AFTER CHUAN HOA:===" + idParam);
             if (accessory != null) {
                 request.setAttribute("accessory", accessory);
             } else {
