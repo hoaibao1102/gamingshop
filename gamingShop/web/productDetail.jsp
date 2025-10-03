@@ -436,9 +436,7 @@
                     gap:0 !important;
                     min-height:100dvh;
                 }
-                .sidebar{
-                    display:none !important;
-                }
+                
 
                 .Main_content{
                     width:100% !important;
@@ -541,9 +539,11 @@
                 .pd-thumb{
                     flex:0 0 88px !important;
                 }
+                
                 .sidebar{
                     display:none !important;
                 }
+                
 
                 .breadcrumbs {
                     padding: 6px 10px !important;
@@ -634,7 +634,7 @@
 
     <body>
         <div class="wrapper">
-            <!-- Sidebar -->
+             <!-- Sidebar -->
             <div class="sidebar">
                 <jsp:include page="sidebar.jsp"/>
             </div>
@@ -643,7 +643,6 @@
             <div class="Main_content">
                 <!-- Header -->
                 <jsp:include page="header.jsp"/>
-
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
                     <div class="breadcrumbs">
