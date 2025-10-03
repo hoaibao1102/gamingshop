@@ -136,7 +136,9 @@ public class MainController extends HttpServlet {
                 || "deleteBanner".equals(action)
                 || "updateBanner".equals(action)
                 || "searchBanner".equals(action)
+                || "goBannerTextForm".equals(action)
                 || "editBanners".equals(action)
+                || "updateBannerText".equals(action)
                 || "getAllBanner".equals(action);
     }
 

@@ -35,10 +35,11 @@
                 <!-- ====== Marquee (thanh thông báo chạy ngang) ====== -->
                 <div class="marquee-bar">
                     <div class="marquee-inner">
-                        <span class="marquee-item"><span class="badge">HOT</span> Mua 2 tặng 1 phụ kiện chính hãng</span>
-                        <span class="marquee-item"><span class="badge">NEW</span> Hàng mới về mỗi ngày — xem ngay</span>
-                        <span class="marquee-item"><span class="badge">SALE</span> Giảm đến 40% cho bộ sưu tập tuần này</span>
-                        <span class="marquee-item"><a href="#">Xem tất cả khuyến mãi →</a></span>
+                        <c:if test="${not empty listBannerText}">
+                            <c:forEach var="item" items="${listBannerText}">
+                                <span class="marquee-item"><span class="badge">HOT</span> ${item.bannerText}</span>
+                            </c:forEach>
+                        </c:if>
                     </div>
                 </div>
 
@@ -140,7 +141,19 @@
                                 <form class="sb-title" action="MainController" method="post">
                                     <input type="hidden" name="action" value="listMayChoiGame"/>
 
-                                    <button class="btn-view-all">
+
+                                    <button style="padding: 10px 22px;
+                                            background-color: #667eea; /* xanh lá */
+                                            color: #fff;
+                                            font-size: 15px;
+                                            font-weight: 600;
+                                            border: none;
+                                            border-radius: 6px;
+                                            cursor: pointer;
+                                            transition: all 0.3s ease;">
+
+                                    
+
                                         Xem tất cả sản phẩm
                                     </button>
                                 </form>

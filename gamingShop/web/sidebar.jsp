@@ -151,6 +151,7 @@
 
             /* Title */
             .sb-title{
+                text-align: center;
                 margin:20px 0 0 0;
                 font-size:17px;
                 font-weight:850;
@@ -304,42 +305,83 @@
             }
 
             .view-more-btn{
-                width:100%;
-                padding:5px;
-                border:none;
-                border-radius:16px;
-                font-weight:500;
-                font-size:14px;
-                cursor:pointer;
-                text-transform:uppercase;
-                letter-spacing:1px;
-                position:relative;
-                overflow:hidden;
-                transition:all .3s ease;
-                font-family:inherit;
-                background:var(--primary-blue);
-                color:#fff;
+                width: 100%;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 16px;
+                font-weight: 600;
+                font-size: 14px;
+                cursor: pointer;
+                text-transform: uppercase;
+                letter-spacing: 1.5px;
+                position: relative;
+                overflow: hidden;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                font-family: inherit;
+
+                /* Gradient xanh-tím hiện đại */
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: #fff;
+
+                /* Hiệu ứng glassmorphism nhẹ */
+                box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
             }
+
             .view-more-btn::before{
-                content:'';
-                position:absolute;
-                top:0;
-                left:-100%;
-                width:100%;
-                height:100%;
-                background:linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-                transition:left .5s ease;
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.4),
+                    transparent
+                    );
+                transition: left 0.6s ease;
             }
+
+            /* Thêm hiệu ứng shine */
+            .view-more-btn::after{
+                content: '';
+                position: absolute;
+                inset: 0;
+                border-radius: 16px;
+                padding: 2px;
+                background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+                -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                -webkit-mask-composite: xor;
+                mask-composite: exclude;
+                opacity: 0;
+                transition: opacity 0.4s ease;
+            }
+
             .view-more-btn:hover{
-                background:var(--primary-blue-hover);
-                transform:translateY(-2px);
-                box-shadow:0 10px 30px rgba(29,78,216,.4);
+                background: linear-gradient(135deg, #5568d3 0%, #6a3e91 100%);
+                transform: translateY(-3px) scale(1.02);
+                box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5),
+                    0 5px 15px rgba(118, 75, 162, 0.3);
             }
+
             .view-more-btn:hover::before{
-                left:100%;
+                left: 100%;
             }
+
+            .view-more-btn:hover::after{
+                opacity: 1;
+            }
+
             .view-more-btn:active{
-                transform:translateY(0);
+                transform: translateY(-1px) scale(0.98);
+                box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            }
+
+            /* Thêm hiệu ứng glow khi focus */
+            .view-more-btn:focus{
+                outline: none;
+                box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2),
+                    0 8px 32px rgba(102, 126, 234, 0.3);
             }
 
             /* ==== Post cards in sidebar (ảnh trên - tiêu đề - ngày đăng) ==== */
@@ -420,7 +462,7 @@
     </head>
     <body>
 
-        <aside class="sidebar">
+
             <!-- Logo -->
             <div class="logo-card">
                 <img class="logo" src="assets/img/logo/logo.png" alt="Logo cửa hàng">
@@ -440,7 +482,7 @@
                     </form>
                     <form action="MainController" method="post" class="nav-form">
                         <input type="hidden" name="action" value="searchPosts">
-                        <input class="nav-item" type="submit" value="🗂️ Quản lý bài posts">
+                        <input class="nav-item" type="submit" value="🗂️ Quản lý bài đăng">
                     </form>
 <!--                    <form action="MainController" method="post" class="search-form" autocomplete="off">
                         <input type="hidden" name="action" value="searchProduct"/>
@@ -458,6 +500,10 @@
                         <input type="hidden" name="action" value="viewModelList">
                         <input class="nav-item" type="submit" value="🎮 Quản lý sản phẩm"> 
                     </form>
+                    <form method="get" action="MainController" class="nav-form">
+                        <input type="hidden" name="action" value="goBannerTextForm">
+                        <input class="nav-item" type="submit" value="📊 Sửa nội dung banner">
+                    </form>
                 </c:if>
             </nav>
 
@@ -465,7 +511,7 @@
 
             <!-- Danh sách sản phẩm nổi bật: chỉ ẩn khi đang ở trang danh sách nổi bật -->
             <c:if test="${isListProminent != true}">
-                <h3 class="sb-title">Nổi bật</h3>
+                <h3 class="sb-title">NỔI BẬT</h3>
                 <c:choose>
                     <c:when test="${not empty listProductForSidebar}">
                         <c:set var="shown" value="0"/>
@@ -508,7 +554,7 @@
             <!-- Bài đăng gần đây -->
             <c:if test="${ not empty listPostForSidebar }">
                 <c:set var="shown" value="0"/>
-                <h3 class="sb-title">Bài đăng</h3>
+                <h3 class="sb-title">BÀI ĐĂNG</h3>
                 <ul class="featured-list-sb">
                     <c:forEach var="p" items="${listPostForSidebar}">
                         <c:if test="${p.status == 1 and shown <3}">
@@ -526,7 +572,7 @@
 
                                     <div class="post-body">
                                         <!-- Tiêu đề (giống style product-name) -->
-                                        <span class="post-title">${p.title}</span>
+                                        <span class="product-name">${p.title}</span>
 
                                         <!-- Ngày đăng kèm trạng thái -->
                                         <span class="post-date">
@@ -554,7 +600,7 @@
                     <input class="view-more-btn" type="submit" value="Xem thêm">
                 </form>
             </c:if>
-        </aside>
+
 
     </body>
 </html>

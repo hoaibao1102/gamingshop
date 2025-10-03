@@ -147,6 +147,27 @@ h1 {
     box-shadow: 0 2px 8px rgba(238, 90, 82, 0.4);
     animation: pulse 2s ease-in-out infinite;
 }
+    .btn-view-all_1 {
+        padding: 10px 22px;
+        background-color: #667eea; /* xanh lá */
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-view-all_1:hover {
+        background-color: #0069d9; /* xanh lá đậm hơn */
+        transform: translateY(-2px);
+    }
+
+    .btn-view-all_1:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(40,167,69,0.4);
+    }
 
 @keyframes pulse {
     0%, 100% {

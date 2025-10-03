@@ -5,6 +5,7 @@
 package controller;
 
 import dao.AccessoriesDAO;
+import dao.BannerTextDAO;
 import dao.BannersDAO;
 import dto.Accessories;
 import dao.GuaranteesDAO;
@@ -15,6 +16,7 @@ import dao.ProductAccessoriesDAO;
 import dao.ProductImagesDAO;
 import dao.ProductsDAO;
 import dao.ServicesDAO;
+import dto.BannerText;
 import dto.Banners;
 import dto.Guarantees;
 import dto.Memories;
@@ -26,6 +28,7 @@ import dto.Product_accessories;
 import dto.Product_images;
 import dto.Products;
 import dto.Services;
+import jakarta.security.auth.message.callback.PrivateKeyCallback;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -75,6 +78,7 @@ public class ProductController extends HttpServlet {
 
             if ("prepareHome".equals(action) || action == null) {
                 handleViewAllProducts_sidebar(request, response);
+                handleGetAllBannerText(request, response);
                 url = handleViewAllProducts(request, response);
             } else if (action.equals("searchProduct")) {
                 url = handleProductSearching(request, response);
@@ -2339,5 +2343,14 @@ public class ProductController extends HttpServlet {
         return "serviceHome.jsp";
 
     }
+
+    private void handleGetAllBannerText(HttpServletRequest request, HttpServletResponse response) {
+        List<BannerText> listBannerText = new ArrayList();
+        BannerTextDAO btDAO = new BannerTextDAO();
+        listBannerText = btDAO.getAll();
+        request.setAttribute("listBannerText", listBannerText);
+    }
+    
+    
 
 }
