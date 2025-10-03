@@ -14,6 +14,8 @@
         <meta charset="UTF-8" />
         <title>SHOP GAME VIỆT 38</title>
         <%@ include file="/WEB-INF/jspf/head.jspf" %>
+        <!-- Breadcrumbs CSS -->
+        <link rel="stylesheet" href="assets/css/breadcrumbs.css" />
         <style>
             /* =========================
    Base + Variables (giữ gọn)
@@ -268,6 +270,72 @@
                 left: 0;
                 top: 0;
             }
+            /* Breadcrumbs hiện đại */
+            .breadcrumbs {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.9rem;
+                color: #6b7280;
+                margin-bottom: 16px;
+                padding: 12px 16px;
+                background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            }
+            .breadcrumbs a {
+                color: #3b82f6;
+                text-decoration: none;
+                font-weight: 500;
+                padding: 4px 8px;
+                border-radius: 6px;
+                transition: all 0.2s ease;
+                position: relative;
+            }
+            .breadcrumbs a:hover {
+                background: rgba(59, 130, 246, 0.1);
+                color: #1d4ed8;
+                transform: translateY(-1px);
+            }
+            .breadcrumbs .sep {
+                color: #9ca3af;
+                font-weight: 600;
+                font-size: 1rem;
+                margin: 0 2px;
+            }
+            .breadcrumbs .current {
+                color: #111827;
+                font-weight: 600;
+                background: rgba(255, 255, 255, 0.8);
+                padding: 4px 8px;
+                border-radius: 6px;
+                border: 1px solid #e5e7eb;
+            }
+            
+            /* Breadcrumbs animations và micro-interactions */
+            .breadcrumbs a::before {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                width: 0;
+                height: 2px;
+                background: #3b82f6;
+                transition: all 0.3s ease;
+                transform: translateX(-50%);
+            }
+            .breadcrumbs a:hover::before {
+                width: 80%;
+            }
+            .breadcrumbs .sep {
+                transition: all 0.2s ease;
+            }
+            .breadcrumbs a:hover + .sep {
+                color: #3b82f6;
+                transform: scale(1.1);
+            }
+
             /* Empty state */
             .empty-state{
                 text-align:center;
@@ -384,6 +452,16 @@
                 .container{
                     padding:12px 12px 20px !important;
                 }
+                
+                .breadcrumbs {
+                    padding: 8px 12px !important;
+                    font-size: 0.85rem !important;
+                    flex-wrap: wrap !important;
+                    margin-bottom: 12px !important;
+                }
+                .breadcrumbs a {
+                    padding: 3px 6px !important;
+                }
 
                 .product-detail{
                     grid-template-columns:1fr !important;
@@ -465,6 +543,19 @@
                 .pd-thumb{
                     flex:0 0 88px !important;
                 }
+                
+                .breadcrumbs {
+                    padding: 6px 10px !important;
+                    font-size: 0.8rem !important;
+                    margin-bottom: 10px !important;
+                }
+                .breadcrumbs a {
+                    padding: 2px 4px !important;
+                    font-size: 0.8rem !important;
+                }
+                .breadcrumbs .sep {
+                    font-size: 0.9rem !important;
+                }
             }
 
             /* Accessibility */
@@ -520,6 +611,15 @@
                     width: 100%; /* nút chiếm full chiều ngang */
                     font-size: 16px;
                 }
+                
+                .breadcrumbs {
+                    padding: 8px 12px;
+                    font-size: 0.85rem;
+                    flex-wrap: wrap;
+                }
+                .breadcrumbs a {
+                    padding: 3px 6px;
+                }
             }
 
             @media (max-width: 480px) {
@@ -545,11 +645,11 @@
 
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
-                    <div class="breadcrumb">
-                        <a href="MainController?action=listMayChoiGame">Danh sách sản phẩm</a>
-                        <span>/</span>
-                        <span>Chi tiết sản phẩm</span>
-                    </div><br>
+                    <div class="breadcrumbs">
+                        <a href="MainController?action=${breadCrumbs}">Danh sách sản phẩm</a>
+                        <span class="sep">›</span>
+                        <span class="current">Chi tiết sản phẩm</span>
+                    </div>
                     <c:choose>
                         <c:when test="${not empty productDetail}">
                             <div class="product-detail">

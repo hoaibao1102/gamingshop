@@ -32,11 +32,9 @@ import java.util.List;
 @WebServlet(name = "AccessoryController", urlPatterns = {"/AccessoryController"})
 public class AccessoryController extends HttpServlet {
 
-
     private final String INDEX_PAGE = "index.jsp";
     private final AccessoriesDAO accessoriesDAO = new AccessoriesDAO();
     private final BannersDAO bannersDAO = new BannersDAO();
-    
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -60,7 +58,7 @@ public class AccessoryController extends HttpServlet {
                 url = handleAccessoryEditing(request, response);
             } else if (action.equals("deleteAccessory")) {
                 url = handleAccessoryDelete(request, response);
-            }else if (action.equals("getAccessory")) {
+            } else if (action.equals("getAccessory")) {
                 url = handleGetAccessory(request, response);
             }
         } catch (Exception e) {
@@ -129,11 +127,9 @@ public class AccessoryController extends HttpServlet {
             }
 
             // Lấy dữ liệu với phân trang
-
             Page<Accessories> pageResult = accessoriesDAO.getListAccessotiesBuy(filter);
             List<Banners> listBanner = bannersDAO.getTop5Active();
             request.setAttribute("topBanners", listBanner);
-
 
             request.setAttribute("listProductsByCategory", pageResult);
             request.setAttribute("isListProductsByCategory", "true");
@@ -142,11 +138,12 @@ public class AccessoryController extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("checkError", "Error loading products: " + e.getMessage());
         }
-
+        String action = request.getParameter("action");
+        request.setAttribute("action", action);
         return INDEX_PAGE;
     }
-    
-        /**
+
+    /**
      * Hiển thị danh sách tất cả accessories với phân trang
      */
     private String handleViewAllAccessories(HttpServletRequest request, HttpServletResponse response) {
@@ -759,6 +756,5 @@ public class AccessoryController extends HttpServlet {
 
         return "accessoryDetail.jsp";
     }
-
 
 }

@@ -14,6 +14,8 @@
         <meta charset="UTF-8" />
         <title>SHOP GAME VIỆT 38 - Chi tiết phụ kiện</title>
         <%@ include file="/WEB-INF/jspf/head.jspf" %>
+        <!-- Breadcrumbs CSS -->
+        <link rel="stylesheet" href="assets/css/breadcrumbs.css" />
         <style>
             /* =========================
    Base + Variables
@@ -75,22 +77,48 @@
             }
 
             /* =========================
-               Breadcrumb
+               Breadcrumbs hiện đại
             ========================= */
-            .breadcrumb{
-                margin-bottom: 20px;
+            .breadcrumb, .breadcrumbs {
                 display: flex;
                 align-items: center;
                 gap: 8px;
-                font-size: 14px;
-                color: var(--muted);
+                font-size: 0.9rem;
+                color: #6b7280;
+                margin-bottom: 16px;
+                padding: 12px 16px;
+                background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             }
-            .breadcrumb a{
-                color: var(--accent);
+            .breadcrumb a, .breadcrumbs a {
+                color: #3b82f6;
                 text-decoration: none;
+                font-weight: 500;
+                padding: 4px 8px;
+                border-radius: 6px;
+                transition: all 0.2s ease;
+                position: relative;
             }
-            .breadcrumb a:hover{
-                text-decoration: underline;
+            .breadcrumb a:hover, .breadcrumbs a:hover {
+                background: rgba(59, 130, 246, 0.1);
+                color: #1d4ed8;
+                transform: translateY(-1px);
+            }
+            .breadcrumb .sep, .breadcrumbs .sep {
+                color: #9ca3af;
+                font-weight: 600;
+                font-size: 1rem;
+                margin: 0 2px;
+            }
+            .breadcrumb .current, .breadcrumbs .current {
+                color: #111827;
+                font-weight: 600;
+                background: rgba(255, 255, 255, 0.8);
+                padding: 4px 8px;
+                border-radius: 6px;
+                border: 1px solid #e5e7eb;
             }
 
             /* =========================
@@ -425,6 +453,15 @@
                     width: 100%; /* nút chiếm full chiều ngang */
                     font-size: 16px;
                 }
+                
+                .breadcrumb, .breadcrumbs {
+                    padding: 8px 12px;
+                    font-size: 0.85rem;
+                    flex-wrap: wrap;
+                }
+                .breadcrumb a, .breadcrumbs a {
+                    padding: 3px 6px;
+                }
             }
 
             @media (prefers-reduced-motion: reduce){
@@ -453,10 +490,10 @@
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
                     <!-- Breadcrumb -->
-                    <div class="breadcrumb">
+                    <div class="breadcrumbs">
                         <a href="MainController?action=listPhuKien">Danh sách phụ kiện</a>
                         <span>/</span>
-                        <span>Chi tiết phụ kiện</span>
+                        <span class="current">Chi tiết phụ kiện</span>
                     </div><br>
                     <c:choose>
                         <c:when test="${not empty accessory}">

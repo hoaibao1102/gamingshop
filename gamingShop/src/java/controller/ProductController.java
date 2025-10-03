@@ -153,6 +153,9 @@ public class ProductController extends HttpServlet {
                 url = handleGetService(request, response);
             } else if (action.equals("listDichVu")) {
                 url = handleListServices(request, response);
+            } else if (action.equals("listSanPhamCongNghe")) {
+                url = handleListSanPhamCongNghe(request, response);
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -268,7 +271,6 @@ public class ProductController extends HttpServlet {
         String checkError = "";
         String keyword = request.getParameter("keyword");
         List<Products> list;
-
         if (keyword != null && !keyword.trim().isEmpty()) {
             list = productsdao.getByName(keyword.trim());
             if (list == null || list.isEmpty()) {
@@ -280,17 +282,27 @@ public class ProductController extends HttpServlet {
                     p.setImage(imgs); // Products giờ có field List<ProductImages> images + setter
                 }
             }
+            request.setAttribute("list", list);
         } else {
+            List<Products> list2 = new ArrayList<>();
             list = productsdao.getAll();
-            // cũng lấy danh sách ảnh cho tất cả sản phẩm
+            int model_id = Integer.parseInt(request.getParameter("model_id"));
+
             for (Products p : list) {
+                if (p.getModel_id() == model_id) {
+                    list2.add(p);
+                }
+            }
+            // cũng lấy danh sách ảnh cho tất cả sản phẩm
+            for (Products p : list2) {
                 List<Product_images> imgs = productImagesDAO.getByProductId(p.getId());
                 p.setImage(imgs);
             }
+            request.setAttribute("list", list2);
+            request.setAttribute("model_id", model_id);
         }
 
         request.setAttribute("keyword", keyword);
-        request.setAttribute("list", list);
         request.setAttribute("checkErrorSearch", checkError);
         return "products.jsp";
     }
@@ -612,11 +624,15 @@ public class ProductController extends HttpServlet {
             // Lấy các trường còn lại từ form
             String productType;
             int model_id = Integer.parseInt(request.getParameter("model_id"));
+
             if (model_id == 1) {
                 productType = request.getParameter("product_type");
-            } else {
+            } else if (model_id == 2) {
                 productType = "game_card";
+            } else {
+                productType = "others_product";
             }
+
             int memory_id = Integer.parseInt(request.getParameter("memory_id"));
             int guarantee_id = Integer.parseInt(request.getParameter("guarantee_id"));
             String specHtml = request.getParameter("spec_html");
@@ -1209,6 +1225,9 @@ public class ProductController extends HttpServlet {
             List<Accessories> accessories = paDAO.getAccessoriesByProductId(productId);
 
             // 4) Gán attribute ra view
+            
+            
+            request.setAttribute("breadCrumbs", request.getParameter("breadCrumbs"));
             request.setAttribute("productDetail", product);
             request.setAttribute("list_pro", list_pro);
             request.setAttribute("guaranteeProduct", guaranteeProduct);
@@ -2151,14 +2170,66 @@ public class ProductController extends HttpServlet {
             List<Banners> listBanner = bannersDAO.getTop5Active();
 
             request.setAttribute("topBanners", listBanner);
-
+            request.setAttribute("nameProductsByCategory", "Thẻ game");
             request.setAttribute("listProductsByCategory", pageResult);
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("checkError", "Error loading products: " + e.getMessage());
         }
+        
+        String action = request.getParameter("action");
+        request.setAttribute("action", action);
+        return INDEX_PAGE;
+    }
 
+    private String handleListSanPhamCongNghe(HttpServletRequest request, HttpServletResponse response) {
+
+        try {
+            request.setCharacterEncoding("UTF-8");
+            // Tạo filter mặc định
+            ProductFilter filter = new ProductFilter();
+
+            // Lấy tham số page nếu có
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.isEmpty()) {
+                try {
+                    int page = Integer.parseInt(pageParam);
+                    if (page > 0) {
+                        filter.setPage(page);
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore, use default page
+                }
+            }
+
+            // Lấy dữ liệu với phân trang
+            Page<Products> pageResult = productsdao.getListSanPhamKhac(filter);
+            // ===== Gán ảnh cho từng sản phẩm =====
+
+            // ===== Gán ảnh cho từng sản phẩm =====
+            for (Products p : pageResult.getContent()) {
+                // Lấy 1 ảnh cover (status=1) thay vì toàn bộ
+                Product_images coverImg = productImagesDAO.getCoverImgByProductId(p.getId());
+                if (coverImg != null) {
+                    p.setCoverImg(coverImg.getImage_url());
+                } else {
+                    p.setCoverImg("");
+                }
+            }
+
+            List<Banners> listBanner = bannersDAO.getTop5Active();
+
+            request.setAttribute("topBanners", listBanner);
+            request.setAttribute("nameProductsByCategory", "Sản phẩm công nghệ");
+            request.setAttribute("listProductsByCategory", pageResult);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("checkError", "Error loading products: " + e.getMessage());
+        }
+        String action = request.getParameter("action");
+        request.setAttribute("action", action);
         return INDEX_PAGE;
     }
 
@@ -2217,7 +2288,6 @@ public class ProductController extends HttpServlet {
 
             Integer intParam = Integer.parseInt(idParam);
             Services service = servicesDAO.getById(intParam);
-            System.out.println("IDPRAM AFTER CHUAN HOA:===" + idParam);
             if (service != null) {
                 request.setAttribute("serviceDetail", service);
             } else {

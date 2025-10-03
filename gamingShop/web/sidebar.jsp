@@ -442,10 +442,10 @@
                         <input type="hidden" name="action" value="searchPosts">
                         <input class="nav-item" type="submit" value="🗂️ Quản lý bài posts">
                     </form>
-                    <form action="MainController" method="post" class="search-form" autocomplete="off">
+<!--                    <form action="MainController" method="post" class="search-form" autocomplete="off">
                         <input type="hidden" name="action" value="searchProduct"/>
                         <input class="nav-item" type="submit" value="📦 Quản lý sản phẩm">
-                    </form>
+                    </form>-->
                     <form action="MainController" method="post" class="nav-form">
                         <input type="hidden" name="action" value="viewAllAccessories">
                         <input class="nav-item" type="submit" value="🔧 Quản lý phụ kiện">
@@ -456,7 +456,7 @@
                     </form>
                     <form action="MainController" method="post" class="nav-form">
                         <input type="hidden" name="action" value="viewModelList">
-                        <input class="nav-item" type="submit" value="🎮 Quản lý model"> 
+                        <input class="nav-item" type="submit" value="🎮 Quản lý sản phẩm"> 
                     </form>
                 </c:if>
             </nav>
