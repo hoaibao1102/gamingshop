@@ -20,6 +20,8 @@
 
         <!-- Custom CSS -->
         <link rel="stylesheet" href="assets/css/maincss.css">
+        <link rel="stylesheet" href="assets/css/no-border-radius.css">
+
     </head>
     <body>
         <div class="wrapper">
@@ -137,7 +139,7 @@
                                 <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí tìm kiếm của bạn.</p>
                                 <form class="sb-title" action="MainController" method="post">
                                     <input type="hidden" name="action" value="listMayChoiGame"/>
-                                    
+
                                     <button class="btn-view-all">
                                         Xem tất cả sản phẩm
                                     </button>
