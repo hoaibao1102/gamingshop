@@ -368,50 +368,24 @@
                 }
             }
 
-            /* <= 768px: xếp dọc, nút full width, lưới thoáng hơn */
-            @media (max-width:768px){
-                .admin-toolbar{
-                    flex-direction:column;
-                    align-items:stretch;
-                    gap:10px
-                }
-                .header-actions{
-                    flex-direction:column;
-                    align-items:stretch;
-                    width:100%
-                }
-                .header-actions .search-form,
-                .header-actions .action-form{
-                    width:100%
-                }
-                .header-actions .search-form input[type="text"]{
-                    width:100%
-                }
-                .btn-custom, .btn-primary, .btn-outline, .btn-danger{
-                    width:100%
-                }
+            @media (max-width: 768px) {
+    .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 cột */
+        gap: 12px; /* điều chỉnh khoảng cách */
+    }
 
-                .card-grid{
-                    grid-template-columns:minmax(0,1fr);
-                    gap:12px
-                }
-                .card .thumb{
-                    aspect-ratio:1/1
-                } /* vuông ở mobile, không set width cứng */
-                .card .actions{
-                    flex-direction:column
-                }
-                .card .actions .btn{
-                    width:100%
-                } /* nút chiếm đủ ngang */
+    .card .thumb {
+        aspect-ratio: 1/1; /* ảnh vuông trên mobile */
+    }
 
-                .products-meta{
-                    gap:6px
-                }
-                .container{
-                    padding:0 12px
-                }
-            }
+    .card .actions {
+        flex-direction: column;
+    }
+
+    .card .actions .btn {
+        width: 100%; /* nút chiếm full ngang */
+    }
+}
 
             /* >= 1200px: thoáng hơn */
             @media (min-width:1200px){
@@ -448,18 +422,18 @@
 
                 <div class="container">
                     <div class="admin-toolbar">
-                        <div class="title">Danh sách bài post</div>
+                        <div class="title">Danh sách bài đăng</div>
                         <c:if test="${isLoggedIn}">
                             <div class="header-actions">
                                 <form action="MainController" method="post" class="search-form" autocomplete="off">
                                     <input type="hidden" name="action" value="searchPosts"/>
-                                    <input type="text" name="keyword" value="${keyword != null ? keyword : ''}" placeholder="Nhập tên bài post..." />
+                                    <input type="text" name="keyword" value="${keyword != null ? keyword : ''}" placeholder="Nhập tên bài đăng..." />
                                     <button type="submit" class="btn btn-custom">Tìm kiếm</button>
                                 </form>
 
                                 <form action="MainController" method="post" class="action-form">
                                     <input type="hidden" name="action" value="showAddPosts"/>
-                                    <button class="btn btn-custom" type="submit">+ Thêm bài post</button>
+                                    <button class="btn btn-custom" type="submit">+ Thêm bài đăng</button>
                                 </form>
                             </div>
                         </c:if>
@@ -497,14 +471,8 @@
                                                     </c:choose>
                                                     <div class="body">
                                                         <span class="title">${p.title}</span>
-                                                        <div class="meta">
-                                                            <c:if test="${isLoggedIn}"><span class="badge">#${p.id}</span></c:if>
-                                                            <span>Tác giả: <strong>${p.author}</strong></span>
-                                                            <span><fmt:formatDate value="${p.publish_date}" pattern="dd/MM/yyyy"/></span>
-                                                            <c:choose>
-                                                                <c:when test="${p.status == 1}"><span class="badge success">Đã xuất bản</span></c:when>
-                                                                <c:otherwise><c:if test="${isLoggedIn}"><span class="badge warning">Bản nháp</span></c:if></c:otherwise>
-                                                            </c:choose>
+                                                        <div class="meta" style="padding: 0px; margin: 0px 0px">
+                                                            <span style="padding: 0px; margin: 10px 5px"><fmt:formatDate value="${p.publish_date}" pattern="dd/MM/yyyy"/></span>
                                                         </div>
                                                     </div>
                                                 </a>

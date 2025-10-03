@@ -4,7 +4,9 @@
  */
 package controller;
 
+import dao.BannerTextDAO;
 import dao.BannersDAO;
+import dto.BannerText;
 import dto.Banners;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,7 +60,12 @@ public class BannerController extends HttpServlet {
                 url = handleDeleteBanner(request, response);
             } else if (action.equals("editBanners")) {
                 url = handleEditBanner(request, response);
+            }else if (action.equals("goBannerTextForm")) {
+                url = handleGoBannerTextForm(request, response);
+            }else if (action.equals("updateBannerText")) {
+                url = handleUpdateBannerText(request, response);
             }
+            
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("checkError", "Unexpected error: " + e.getMessage());
@@ -374,6 +382,22 @@ public class BannerController extends HttpServlet {
             request.setAttribute("errorMessage", "Error while loading banner for edit: " + e.getMessage());
             return "error.jsp";
         }
+    }
+
+    private String handleGoBannerTextForm(HttpServletRequest request, HttpServletResponse response) {
+        List<BannerText> listBannerText = new ArrayList();
+        BannerTextDAO btDAO = new BannerTextDAO();
+        listBannerText = btDAO.getAll();
+        request.setAttribute("listBannerText", listBannerText);
+        return "BannerTextForm.jsp";
+    }
+
+    private String handleUpdateBannerText(HttpServletRequest request, HttpServletResponse response) {
+        int id =  Integer.parseInt(request.getParameter("id"));
+        String description = request.getParameter("description");
+        BannerTextDAO btDAO = new BannerTextDAO();
+        btDAO.updateByID(id,description);
+        return "MainController?action=goBannerTextForm";
     }
 
 }

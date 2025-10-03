@@ -777,7 +777,7 @@
                             <c:set var="shown" value="0"/>
                             <div class="featured-grid-4cols">
                                 <c:forEach var="i" items="${list_pro}">
-                                    <c:if test="${ shown < 4}">
+                                    <c:if test="${ shown < 8}">
                                         <div class="grid-item-sb">
                                             <form action="MainController" method="post" class="card">
                                                 <input type="hidden" name="action" value="getProduct"/>
