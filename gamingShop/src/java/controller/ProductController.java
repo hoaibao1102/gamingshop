@@ -1322,15 +1322,15 @@ public class ProductController extends HttpServlet {
             }
 
             // 3. Check for duplicate model_type (UNIQUE constraint)
-//            try {
-//                boolean typeExists = modelsDAO.isModelTypeExists(modelType.trim());
-//                if (typeExists) {
-//                    request.setAttribute("checkErrorAddModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
-//                    return "modelUpdate.jsp";
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+            try {
+                boolean typeExists = modelsDAO.isModelTypeExists(modelType.trim());
+                if (typeExists) {
+                    request.setAttribute("checkErrorAddModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
+                    return "modelUpdate.jsp";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             // 4. Validate status value
             if (status != null && !status.trim().isEmpty()) {
                 String normalizedStatus = status.trim();
@@ -1508,16 +1508,16 @@ public class ProductController extends HttpServlet {
             }
 
             // Check duplicate model_type (exclude current record)
-//            try {
-//                boolean typeExists = modelsDAO.isModelTypeExistsExcept(modelType.trim(), modelId);
-//                if (typeExists) {
-//                    request.setAttribute("checkErrorEditModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
-//                    request.setAttribute("model", existingModel);
-//                    return "modelUpdate.jsp";
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+            try {
+                boolean typeExists = modelsDAO.isModelTypeExistsExcept(modelType.trim(), modelId);
+                if (typeExists) {
+                    request.setAttribute("checkErrorEditModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
+                    request.setAttribute("model", existingModel);
+                    return "modelUpdate.jsp";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             // Validate status
             if (status != null && !status.trim().isEmpty()) {
                 String normalizedStatus = status.trim();
@@ -1923,8 +1923,6 @@ public class ProductController extends HttpServlet {
             // Update database
             boolean success = servicesDAO.update(existingService);
 
-            System.out.println("===DEBUG====");
-            System.out.println("GET SERVICE" + existingService.getId() + existingService.getDescription_html() + existingService.getService_type() + existingService.getStatus() + existingService.getPrice());
             if (success) {
                 HttpSession session = request.getSession();
                 session.removeAttribute("cachedServiceList");
