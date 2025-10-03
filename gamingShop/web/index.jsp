@@ -20,6 +20,8 @@
 
         <!-- Custom CSS -->
         <link rel="stylesheet" href="assets/css/maincss.css">
+        <link rel="stylesheet" href="assets/css/no-border-radius.css">
+
     </head>
     <body>
         <div class="wrapper">
@@ -139,6 +141,7 @@
                                 <form class="sb-title" action="MainController" method="post">
                                     <input type="hidden" name="action" value="listMayChoiGame"/>
 
+
                                     <button style="padding: 10px 22px;
                                             background-color: #667eea; /* xanh lá */
                                             color: #fff;
@@ -148,6 +151,9 @@
                                             border-radius: 6px;
                                             cursor: pointer;
                                             transition: all 0.3s ease;">
+
+                                    
+
                                         Xem tất cả sản phẩm
                                     </button>
                                 </form>

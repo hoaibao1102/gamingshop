@@ -289,7 +289,7 @@ public class ProductController extends HttpServlet {
             request.setAttribute("list", list);
         } else {
             List<Products> list2 = new ArrayList<>();
-            list = productsdao.getAll();
+            list = productsdao.getAllProducts(keyword);
             int model_id = Integer.parseInt(request.getParameter("model_id"));
 
             for (Products p : list) {
