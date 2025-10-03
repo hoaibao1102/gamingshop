@@ -180,7 +180,47 @@
                 }
             }
 
-            /* List */
+            /* Grid layout for sidebar - thống nhất với productDetail */
+            .featured-grid-sidebar {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .grid-item-sb {
+                width: 100%;
+            }
+
+            .grid-item-sb .card {
+                width: 100%;
+                height: 100%;
+                background: #ffffff;
+                border: 1px solid #f1f5f9;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 6px 20px rgba(0,0,0,.08);
+                transition: all .3s ease;
+            }
+
+            .grid-item-sb .card:hover {
+                transform: translateY(-4px) scale(1.02);
+                box-shadow: 0 12px 35px rgba(0,0,0,.15);
+            }
+
+            .grid-item-sb .thumb-btn-sb {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                border: none;
+                background: none;
+                padding: 12px;
+                cursor: pointer;
+                gap: 8px;
+            }
+
+            /* List fallback */
             .featured-list-sb{
                 list-style:none;
                 margin:0 0 20px 0;
@@ -249,34 +289,40 @@
                 flex-direction:column;
                 gap:12px;
             }
+            
             .image-price-container-sb{
-                display:flex;
-                gap:8px;
-                align-items:stretch;
+                position: relative;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .thumb-sb{
-                flex: 7;
-                width: 80px;
-                object-fit:cover;
-                border-radius:10px;
-                box-shadow:0 2px 8px rgba(0,0,0,.1);
-                transition:transform .3s ease;
+                width: 100%;
+                height: 120px;
+                object-fit: cover;
+                display: block;
+                border-radius: 8px;
+                transition: transform .3s ease;
             }
-            .thumb-btn-sb:hover .thumb-sb{
-                transform:scale(1.02);
+            
+            .grid-item-sb .thumb-btn-sb:hover .thumb-sb{
+                transform: scale(1.05);
             }
 
             .price-box-sb{
-                color:#e12e2e;
-                flex: 0 0 36%;
-                height:80px;
-                background:#f8f9fa;
-                border-radius:10px;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                text-decoration:none;
+                position: absolute;
+                bottom: 8px;
+                right: 8px;
+                background: rgba(255, 255, 255, 0.95);
+                color: #e11d48;
+                padding: 4px 8px;
+                border-radius: 6px;
+                font-size: 11px;
+                font-weight: 600;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                backdrop-filter: blur(4px);
                 box-shadow:0 2px 8px rgba(0,0,0,.05);
                 border:1px solid #e9ecef;
                 transition:background .3s ease;
@@ -291,14 +337,14 @@
                 hyphens:auto;
             }
             .product-name{
-                color:#000;
-                font-weight:800;
-                font-size:13px;
-                text-align:center;
-                line-height:1.3;
-                padding:0 4px;
-                word-break:break-word;
-                hyphens:auto;
+                color: #111827;
+                font-weight: 600;
+                font-size: 13px;
+                text-align: center;
+                line-height: 1.4;
+                padding: 8px 4px 0;
+                word-break: break-word;
+                hyphens: auto;
             }
             .thumb-btn-sb:hover .price-box-sb{
                 background:#dee2e6;
@@ -515,31 +561,33 @@
                 <c:choose>
                     <c:when test="${not empty listProductForSidebar}">
                         <c:set var="shown" value="0"/>
-                        <ul class="featured-list-sb">
+                        <div class="featured-grid-sidebar">
                             <c:forEach var="i" items="${listProductForSidebar}">
                                 <c:if test="${i.status eq 'prominent' and shown < 3}">
-                                    <li class="item-sb">
+                                    <div class="grid-item-sb">
                                         <form action="MainController" method="post" class="card">
                                             <input type="hidden" name="action" value="getProduct"/>
                                             <input type="hidden" name="idProduct" value="${i.id}"/>
-
+                                            <!-- Bấm vào cả card là submit -->
                                             <button type="submit" class="thumb-btn-sb">
+                                                <!-- Container cho ảnh và giá -->
                                                 <div class="image-price-container-sb">
-                                                    <img class="thumb-sb" src="${i.coverImg}" alt="${fn:escapeXml(i.name)}"/>
+                                                    <img class="thumb-sb" src="${i.coverImg}" alt="${fn:escapeXml(i.name)}" style="height:120px;"/>
                                                     <div class="price-box-sb">
                                                         <div class="price-text-sb">
                                                             <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <!-- Tên sản phẩm ở dưới -->
                                                 <div class="product-name">${i.name}</div>
                                             </button>
                                         </form>
-                                    </li>
+                                    </div>
                                     <c:set var="shown" value="${shown + 1}"/>
                                 </c:if>
                             </c:forEach>
-                        </ul>
+                        </div>
                         <form action="MainController" method="post">
                             <input type="hidden" name="action" value="getProminentList">
                             <input class="view-more-btn" type="submit" value="Xem thêm">

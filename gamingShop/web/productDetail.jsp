@@ -59,8 +59,7 @@
                 border-radius:20px;
                 padding:24px;
                 box-shadow:var(--shadow);
-                position:sticky;
-                top:20px;
+                position:static;
                 height:fit-content;
             }
             .Main_content{
@@ -147,13 +146,12 @@
 
             /* Info + Description */
             .pd-right{
-                position:sticky;
-                top:16px;
+                position:static;
                 background:#fff;
                 border-radius:16px;
                 box-shadow:var(--shadow);
                 padding:20px;
-                height:fit-content;
+                height:auto;
             }
             .pd-name{
                 margin:0 0 12px;
@@ -543,7 +541,10 @@
                 .pd-thumb{
                     flex:0 0 88px !important;
                 }
-                
+                .sidebar{
+                    display:none !important;
+                }
+
                 .breadcrumbs {
                     padding: 6px 10px !important;
                     font-size: 0.8rem !important;

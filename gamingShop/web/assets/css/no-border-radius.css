@@ -4,6 +4,8 @@
 .item,
 .item-sb,
 .grid-item-sb,
+.grid-item-sb .card,
+.featured-grid-sidebar,
 .product-item,
 .product-card,
 .accessory-item,
@@ -24,7 +26,6 @@
 /* Đảm bảo tất cả các product buttons cũng không có border-radius */
 .product-button,
 .product-btn,
-.thumb-btn-sb,
 .item-btn {
   border-radius: 0 !important;
 }
@@ -38,7 +39,6 @@
 
 /* Đảm bảo aspect ratio 1:1 cho tất cả product images */
 .thumb,
-.thumb-sb,
 .product-thumb,
 .product-image,
 .featured-list .thumb,
@@ -71,19 +71,19 @@
 /* Mobile responsive cho square images */
 @media (max-width: 768px) {
   .thumb-sb {
-    width: 70px;
-    height: 70px;
+    width: 90px;
+    height: 90px;
   }
 }
 
 @media (min-width: 769px) {
   .thumb-sb {
-    width: 80px;
-    height: 80px;
+    width: 120px;
+    height: 120px;
   }
 }
 
-/* ULTIMATE OVERRIDE - Đảm bảo 100% hoạt động * .thumb,
+/* ULTIMATE OVERRIDE - Đảm bảo 100% hoạt động * .thumb,*/
 *.thumb,
 .item > .thumb,
 .featured-list > .item > .product-button > .product-content > .thumb {
@@ -95,4 +95,4 @@
   max-height: none !important;
   min-width: 0 !important;
   min-height: 0 !important;
-} */
+}
