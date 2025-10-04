@@ -580,52 +580,66 @@
 
             <hr class="divider">
 
-            <!-- Danh sách sản phẩm nổi bật: chỉ ẩn khi đang ở trang danh sách nổi bật -->
+            <!-- Danh sách sản phẩm nổi bật: chỉ hiện khi có sản phẩm prominent -->
             <c:if test="${isListProminent != true}">
-                <h3 class="sb-title">NỔI BẬT</h3>
-                <c:choose>
-                    <c:when test="${not empty listProductForSidebar}">
-                        <c:set var="shown" value="0"/>
-                        <div class="featured-grid-sidebar">
-                            <c:forEach var="i" items="${listProductForSidebar}">
-                                <c:if test="${i.status eq 'prominent' and shown < 3}">
-                                    <div class="grid-item-sb">
-                                        <form action="MainController" method="post" class="card">
-                                            <input type="hidden" name="action" value="getProduct"/>
-                                            <input type="hidden" name="idProduct" value="${i.id}"/>
-                                            <!-- Bấm vào cả card là submit -->
-                                            <button type="submit" class="thumb-btn-sb">
-                                                <!-- Container cho ảnh và giá -->
-                                                <div class="image-price-container-sb">
-                                                    <img class="thumb-sb" src="${i.coverImg}" alt="${fn:escapeXml(i.name)}"/>
-                                                    <div class="price-box-sb">
-                                                        <div class="price-text-sb">
-                                                            <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
-                                                        </div>
+                <!-- Kiểm tra trước xem có sản phẩm prominent không -->
+                <c:set var="hasProminentProducts" value="false"/>
+                <c:forEach var="i" items="${listProductForSidebar}">
+                    <c:if test="${i.status eq 'prominent'}">
+                        <c:set var="hasProminentProducts" value="true"/>
+                    </c:if>
+                </c:forEach>
+                
+                <!-- Chỉ hiện mục khi có sản phẩm prominent -->
+                <c:if test="${hasProminentProducts}">
+                    <h3 class="sb-title">NỔI BẬT</h3>
+                    <c:set var="shown" value="0"/>
+                    <div class="featured-grid-sidebar">
+                        <c:forEach var="i" items="${listProductForSidebar}">
+                            <c:if test="${i.status eq 'prominent' and shown < 3}">
+                                <div class="grid-item-sb">
+                                    <form action="MainController" method="post" class="card">
+                                        <input type="hidden" name="action" value="getProduct"/>
+                                        <input type="hidden" name="idProduct" value="${i.id}"/>
+                                        <!-- Bấm vào cả card là submit -->
+                                        <button type="submit" class="thumb-btn-sb">
+                                            <!-- Container cho ảnh và giá -->
+                                            <div class="image-price-container-sb">
+                                                <img class="thumb-sb" src="${i.coverImg}" alt="${fn:escapeXml(i.name)}"/>
+                                                <div class="price-box-sb">
+                                                    <div class="price-text-sb">
+                                                        <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
                                                     </div>
                                                 </div>
-                                                <!-- Tên sản phẩm ở dưới -->
-                                                <div class="product-name">${i.name}</div>
-                                            </button>
-                                        </form>
-                                    </div>
-                                    <c:set var="shown" value="${shown + 1}"/>
-                                </c:if>
-                            </c:forEach>
-                        </div>
-                        <form action="MainController" method="post">
-                            <input type="hidden" name="action" value="getProminentList">
-                            <input class="view-more-btn" type="submit" value="Xem thêm">
-                        </form>
-                    </c:when>
-                    <c:otherwise>
-                        <p>Hiện danh sách đang trống!</p>
-                    </c:otherwise>
-                </c:choose>
+                                            </div>
+                                            <!-- Tên sản phẩm ở dưới -->
+                                            <div class="product-name">${i.name}</div>
+                                        </button>
+                                    </form>
+                                </div>
+                                <c:set var="shown" value="${shown + 1}"/>
+                            </c:if>
+                        </c:forEach>
+                    </div>
+                    <!-- Chỉ hiện nút xem thêm khi có sản phẩm prominent -->
+                    <form action="MainController" method="post">
+                        <input type="hidden" name="action" value="getProminentList">
+                        <input class="view-more-btn" type="submit" value="Xem thêm">
+                    </form>
+                </c:if>
             </c:if>
 
-            <!-- Bài đăng gần đây -->
-            <c:if test="${ not empty listPostForSidebar }">
+            <!-- Bài đăng gần đây - chỉ hiện khi có bài đăng active -->
+            <!-- Kiểm tra trước xem có bài đăng active không -->
+            <c:set var="hasActivePosts" value="false"/>
+            <c:forEach var="p" items="${listPostForSidebar}">
+                <c:if test="${p.status == 1}">
+                    <c:set var="hasActivePosts" value="true"/>
+                </c:if>
+            </c:forEach>
+            
+            <!-- Chỉ hiện mục khi có bài đăng active -->
+            <c:if test="${hasActivePosts}">
                 <c:set var="shown" value="0"/>
                 <h3 class="sb-title">BÀI ĐĂNG</h3>
                 <ul class="featured-list-sb">
@@ -667,7 +681,7 @@
                         </c:if>
                     </c:forEach>
                 </ul>
-                <!-- Nút Xem thêm -->
+                <!-- Chỉ hiện nút xem thêm khi có bài đăng active -->
                 <form action="MainController" method="post">
                     <input type="hidden" name="action" value="searchPosts">
                     <input class="view-more-btn" type="submit" value="Xem thêm">
