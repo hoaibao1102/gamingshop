@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet(
         name = "MainController",
-        urlPatterns = {"/product/*", "/accessory/*", "/service/*", "/post/*", "/MainController", "/mc", ""}
+        urlPatterns = {"/admin/*", "/product/*", "/accessory/*", "/service/*", "/post/*", "/MainController", "/mc", ""}
 )
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 2, // 2MB
