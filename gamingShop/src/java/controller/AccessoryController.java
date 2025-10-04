@@ -289,16 +289,17 @@ public class AccessoryController extends HttpServlet {
             }
 
 //            // 3. NEW: Check for duplicate name (UNIQUE constraint validation)
-//            try {
-//                
-//                if (accessoriesDAO.isNameExists(name)) {
-//                    request.setAttribute("checkErrorAddAccessory", "Accessory name '" + name.trim() + "' already exists. Please choose a different name.");
-//                    return "accessoryUpdate.jsp";
-//                }
-//            } catch (Exception e) {
-//                // If we can't check, continue but log the error
-//                e.printStackTrace();
-//            }
+            try {
+                
+                if (accessoriesDAO.isNameExists(name)) {
+                    request.setAttribute("checkErrorAddAccessory", "Accessory name '" + name.trim() + "' already exists. Please choose a different name.");
+                    return "accessoryUpdate.jsp";
+                }
+            } catch (Exception e) {
+                // If we can't check, continue but log the error
+                e.printStackTrace();
+            }
+
             // 4. Validate quantity - required, numeric, and non-negative
             if (quantityStr == null || quantityStr.trim().isEmpty()) {
                 request.setAttribute("checkErrorAddAccessory", "Quantity is required.");
@@ -393,8 +394,6 @@ public class AccessoryController extends HttpServlet {
             Part imagePart = null;
             try {
                 imagePart = request.getPart("imageFile");
-//                System.out.println("DEBUG: Image part retrieved - "
-//                        + (imagePart != null ? "Size: " + imagePart.getSize() + ", FileName: " + imagePart.getSubmittedFileName() : "NULL"));
             } catch (Exception e) {
                 e.getMessage();
             }
@@ -587,6 +586,17 @@ public class AccessoryController extends HttpServlet {
                 request.setAttribute("checkErrorEditAccessory", "Accessory name is required.");
                 request.setAttribute("accessory", existingAccessory);
                 return "accessoryUpdate.jsp";
+            }
+                       // Check duplicate model_type (exclude current record)
+            try {
+                boolean typeExists = accessoriesDAO.isAccessoryTypeExistsExcept(name.trim(), accessoryId);
+                if (typeExists) {
+                    request.setAttribute("checkErrorEditAccessory", "name '" + name.trim() + "' already exists. Please choose a different name");
+                    request.setAttribute("accessory", existingAccessory);
+                    return "accessoryUpdate.jsp";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             if (name.trim().length() > 255) {
@@ -835,6 +845,7 @@ public class AccessoryController extends HttpServlet {
             }
 
             // ===== 3) Nếu có dữ liệu, set attribute =====
+
             if (accessory != null) {
                 request.setAttribute("accessory", accessory);
             }

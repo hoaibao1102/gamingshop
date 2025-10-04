@@ -472,6 +472,21 @@
                     transition: none;
                 }
             }
+
+            /* Mặc định là 4 cột cho màn hình lớn */
+            .featured-grid-4cols {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr); /* 4 cột */
+                gap: 16px;
+            }
+
+            /* Khi màn hình nhỏ (mobile), sẽ hiển thị 2 cột */
+            @media (max-width: 768px) {
+                .featured-grid-4cols {
+                    grid-template-columns: repeat(2, 1fr); /* 2 cột */
+                }
+            }
+
         </style>
     </head>
 
@@ -595,6 +610,9 @@
                                                 Quay lại danh sách
                                             </a>
                                         </div>
+
+                                        <!--                                     >>> DIV MỚI CHÈN Ở ĐÂY <<< ===============================================-->
+
                                     </div>
                                 </div>
                             </div>
@@ -631,6 +649,46 @@
                                 </a>                            </div>
                             </c:otherwise>
                         </c:choose>
+
+                    </div>
+                    <div class="pd-left-extra">
+                        <h3 class="extra-title">NHỮNG PHỤ KIỆN LIÊN QUAN </h3>
+                        <c:choose>
+                            <c:when test="${not empty accessories}">
+                                <c:set var="shown" value="0"/>
+                                <div class="featured-grid-4cols">
+                                    <c:forEach var="i" items="${accessories}">
+                                        <c:if test="${ shown < 8 }">
+                                            <div class="grid-item-sb">
+                                                <form action="MainController" method="post" class="card">
+                                                    <input type="hidden" name="action" value="getAccessory"/>
+                                                    <input type="hidden" name="idAccessory" value="${i.id}"/>
+                                                    <!-- Bấm vào cả card là submit -->
+                                                    <button type="submit" class="thumb-btn-sb">
+                                                        <!-- Container cho ảnh và giá -->
+                                                        <div class="image-price-container-sb">
+                                                            <img class="thumb-sb" src="${i.coverImg}" alt="${i.name}" style="height:130px;"/>
+                                                            <div class="price-box-sb">
+                                                                <div class="price-text-sb"><fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" />
+                                                                    VND</div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Tên sản phẩm ở dưới -->
+                                                        <div class="product-name">${i.name}</div>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            <c:set var="shown" value="${shown + 1}"/>
+                                        </c:if>
+                                    </c:forEach>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <p>Hiện danh sách đang trống!</p>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+
                 </div>
             </div>
         </div>

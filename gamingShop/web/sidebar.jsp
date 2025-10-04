@@ -151,6 +151,7 @@
 
             /* Title */
             .sb-title{
+                text-align: center;
                 margin:20px 0 0 0;
                 font-size:17px;
                 font-weight:850;
@@ -179,7 +180,47 @@
                 }
             }
 
-            /* List */
+            /* Grid layout for sidebar - thống nhất với productDetail */
+            .featured-grid-sidebar {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .grid-item-sb {
+                width: 100%;
+            }
+
+            .grid-item-sb .card {
+                width: 100%;
+                height: 100%;
+                background: #ffffff;
+                border: 1px solid #f1f5f9;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 6px 20px rgba(0,0,0,.08);
+                transition: all .3s ease;
+            }
+
+            .grid-item-sb .card:hover {
+                transform: translateY(-4px) scale(1.02);
+                box-shadow: 0 12px 35px rgba(0,0,0,.15);
+            }
+
+            .grid-item-sb .thumb-btn-sb {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                border: none;
+                background: none;
+                padding: 12px;
+                cursor: pointer;
+                gap: 8px;
+            }
+
+            /* List fallback */
             .featured-list-sb{
                 list-style:none;
                 margin:0 0 20px 0;
@@ -187,7 +228,7 @@
                 display:grid;
                 gap:16px;
             }
-            p{
+            .sidebar p, .featured-list-sb p{
                 color:#1296ba;
                 text-align:center;
                 font-style:italic;
@@ -246,100 +287,159 @@
                 cursor:pointer;
                 display:flex;
                 flex-direction:column;
-                gap:12px;
-            }
-            .image-price-container-sb{
-                display:flex;
                 gap:8px;
-                align-items:stretch;
+                align-items:center;
+                text-align:center;
+            }
+            
+            .image-price-container-sb{
+                position: relative;
+                width: 100%;
+                height: 160px;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             }
 
             .thumb-sb{
-                flex: 7;
-                width: 80px;
-                object-fit:cover;
-                border-radius:10px;
-                box-shadow:0 2px 8px rgba(0,0,0,.1);
-                transition:transform .3s ease;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+                border-radius: 6px;
+                transition: transform .3s ease;
+                
             }
-            .thumb-btn-sb:hover .thumb-sb{
-                transform:scale(1.02);
+            
+            .grid-item-sb .thumb-btn-sb:hover .thumb-sb{
+                transform: scale(1.05);
             }
 
             .price-box-sb{
-                color:#e12e2e;
-                flex: 0 0 36%;
-                height:80px;
-                background:#f8f9fa;
-                border-radius:10px;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                text-decoration:none;
-                box-shadow:0 2px 8px rgba(0,0,0,.05);
-                border:1px solid #e9ecef;
-                transition:background .3s ease;
+                position: absolute;
+                bottom: 8px;
+                right: 8px;
+                background: linear-gradient(135deg, rgba(37,99,235,0.95), rgba(59,130,246,0.95));
+                color: white;
+                padding: 4px 8px;
+                border-radius: 8px !important;
+                font-size: 11px;
+                font-weight: 700;
+                box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+                border: 1px solid rgba(255,255,255,0.2);
+                z-index: 10;
             }
             .price-text-sb{
-                color:#dc3545;
-                font-weight:800;
+                color: white;
+                font-weight:700;
                 font-size:12px;
                 text-align:center;
                 line-height:1.2;
-                word-break:break-word;
-                hyphens:auto;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.3);
             }
             .product-name{
-                color:#000;
-                font-weight:800;
-                font-size:13px;
-                text-align:center;
-                line-height:1.3;
-                padding:0 4px;
-                word-break:break-word;
-                hyphens:auto;
+                color: #111827;
+                font-weight: 600;
+                font-size: 13px;
+                text-align: center;
+                line-height: 1.4;
+                width: 100%;
+                word-break: break-word;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                margin-top: 4px;
             }
             .thumb-btn-sb:hover .price-box-sb{
-                background:#dee2e6;
+                background: linear-gradient(135deg, rgba(59,130,246,0.95), rgba(37,99,235,0.95));
+                transform: scale(1.05);
+                box-shadow: 0 6px 16px rgba(37,99,235,0.4);
             }
 
             .view-more-btn{
-                width:100%;
-                padding:5px;
-                border:none;
-                border-radius:16px;
-                font-weight:500;
-                font-size:14px;
-                cursor:pointer;
-                text-transform:uppercase;
-                letter-spacing:1px;
-                position:relative;
-                overflow:hidden;
-                transition:all .3s ease;
-                font-family:inherit;
-                background:var(--primary-blue);
-                color:#fff;
+                width: 100%;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 16px;
+                font-weight: 600;
+                font-size: 14px;
+                cursor: pointer;
+                text-transform: uppercase;
+                letter-spacing: 1.5px;
+                position: relative;
+                overflow: hidden;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                font-family: inherit;
+
+                /* Gradient xanh-tím hiện đại */
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: #fff;
+
+                /* Hiệu ứng glassmorphism nhẹ */
+                box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
             }
+
             .view-more-btn::before{
-                content:'';
-                position:absolute;
-                top:0;
-                left:-100%;
-                width:100%;
-                height:100%;
-                background:linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-                transition:left .5s ease;
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.4),
+                    transparent
+                    );
+                transition: left 0.6s ease;
             }
+
+            /* Thêm hiệu ứng shine */
+            .view-more-btn::after{
+                content: '';
+                position: absolute;
+                inset: 0;
+                border-radius: 16px;
+                padding: 2px;
+                background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+                -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                -webkit-mask-composite: xor;
+                mask-composite: exclude;
+                opacity: 0;
+                transition: opacity 0.4s ease;
+            }
+
             .view-more-btn:hover{
-                background:var(--primary-blue-hover);
-                transform:translateY(-2px);
-                box-shadow:0 10px 30px rgba(29,78,216,.4);
+                background: linear-gradient(135deg, #5568d3 0%, #6a3e91 100%);
+                transform: translateY(-3px) scale(1.02);
+                box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5),
+                    0 5px 15px rgba(118, 75, 162, 0.3);
             }
+
             .view-more-btn:hover::before{
-                left:100%;
+                left: 100%;
             }
+
+            .view-more-btn:hover::after{
+                opacity: 1;
+            }
+
             .view-more-btn:active{
-                transform:translateY(0);
+                transform: translateY(-1px) scale(0.98);
+                box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            }
+
+            /* Thêm hiệu ứng glow khi focus */
+            .view-more-btn:focus{
+                outline: none;
+                box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2),
+                    0 8px 32px rgba(102, 126, 234, 0.3);
             }
 
             /* ==== Post cards in sidebar (ảnh trên - tiêu đề - ngày đăng) ==== */
@@ -399,17 +499,30 @@
                     width:100px;
                     height:100px;
                 }
-                .thumb-sb{
-                    height:70px;
+                .image-price-container-sb{
+                    width: 100%;
+                    height: 140px;
+                    border-radius: 10px;
+                    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
                 }
-                .price-box-sb{
-                    height:70px;
+                .thumb-btn-sb{
+                    padding: 12px;
+                    gap: 14px;
                 }
                 .price-text-sb{
-                    font-size:10px;
+                    font-size:11px;
+                }
+                .price-box-sb{
+                    bottom: 6px;
+                    right: 6px;
+                    padding: 3px 6px;
+                    border-radius: 6px;
+                    font-size: 10px;
+                    box-shadow: 0 3px 8px rgba(37,99,235,0.25);
                 }
                 .product-name{
-                    font-size:11px;
+                    font-size:12px;
+                    margin-top: 2px;
                 }
                 .nav-item, .sb-nav a{
                     padding:12px 14px;
@@ -420,7 +533,7 @@
     </head>
     <body>
 
-        <aside class="sidebar">
+
             <!-- Logo -->
             <div class="logo-card">
                 <c:choose>
@@ -446,7 +559,7 @@
                     </form>
                     <form action="${pageContext.request.contextPath}/MainController" method="post" class="nav-form">
                         <input type="hidden" name="action" value="searchPosts">
-                        <input class="nav-item" type="submit" value="🗂️ Quản lý bài posts">
+                        <input class="nav-item" type="submit" value="🗂️ Quản lý bài đăng">
                     </form>
 
                     <form action="MainController" method="get" class="nav-form">
@@ -461,66 +574,77 @@
                         <input type="hidden" name="action" value="viewModelList">
                         <input class="nav-item" type="submit" value="🎮 Quản lý sản phẩm"> 
                     </form>
+                    <form method="get" action="MainController" class="nav-form">
+                        <input type="hidden" name="action" value="goBannerTextForm">
+                        <input class="nav-item" type="submit" value="📊 Sửa nội dung banner">
+                    </form>
                 </c:if>
             </nav>
 
             <hr class="divider">
 
-            <c:if test="${isListProminent != true}">
-                <h3 class="sb-title">Nổi bật</h3>
-                <c:choose>
-                    <c:when test="${not empty listProductForSidebar}">
-                        <c:set var="shown" value="0"/>
-                        <ul class="featured-list-sb">
-                            <c:forEach var="i" items="${listProductForSidebar}">
-                                <c:if test="${i.status eq 'prominent' and shown < 3}">
-                                    <li class="item-sb">
-                                        <form action="${pageContext.request.contextPath}/MainController" method="post" class="card">
-                                            <input type="hidden" name="action" value="getProduct"/>
-                                            <input type="hidden" name="idProduct" value="${i.id}"/>
+<!-- Danh sách sản phẩm nổi bật: chỉ hiện khi có sản phẩm prominent -->
+<c:if test="${isListProminent != true}">
+    <!-- Kiểm tra trước xem có sản phẩm prominent không -->
+    <c:set var="hasProminentProducts" value="false"/>
+    <c:forEach var="i" items="${listProductForSidebar}">
+        <c:if test="${i.status eq 'prominent'}">
+            <c:set var="hasProminentProducts" value="true"/>
+        </c:if>
+    </c:forEach>
+    
+    <!-- Chỉ hiện mục khi có sản phẩm prominent -->
+    <c:if test="${hasProminentProducts}">
+        <h3 class="sb-title">NỔI BẬT</h3>
+        <c:set var="shown" value="0"/>
+        <div class="featured-grid-sidebar">
+            <c:forEach var="i" items="${listProductForSidebar}">
+                <c:if test="${i.status eq 'prominent' and shown < 3}">
+                    <div class="grid-item-sb">
+                        <form action="MainController" method="post" class="card">
+                            <input type="hidden" name="action" value="getProduct"/>
+                            <input type="hidden" name="idProduct" value="${i.id}"/>
+                            <!-- Bấm vào cả card là submit -->
+                            <button type="submit" class="thumb-btn-sb">
+                                <!-- Container cho ảnh và giá -->
+                                <div class="image-price-container-sb">
+                                    <c:choose>
+                                        <c:when test="${not empty i.coverImg and (fn:startsWith(i.coverImg, 'http') or fn:startsWith(i.coverImg, '/'))}">
+                                            <img class="thumb-sb" src="${i.coverImg}" alt="${fn:escapeXml(i.name)}"/>
+                                        </c:when>
+                                        <c:when test="${not empty i.coverImg}">
+                                            <img class="thumb-sb" src="${pageContext.request.contextPath}/${i.coverImg}" alt="${fn:escapeXml(i.name)}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img class="thumb-sb" src="${pageContext.request.contextPath}/assets/images/no-image.jpg" alt="${fn:escapeXml(i.name)}"/>
+                                        </c:otherwise>
+                                    </c:choose>
 
-                                            <button type="submit" class="thumb-btn-sb">
-                                                <div class="image-price-container-sb">
-                                                    <c:choose>
-                                                        <c:when test="${not empty i.coverImg and (fn:startsWith(i.coverImg, 'http') or fn:startsWith(i.coverImg, '/'))}">
-                                                            <img class="thumb-sb" src="${i.coverImg}" alt="${fn:escapeXml(i.name)}"/>
-                                                        </c:when>
-                                                        <c:when test="${not empty i.coverImg}">
-                                                            <img class="thumb-sb" src="${pageContext.request.contextPath}/${i.coverImg}" alt="${fn:escapeXml(i.name)}"/>
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                            <img class="thumb-sb" src="${pageContext.request.contextPath}/assets/images/no-image.jpg" alt="${fn:escapeXml(i.name)}"/>
-                                                        </c:otherwise>
-                                                    </c:choose>
-
-                                                    <div class="price-box-sb">
-                                                        <div class="price-text-sb">
-                                                            <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="product-name">${i.name}</div>
-                                            </button>
-                                        </form>
-                                    </li>
-                                    <c:set var="shown" value="${shown + 1}"/>
-                                </c:if>
-                            </c:forEach>
-                        </ul>
-                        <form action="${pageContext.request.contextPath}/MainController" method="post">
-                            <input type="hidden" name="action" value="getProminentList">
-                            <input class="view-more-btn" type="submit" value="Xem thêm">
+                                    <div class="price-box-sb">
+                                        <div class="price-text-sb">
+                                            <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tên sản phẩm ở dưới -->
+                                <div class="product-name">${i.name}</div>
+                            </button>
                         </form>
-                    </c:when>
-                    <c:otherwise>
-                        <p>Hiện danh sách đang trống!</p>
-                    </c:otherwise>
-                </c:choose>
-            </c:if>
+                    </div>
+                    <c:set var="shown" value="${shown + 1}"/>
+                </c:if>
+            </c:forEach>
+        </div>
+        <!-- Chỉ hiện nút xem thêm khi có sản phẩm prominent -->
+        <form action="MainController" method="post">
+            <input type="hidden" name="action" value="getProminentList">
+            <input class="view-more-btn" type="submit" value="Xem thêm">
+        </form>
+    </c:if>
+</c:if>
 
-            <c:if test="${ not empty listPostForSidebar }">
                 <c:set var="shown" value="0"/>
-                <h3 class="sb-title">Bài đăng</h3>
+                <h3 class="sb-title">BÀI ĐĂNG</h3>
                 <ul class="featured-list-sb">
                     <c:forEach var="p" items="${listPostForSidebar}">
                         <c:if test="${p.status == 1 and shown < 3}">
@@ -540,7 +664,9 @@
                                     </c:choose>
 
                                     <div class="post-body">
-                                        <span class="post-title">${p.title}</span>
+
+                                        <!-- Tiêu đề (giống style product-name) -->
+                                        <span class="product-name">${p.title}</span>
 
                                         <span class="post-date">
                                             <c:choose>
@@ -561,11 +687,15 @@
                         </c:if>
                     </c:forEach>
                 </ul>
+
                 <form action="${pageContext.request.contextPath}/MainController" method="post">
+
                     <input type="hidden" name="action" value="searchPosts">
                     <input class="view-more-btn" type="submit" value="Xem thêm">
                 </form>
             </c:if>
+
         </aside>
+
     </body>
 </html>

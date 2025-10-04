@@ -5,6 +5,7 @@
 package controller;
 
 import dao.AccessoriesDAO;
+import dao.BannerTextDAO;
 import dao.BannersDAO;
 import dto.Accessories;
 import dao.GuaranteesDAO;
@@ -15,6 +16,7 @@ import dao.ProductAccessoriesDAO;
 import dao.ProductImagesDAO;
 import dao.ProductsDAO;
 import dao.ServicesDAO;
+import dto.BannerText;
 import dto.Banners;
 import dto.Guarantees;
 import dto.Memories;
@@ -26,6 +28,7 @@ import dto.Product_accessories;
 import dto.Product_images;
 import dto.Products;
 import dto.Services;
+import jakarta.security.auth.message.callback.PrivateKeyCallback;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -77,6 +80,7 @@ public class ProductController extends HttpServlet {
 
             if ("prepareHome".equals(action) || action == null) {
                 handleViewAllProducts_sidebar(request, response);
+                handleGetAllBannerText(request, response);
                 url = handleViewAllProducts(request, response);
             } else if (action.equals("searchProduct")) {
                 url = handleProductSearching(request, response);
@@ -287,7 +291,7 @@ public class ProductController extends HttpServlet {
             request.setAttribute("list", list);
         } else {
             List<Products> list2 = new ArrayList<>();
-            list = productsdao.getAll();
+            list = productsdao.getAllProducts(keyword);
             int model_id = Integer.parseInt(request.getParameter("model_id"));
 
             for (Products p : list) {
@@ -1361,15 +1365,15 @@ public class ProductController extends HttpServlet {
             }
 
             // 3. Check for duplicate model_type (UNIQUE constraint)
-//            try {
-//                boolean typeExists = modelsDAO.isModelTypeExists(modelType.trim());
-//                if (typeExists) {
-//                    request.setAttribute("checkErrorAddModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
-//                    return "modelUpdate.jsp";
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+            try {
+                boolean typeExists = modelsDAO.isModelTypeExists(modelType.trim());
+                if (typeExists) {
+                    request.setAttribute("checkErrorAddModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
+                    return "modelUpdate.jsp";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             // 4. Validate status value
             if (status != null && !status.trim().isEmpty()) {
                 String normalizedStatus = status.trim();
@@ -1547,16 +1551,16 @@ public class ProductController extends HttpServlet {
             }
 
             // Check duplicate model_type (exclude current record)
-//            try {
-//                boolean typeExists = modelsDAO.isModelTypeExistsExcept(modelType.trim(), modelId);
-//                if (typeExists) {
-//                    request.setAttribute("checkErrorEditModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
-//                    request.setAttribute("model", existingModel);
-//                    return "modelUpdate.jsp";
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+            try {
+                boolean typeExists = modelsDAO.isModelTypeExistsExcept(modelType.trim(), modelId);
+                if (typeExists) {
+                    request.setAttribute("checkErrorEditModel", "Model type '" + modelType.trim() + "' already exists. Please choose a different model type.");
+                    request.setAttribute("model", existingModel);
+                    return "modelUpdate.jsp";
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             // Validate status
             if (status != null && !status.trim().isEmpty()) {
                 String normalizedStatus = status.trim();
@@ -1962,8 +1966,6 @@ public class ProductController extends HttpServlet {
             // Update database
             boolean success = servicesDAO.update(existingService);
 
-            System.out.println("===DEBUG====");
-            System.out.println("GET SERVICE" + existingService.getId() + existingService.getDescription_html() + existingService.getService_type() + existingService.getStatus() + existingService.getPrice());
             if (success) {
                 HttpSession session = request.getSession();
                 session.removeAttribute("cachedServiceList");
@@ -2380,5 +2382,14 @@ public class ProductController extends HttpServlet {
         return "serviceHome.jsp";
 
     }
+
+    private void handleGetAllBannerText(HttpServletRequest request, HttpServletResponse response) {
+        List<BannerText> listBannerText = new ArrayList();
+        BannerTextDAO btDAO = new BannerTextDAO();
+        listBannerText = btDAO.getAll();
+        request.setAttribute("listBannerText", listBannerText);
+    }
+    
+    
 
 }

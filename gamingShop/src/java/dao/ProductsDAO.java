@@ -651,6 +651,50 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         }
         return list;
     }
+    
+
+    public List<Products> getAllProducts(String keyword) {
+        List<Products> list = new ArrayList<>();
+        // Bắt đầu câu lệnh SQL cơ bản
+        String sql = "SELECT * FROM Products";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            // Xây dựng mệnh đề WHERE nếu có từ khóa tìm kiếm
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                sql += " WHERE name LIKE ?";
+            }
+
+           sql += " ORDER BY CASE status "
+             + "WHEN 'prominent' THEN 1 "
+             + "WHEN 'active' THEN 2 "
+             + "ELSE 3 END ASC, id DESC";
+        
+
+            // Mở kết nối và thực thi
+            conn = DBUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+
+            // Gán giá trị cho tham số '?' trong mệnh đề WHERE (nếu có)
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                ps.setString(1, "%" + keyword + "%");
+            }
+
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(map(rs));
+            }
+        } catch (Exception e) {
+            // In lỗi ra console để debug
+            e.printStackTrace();
+        } finally {
+            // Đóng các kết nối để tránh rò rỉ tài nguyên
+            close(conn, ps, rs);
+        }
+        return list;
+    }
 
     public Products findBySlug(String slug) {
         try ( Connection c = DBUtils.getConnection();  PreparedStatement st = c.prepareStatement(GET_BY_SLUG)) {

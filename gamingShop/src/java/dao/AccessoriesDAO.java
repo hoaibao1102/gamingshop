@@ -29,11 +29,13 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     private static final String GET_ALL = "SELECT * FROM dbo.Accessories";
     private static final String GET_BY_ID = "SELECT * FROM dbo.Accessories WHERE id = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Accessories WHERE name LIKE ? ";
+
     private static final String CREATE = "INSERT INTO dbo.Accessories (name, quantity, price, description_html, image_url, status, gift, slug) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE = "UPDATE dbo.Accessories SET name = ?, quantity = ?, price = ?, description_html = ?, image_url = ?, status = ?, gift = ?, updated_at = GETDATE(), slug = ? WHERE id = ?";
     private static final String CHECK_EXIST_NAME = "SELECT COUNT(1) FROM dbo.Accessories WHERE name = ? AND status = 'active'";
     private static final String GET_ALL_ACTIVE = "SELECT * FROM dbo.Accessories WHERE status = 'active'";
     private static final String GET_BY_SLUG = "SELECT * FROM dbo.Accessories WHERE slug = ?";
+
     
     @Override
     public boolean create(Accessories e) {
@@ -206,6 +208,37 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
             throw new SQLException("Error checking name existence: " + ex.getMessage(), ex);
         }
 
+        return false;
+    }
+    
+    /**
+     * Kiểm tra xem model_type đã tồn tại hay chưa, ngoại trừ model có id được
+     * chỉ định Thường dùng khi update để tránh trùng lặp với chính model đang
+     * được update
+     *
+     * @param modelType tên model type cần kiểm tra
+     * @param modelId id của model cần loại trừ khỏi việc kiểm tra
+     * @return true nếu model_type đã tồn tại ở model khác, false nếu không
+     */
+    public boolean isAccessoryTypeExistsExcept(String trim, int accessorylId) {
+        Connection c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            c = DBUtils.getConnection();
+            ps = c.prepareStatement(CHECK_ACCESSORY_TYPE_EXISTS_EXCEPT);
+            ps.setString(1, trim);
+            ps.setInt(2, accessorylId);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(c, ps, rs);
+        }
         return false;
     }
 

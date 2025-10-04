@@ -1,0 +1,97 @@
+/* CSS Override để loại bỏ border-radius khỏi tất cả các product items */
+
+/* Loại bỏ border-radius và border khỏi tất cả các product/item containers */
+.item,
+.item-sb,
+.grid-item-sb,
+.grid-item-sb .card,
+.featured-grid-sidebar,
+.product-item,
+.product-card,
+.accessory-item,
+.service-item {
+  border-radius: 0 !important;
+  border: none !important;
+}
+
+/* Loại bỏ border-radius khỏi tất cả các product images */
+.thumb,
+.thumb-sb,
+.product-thumb,
+.product-image,
+.item-image {
+  border-radius: 0 !important;
+}
+
+/* Đảm bảo tất cả các product buttons cũng không có border-radius */
+.product-button,
+.product-btn,
+.item-btn {
+  border-radius: 0 !important;
+}
+
+/* Override cho các price boxes nếu có */
+.price-box,
+.product-price-box {
+  border-radius: 0 !important;
+}
+
+/* Đảm bảo aspect ratio 1:1 cho tất cả product images */
+.thumb,
+.product-thumb,
+.product-image,
+.featured-list .thumb,
+.item .thumb,
+#tab-images .thumb {
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+  height: auto !important;
+  width: 100% !important;
+}
+
+/* Override mạnh mẽ cho trang chủ */
+.featured-list .item,
+.featured-list .item .thumb,
+.item .thumb,
+.product-button .thumb {
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.featured-list .item .thumb,
+.item .thumb,
+.product-button .thumb {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+}
+
+/* Mobile responsive cho square images */
+@media (max-width: 768px) {
+  .thumb-sb {
+    width: 90px;
+    height: 90px;
+  }
+}
+
+@media (min-width: 769px) {
+  .thumb-sb {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* ULTIMATE OVERRIDE - Đảm bảo 100% hoạt động * .thumb,*/
+*.thumb,
+.item > .thumb,
+.featured-list > .item > .product-button > .product-content > .thumb {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
