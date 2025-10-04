@@ -316,22 +316,14 @@
                 <jsp:include page="header.jsp" />
 
                 <!-- ====== Marquee (thanh thông báo chạy ngang) ====== -->
+                <!-- ====== Marquee (thanh thông báo chạy ngang) ====== -->
                 <div class="marquee-bar">
                     <div class="marquee-inner">
-                        <span class="marquee-item"
-                              ><span class="badge">HOT</span> Dịch vụ chất lượng cao</span
-                        >
-                        <span class="marquee-item"
-                              ><span class="badge">NEW</span> Nhiều dịch vụ mới được cập
-                            nhật</span
-                        >
-                        <span class="marquee-item"
-                              ><span class="badge">SALE</span> Ưu đãi đặc biệt cho khách hàng
-                            thân thiết</span
-                        >
-                        <span class="marquee-item"
-                              ><a href="#">Xem tất cả dịch vụ →</a></span
-                        >
+                        <c:if test="${not empty listBannerText}">
+                            <c:forEach var="item" items="${listBannerText}">
+                                <span class="marquee-item"><span class="badge">HOT</span> ${item.bannerText}</span>
+                            </c:forEach>
+                        </c:if>
                     </div>
                 </div>
 
