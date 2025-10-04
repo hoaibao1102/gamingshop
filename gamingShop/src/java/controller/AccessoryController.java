@@ -69,6 +69,7 @@ public class AccessoryController extends HttpServlet {
             } else if ("deleteAccessory".equals(action)) {
                 url = handleAccessoryDelete(request, response);
             } else if ("getAccessory".equals(action)) {
+                handleViewAllAccessories(request, response);
                 url = handleGetAccessory(request, response);
             }
 

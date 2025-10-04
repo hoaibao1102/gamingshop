@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet(
         name = "MainController",
-        urlPatterns = {"/product/*", "/accessory/*", "/MainController", "/mc", ""}
+        urlPatterns = {"/product/*", "/accessory/*", "/service/*", "/post/*", "/MainController", "/mc", ""}
 )
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 2, // 2MB
@@ -38,6 +38,10 @@ public class MainController extends HttpServlet {
                     url = "/ProductController?action=getProduct";
                 } else if (servletPath.equals("/accessory")) {
                     url = "/AccessoryController?action=getAccessory";
+                } else if (servletPath.equals("/service")) {
+                    url = "/ProductController?action=getService";
+                } else if (servletPath.equals("/post")) {
+                    url = "/ProductController?action=viewPost";
                 }
             } else if (action == null || action.trim().isEmpty()) {
                 url = "ProductController?action=prepareHome";

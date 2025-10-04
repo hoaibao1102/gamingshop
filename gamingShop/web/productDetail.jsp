@@ -431,11 +431,11 @@
                     grid-template-columns: 1fr;
                     gap: 20px;
                 }
-                
+
                 .pd-left{
                     order: 1; /* ảnh lên trên */
                 }
-                
+
                 .pd-right{
                     order: 2; /* nội dung xuống dưới */
                 }
@@ -578,7 +578,7 @@
             .pd-left-extra {
                 padding: 0 20px 20px;
             }
-            
+
             .extra-title {
                 font-size: 20px;
                 font-weight: 700;
@@ -590,21 +590,21 @@
                 border-radius: 12px;
                 border: 1px solid #e2e8f0;
             }
-            
+
             .related-products-container {
                 position: relative;
                 overflow: visible;
             }
-            
+
             .related-products-scroll {
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);
                 gap: 16px;
                 padding-bottom: 10px;
             }
-            
 
-            
+
+
             .related-product-item {
                 width: 100%;
                 background: #fff;
@@ -613,17 +613,17 @@
                 overflow: hidden;
                 transition: all 0.3s ease;
             }
-            
+
             .related-product-item:hover {
                 transform: translateY(-4px);
                 box-shadow: 0 8px 24px rgba(0,0,0,0.12);
             }
-            
+
             .related-product-form {
                 width: 100%;
                 height: 100%;
             }
-            
+
             .related-product-btn {
                 width: 100%;
                 height: 100%;
@@ -635,25 +635,25 @@
                 flex-direction: column;
                 text-align: left;
             }
-            
+
             .related-product-image {
                 width: 100%;
                 height: 200px;
                 position: relative;
                 overflow: hidden;
             }
-            
+
             .related-product-image img {
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
                 transition: transform 0.3s ease;
             }
-            
+
             .related-product-item:hover .related-product-image img {
                 transform: scale(1.05);
             }
-            
+
             .related-product-price {
                 position: absolute;
                 bottom: 8px;
@@ -665,7 +665,7 @@
                 font-size: 12px;
                 font-weight: 600;
             }
-            
+
             .related-product-info {
                 padding: 12px;
                 flex-grow: 1;
@@ -673,7 +673,7 @@
                 flex-direction: column;
                 justify-content: space-between;
             }
-            
+
             .related-product-name {
                 font-size: 14px;
                 font-weight: 600;
@@ -686,7 +686,7 @@
                 -webkit-box-orient: vertical;
                 overflow: hidden;
             }
-            
+
             /* Navigation buttons - Ẩn đi vì không còn cần thiết */
             .related-nav-btn {
                 display: none;
@@ -704,32 +704,32 @@
                 .pd-left-extra {
                     padding: 0 12px 16px;
                 }
-                
+
                 .extra-title {
                     font-size: 18px;
                     margin-bottom: 12px;
                     padding: 10px;
                 }
-                
+
                 .related-products-scroll {
                     grid-template-columns: repeat(2, 1fr);
                     gap: 12px;
                 }
-                
+
                 .related-product-image {
                     height: 160px;
                 }
-                
+
                 .related-nav-btn {
                     width: 36px;
                     height: 36px;
                     font-size: 16px;
                 }
-                
+
                 .related-nav-prev {
                     left: -18px;
                 }
-                
+
                 .related-nav-next {
                     right: -18px;
                 }
@@ -759,19 +759,19 @@
                     grid-template-columns: repeat(2, 1fr);
                     gap: 10px;
                 }
-                
+
                 .related-product-image {
                     height: 140px;
                 }
-                
+
                 .related-product-info {
                     padding: 8px;
                 }
-                
+
                 .related-product-name {
                     font-size: 13px;
                 }
-                
+
                 .related-nav-btn {
                     display: none;
                 }
@@ -783,7 +783,7 @@
 
     <body>
         <div class="wrapper">
-             <!-- Sidebar -->
+            <!-- Sidebar -->
             <div class="sidebar">
                 <jsp:include page="sidebar.jsp"/>
             </div>
@@ -792,22 +792,38 @@
             <div class="Main_content">
                 <!-- Header -->
                 <jsp:include page="header.jsp"/>
+
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
                     <div class="breadcrumbs">
-                        <a href="MainController?action=${breadCrumbs}">Danh sách sản phẩm</a>
+                        <a href="${pageContext.request.contextPath}/MainController?action=${breadCrumbs}">Danh sách sản phẩm</a>
                         <span class="sep">›</span>
                         <span class="current">Chi tiết sản phẩm</span>
                     </div>
+
                     <c:choose>
                         <c:when test="${not empty productDetail}">
                             <div class="product-detail">
-                                <!-- LEFT: Gallery (4 phần) -->
+                                <!-- LEFT: Gallery -->
                                 <div class="pd-left">
-                                    <c:set var="firstImg"
-                                           value="${(not empty productDetail.image and not empty productDetail.image[0].image_url) 
-                                                    ? productDetail.image[0].image_url 
-                                                    : '/assets/images/no-image.jpg'}" />
+                                    <%-- firstImg: chuẩn hoá url + fallback no-image --%>
+                                    <c:choose>
+                                        <c:when test="${not empty productDetail.image and not empty productDetail.image[0].image_url}">
+                                            <c:set var="rawFirst" value="${productDetail.image[0].image_url}" />
+                                            <c:choose>
+                                                <c:when test="${fn:startsWith(rawFirst,'http') or fn:startsWith(rawFirst,'/')}">
+                                                    <c:set var="firstImg" value="${rawFirst}" />
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:set var="firstImg" value="${pageContext.request.contextPath}/${rawFirst}" />
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="firstImg" value="${pageContext.request.contextPath}/assets/images/no-image.jpg" />
+                                        </c:otherwise>
+                                    </c:choose>
+
                                     <div class="pd-main">
                                         <img id="pd-main-img" src="${firstImg}" alt="${productDetail.name}" loading="eager"/>
                                     </div>
@@ -815,185 +831,42 @@
                                     <div class="pd-thumbs" id="pd-thumbs">
                                         <c:forEach var="img" items="${productDetail.image}" varStatus="s">
                                             <c:if test="${not empty img.image_url}">
+                                                <%-- Chuẩn hoá từng ảnh thumb --%>
+                                                <c:set var="rawUrl" value="${img.image_url}" />
+                                                <c:choose>
+                                                    <c:when test="${fn:startsWith(rawUrl,'http') or fn:startsWith(rawUrl,'/')}">
+                                                        <c:set var="imgSrc" value="${rawUrl}" />
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <c:set var="imgSrc" value="${pageContext.request.contextPath}/${rawUrl}" />
+                                                    </c:otherwise>
+                                                </c:choose>
+
                                                 <button type="button"
                                                         class="pd-thumb${s.index == 0 ? ' is-active' : ''}"
-                                                        data-src="${img.image_url}"
+                                                        data-src="${imgSrc}"
                                                         aria-label="Ảnh ${s.count}">
-                                                    <img src="${img.image_url}" alt="${productDetail.name}" loading="lazy"/>
+                                                    <img src="${imgSrc}" alt="${productDetail.name}" loading="lazy"/>
                                                 </button>
                                             </c:if>
                                         </c:forEach>
                                     </div>
-        <!-- Main -->
-        <div class="Main_content">
-            <!-- Header -->
-            <jsp:include page="header.jsp"/>
-
-            <!-- ====== Nội dung trang ====== -->
-            <div class="container">
-                <div class="breadcrumbs">
-                    <a href="${pageContext.request.contextPath}/MainController?action=${breadCrumbs}">Danh sách sản phẩm</a>
-                    <span class="sep">›</span>
-                    <span class="current">Chi tiết sản phẩm</span>
-                </div>
-                <c:choose>
-                    <c:when test="${not empty productDetail}">
-                        <div class="product-detail">
-                            <!-- LEFT: Gallery (4 phần) -->
-                            <div class="pd-left">
-                                <%-- First image: xử lý tương tự để luôn có contextPath đúng --%>
-                                <c:choose>
-                                    <c:when test="${not empty productDetail.image and not empty productDetail.image[0].image_url}">
-                                        <c:set var="rawFirst" value="${productDetail.image[0].image_url}" />
-                                        <c:choose>
-                                            <c:when test="${fn:startsWith(rawFirst, 'http') or fn:startsWith(rawFirst, '/')}">
-                                                <c:set var="firstImg" value="${rawFirst}" />
-                                            </c:when>
-                                            <c:otherwise>
-                                                <c:set var="firstImg" value="${pageContext.request.contextPath}/${rawFirst}" />
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <c:set var="firstImg" value="${pageContext.request.contextPath}" />
-                                    </c:otherwise>
-                                </c:choose>
-
-                                <div class="pd-main">
-                                    <img id="pd-main-img" src="${firstImg}" alt="${productDetail.name}" loading="eager"/>
                                 </div>
 
-                                <div class="pd-thumbs" id="pd-thumbs">
-                                    <c:forEach var="img" items="${productDetail.image}" varStatus="s">
-                                        <c:if test="${not empty img.image_url}">
-                                            <%-- chuẩn hóa src từng ảnh nhỏ --%>
-                                            <c:set var="rawUrl" value="${img.image_url}" />
-                                            <c:choose>
-                                                <c:when test="${fn:startsWith(rawUrl, 'http') or fn:startsWith(rawUrl, '/')}">
-                                                    <c:set var="imgSrc" value="${rawUrl}" />
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <c:set var="imgSrc" value="${pageContext.request.contextPath}/${rawUrl}" />
-                                                </c:otherwise>
-                                            </c:choose>
+                                <!-- RIGHT: Info + Description -->
+                                <div class="pd-right">
+                                    <div class="pd-name">${productDetail.name}</div>
 
-                                            <button type="button"
-                                                    class="pd-thumb${s.index == 0 ? ' is-active' : ''}"
-                                                    data-src="${imgSrc}"
-                                                    aria-label="Ảnh ${s.count}">
-                                                <img src="${imgSrc}" alt="${productDetail.name}" loading="lazy"/>
-                                            </button>
-                                        </c:if>
-                                    </c:forEach>
-                                </div>
-                            </div>
-
-                            <!-- RIGHT: Info + Description (6 phần) -->
-                            <div class="pd-right">
-                                <div class="pd-name">${productDetail.name}</div>
-
-                                <div class="pd-basic">
-                                    <div class="pd-row"><b>SKU</b><span>${productDetail.sku}</span></div>
-                                    <div class="pd-row">
-                                        <b>Loại</b>
-                                        <span>
-                                            <c:choose>
-                                                <c:when test="${productDetail.product_type == 'nintendo'}">
-                                                    Nintendo
-                                                </c:when>
-                                                <c:when test="${productDetail.product_type == 'sony'}">
-                                                    Sony
-                                                </c:when>
-                                                <c:otherwise>
-                                                    Hãng khác
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </span>
-                                    </div>
-                                    <div class="pd-row pd-row-price">
-                                        <b>Giá</b>
-                                        <span><fmt:formatNumber value="${productDetail.price}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND</span>
-                                    </div>
-                                    <div class="pd-row"><b>Bảo hành</b><span>${guaranteeProduct}</span></div>
-                                    <div class="pd-row"><b>Bộ nhớ</b><span>${memoryProduct}</span></div>
-                                </div>
-
-                                <c:if test="${not empty accessories}">
-                                    <div class="pd-accessories">
-                                        <b>Phụ kiện tặng kèm:</b>
-                                        <ul>
-                                            <c:forEach var="acc" items="${accessories}">
-                                                <li>
-                                                    ${acc.name} (x${acc.quantity})
-                                                </li>
-                                            </c:forEach>
-                                        </ul>
-                                    </div>
-                                </c:if>
-
-                                <hr>
-
-                                <div class="sd-actions">
-                                    <button onclick="bookService('${serviceDetail.id}', '${serviceDetail.service_type}', '${serviceDetail.price}')" class="btn-service btn-primary">
-                                        🛒 Đặt hàng qua Zalo
-                                    </button>
-                                    <button onclick="callDirectly()" class="btn-service btn-secondary">
-                                        📞 Gọi trực tiếp
-                                    </button>
-                                    <a href="${pageContext.request.contextPath}/MainController?action=listMayChoiGame" class="btn-service btn-secondary">
-                                        📋 Xem sản phẩm khác
-                                    </a>
-                                </div>
-
-                                <!-- Description_html nằm chung cột phải -->
-                                <div class="pd-desc">
-                                    <div class="pd-desc-title">
-                                        📝 Mô tả sản phẩm
-                                    </div>
-                                    ${productDetail.description_html}
-                                </div>
-                            </div>
-                        </div>
-                    </c:when>
-
-                    <c:otherwise>
-                        <div class="empty-state">
-                            <h3>Không tìm thấy sản phẩm</h3>
-                            <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí của bạn.</p>
-                            <c:if test="${not empty checkErrorDeleteProduct}">
-                                <p><c:out value="${checkErrorDeleteProduct}"/></p>
-                            </c:if>
-                            <form action="${pageContext.request.contextPath}/MainController" method="post" style="margin-top:12px;">
-                                <input type="hidden" name="action" value="listProducts"/>
-                                <button class="btn-filter" type="submit">Xem tất cả sản phẩm</button>
-                            </form>
-                        </div>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-
-            <!-- >>> DIV MỚI CHÈN Ở ĐÂY <<< -->
-            <div class="pd-left-extra">
-                <h3 class="extra-title">NHỮNG SẢN PHẨM LIÊN QUAN </h3>
-                <c:choose>
-                    <c:when test="${not empty list_pro}">
-                        <c:set var="shown" value="0"/>
-                        <div class="featured-grid-4cols">
-                            <c:forEach var="i" items="${list_pro}">
-                                <c:if test="${ shown < 4}">
-                                    <div class="grid-item-sb">
-                                        <c:set var="rawCover" value="${i.coverImg}" />
-                                        <c:choose>
-                                            <c:when test="${not empty rawCover}">
+                                    <div class="pd-basic">
+                                        <div class="pd-row"><b>SKU</b><span>${productDetail.sku}</span></div>
+                                        <div class="pd-row">
+                                            <b>Loại</b>
+                                            <span>
                                                 <c:choose>
-                                                    <c:when test="${fn:startsWith(rawCover, 'http') or fn:startsWith(rawCover, '/')}">
-                                                        <c:set var="coverSrc" value="${rawCover}" />
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <c:set var="coverSrc" value="${pageContext.request.contextPath}/${rawCover}" />
-                                                    </c:otherwise>
+                                                    <c:when test="${productDetail.product_type == 'nintendo'}">Nintendo</c:when>
+                                                    <c:when test="${productDetail.product_type == 'sony'}">Sony</c:when>
+                                                    <c:otherwise>Hãng khác</c:otherwise>
                                                 </c:choose>
-
                                             </span>
                                         </div>
                                         <div class="pd-row pd-row-price">
@@ -1009,10 +882,8 @@
                                             <b>Phụ kiện tặng kèm:</b>
                                             <ul>
                                                 <c:forEach var="acc" items="${accessories}">
-                                                    <li>
-                                                        ${acc.name} (x${acc.quantity})
-                                                    </li>
-                                                </c:forEach>
+                                                    <li>${acc.name} (x${acc.quantity})</li>
+                                                    </c:forEach>
                                             </ul>
                                         </div>
                                     </c:if>
@@ -1026,16 +897,13 @@
                                         <button onclick="callDirectly()" class="btn-service btn-secondary">
                                             📞 Gọi trực tiếp
                                         </button>
-                                        <a href="MainController?action=listMayChoiGame" class="btn-service btn-secondary">
+                                        <a href="${pageContext.request.contextPath}/MainController?action=listMayChoiGame" class="btn-service btn-secondary">
                                             📋 Xem sản phẩm khác
                                         </a>
                                     </div>
 
-                                    <!-- Description_html nằm chung cột phải -->
                                     <div class="pd-desc">
-                                        <div class="pd-desc-title">
-                                            📝 Mô tả sản phẩm
-                                        </div>
+                                        <div class="pd-desc-title">📝 Mô tả sản phẩm</div>
                                         ${productDetail.description_html}
                                     </div>
                                 </div>
@@ -1049,32 +917,27 @@
                                 <c:if test="${not empty checkErrorDeleteProduct}">
                                     <p><c:out value="${checkErrorDeleteProduct}"/></p>
                                 </c:if>
-                                <form action="MainController" method="post" style="margin-top:12px;">
+                                <form action="${pageContext.request.contextPath}/MainController" method="post" style="margin-top:12px;">
                                     <input type="hidden" name="action" value="listProducts"/>
                                     <button class="btn-filter" type="submit">Xem tất cả sản phẩm</button>
                                 </form>
                             </div>
                         </c:otherwise>
                     </c:choose>
-                </div>
 
-
-
-                <!-- Sản phẩm liên quan với scroll horizontal -->
-                <div class="pd-left-extra">
-                    <h3 class="extra-title">🔥 NHỮNG SẢN PHẨM LIÊN QUAN</h3>
-                    <c:choose>
-                        <c:when test="${not empty list_pro}">
-                            <div class="related-products-container">
-                                <div class="related-products-scroll">
-                                    <c:set var="shown" value="0"/>
-                                    <c:forEach var="i" items="${list_pro}">
-                                        <c:if test="${shown < 8}">
-                                            <div class="related-product-item">
-                                                <form action="MainController" method="post" class="related-product-form">
-                                                    <input type="hidden" name="action" value="getProduct"/>
-                                                    <input type="hidden" name="idProduct" value="${i.id}"/>
-                                                    <button type="submit" class="related-product-btn">
+                    <!-- Sản phẩm liên quan với scroll horizontal -->
+                    <div class="pd-left-extra">
+                        <h3 class="extra-title">🔥 NHỮNG SẢN PHẨM LIÊN QUAN</h3>
+                        <c:choose>
+                            <c:when test="${not empty list_pro}">
+                                <div class="related-products-container">
+                                    <div id="relatedProductsScroll" class="related-products-scroll">
+                                        <c:set var="shown" value="0"/>
+                                        <c:forEach var="i" items="${list_pro}">
+                                            <c:if test="${shown < 8}">
+                                                <div class="related-product-item">
+                                                    <!-- Dùng slug để đi tới trang chi tiết sản phẩm -->
+                                                    <a href="${pageContext.request.contextPath}/product/${i.slug}" class="related-product-btn">
                                                         <div class="related-product-image">
                                                             <img src="${i.coverImg}" alt="${i.name}" loading="lazy"/>
                                                             <div class="related-product-price">
@@ -1084,144 +947,116 @@
                                                         <div class="related-product-info">
                                                             <div class="related-product-name">${i.name}</div>
                                                         </div>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                            <c:set var="shown" value="${shown + 1}"/>
-                                        </c:if>
-                                    </c:forEach>
+                                                    </a>
+                                                </div>
+                                                <c:set var="shown" value="${shown + 1}"/>
+                                            </c:if>
+                                        </c:forEach>
+                                    </div>
                                 </div>
-                            </div>
-                        </c:when>
-                        <c:otherwise>
-                            <p style="text-align: center; color: #6b7280; padding: 20px;">Hiện danh sách đang trống!</p>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-
-
-
-
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer đặt NGOÀI wrapper để luôn hiển thị khi body cuộn -->
-    <jsp:include page="footer.jsp"/>
-
-    <script>
-        (function () {
-            const main = document.getElementById('pd-main-img');
-            const thumbsWrap = document.getElementById('pd-thumbs');
-            if (!main || !thumbsWrap)
-                return;
-
-            thumbsWrap.addEventListener('click', function (e) {
-                const btn = e.target.closest('.pd-thumb');
-                if (!btn)
+                            </c:when>
+                            <c:otherwise>
+                                <p style="text-align: center; color: #6b7280; padding: 20px;">Hiện danh sách đang trống!</p>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div> <!-- /.container -->
+            </div> <!-- /.Main_content -->
+        </div> <!-- /.wrapper -->
+        <script>
+            (function () {
+                const main = document.getElementById('pd-main-img');
+                const thumbsWrap = document.getElementById('pd-thumbs');
+                if (!main || !thumbsWrap)
                     return;
-                const src = btn.getAttribute('data-src');
-                if (!src || main.src === src)
-                    return;
-                main.src = src;
 
-                document.querySelectorAll('.pd-thumb.is-active')
-                        .forEach(el => el.classList.remove('is-active'));
-                btn.classList.add('is-active');
-            }, false);
-        })();
+                thumbsWrap.addEventListener('click', function (e) {
+                    const btn = e.target.closest('.pd-thumb');
+                    if (!btn)
+                        return;
+                    const src = btn.getAttribute('data-src');
+                    if (!src || main.src === src)
+                        return;
+                    main.src = src;
 
-        // ===== CONFIG - Thay đổi thông tin liên hệ ở đây =====
-        const SHOP_CONFIG = {
-            zaloId: '0357394235', // Thay bằng Zalo ID thực tế
-            phoneNumber: '0357394235', // Thay bằng SĐT thực tế
-            shopName: 'SHOP GAME VIỆT'
-        };
+                    document.querySelectorAll('.pd-thumb.is-active')
+                            .forEach(el => el.classList.remove('is-active'));
+                    btn.classList.add('is-active');
+                }, false);
+            })();
 
-        // ===== MAIN FUNCTIONS =====
+            // ===== CONFIG - Thay đổi thông tin liên hệ ở đây =====
+            const SHOP_CONFIG = {
+                zaloId: '0357394235', // Thay bằng Zalo ID thực tế
+                phoneNumber: '0357394235', // Thay bằng SĐT thực tế
+                shopName: 'SHOP GAME VIỆT'
+            };
 
-        // Đặt dịch vụ qua Zalo
-        function bookService(serviceId, serviceName, price) {
-            // Log user interest (optional - có thể bỏ nếu không cần track)
-            logUserInterest(serviceId, 'book_service');
+            // ===== MAIN FUNCTIONS =====
 
-            // Tạo message template
-            const message = "🎮 ĐẶT DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
-                    "📋 Dịch vụ: " + serviceName + "\n" +
-                    "💰 Giá: " + new Intl.NumberFormat('vi-VN').format(price) + " VND\n" +
-                    "🆔 Mã: #SV" + serviceId + "\n\n" +
-                    "Xin chào! Tôi muốn đặt dịch vụ trên. Vui lòng tư vấn thêm cho tôi.";
+            // Đặt dịch vụ qua Zalo
+            function bookService(serviceId, serviceName, price) {
+                // Log user interest (optional - có thể bỏ nếu không cần track)
+                logUserInterest(serviceId, 'book_service');
 
-            // Mở Zalo
-            const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
-            window.open(zaloUrl, '_blank');
-        }
+                // Tạo message template
+                const message = "🎮 ĐẶT DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
+                        "📋 Dịch vụ: " + serviceName + "\n" +
+                        "💰 Giá: " + new Intl.NumberFormat('vi-VN').format(price) + " VND\n" +
+                        "🆔 Mã: #SV" + serviceId + "\n\n" +
+                        "Xin chào! Tôi muốn đặt dịch vụ trên. Vui lòng tư vấn thêm cho tôi.";
 
-        // Tư vấn dịch vụ qua Zalo  
-        function consultService(serviceName) {
-            const message = "💬 TƯ VẤN DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
-                    "📋 Về dịch vụ: " + serviceName + "\n\n" +
-                    "Xin chào! Tôi cần được tư vấn thêm về dịch vụ này. Cảm ơn!";
-
-            const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
-            window.open(zaloUrl, '_blank');
-        }
-
-        // Gọi điện trực tiếp
-        function callDirectly() {
-            if (confirm("Gọi đến " + SHOP_CONFIG.phoneNumber + "?")) {
-                window.open("tel:" + SHOP_CONFIG.phoneNumber, '_self');
+                // Mở Zalo
+                const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
+                window.open(zaloUrl, '_blank');
             }
-        }
 
-        // Log user interest (optional - để tracking)
-        function logUserInterest(serviceId, action) {
-            // Có thể gọi API để log, hoặc bỏ nếu không cần
-            fetch('MainController', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: `action=logServiceInterest&serviceId=${serviceId}&interestType=${action}`
-            }).catch(e => console.log('Tracking failed:', e)); // Silent fail
-        }
+            // Tư vấn dịch vụ qua Zalo  
+            function consultService(serviceName) {
+                const message = "💬 TƯ VẤN DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
+                        "📋 Về dịch vụ: " + serviceName + "\n\n" +
+                        "Xin chào! Tôi cần được tư vấn thêm về dịch vụ này. Cảm ơn!";
 
-        // ===== UI EFFECTS =====
-        document.addEventListener('DOMContentLoaded', function () {
-            // Hover effects
-            const actionButtons = document.querySelectorAll('.btn-service');
-            actionButtons.forEach(btn => {
-                btn.addEventListener('mouseenter', function () {
-                    this.style.transform = 'translateY(-2px)';
+                const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
+                window.open(zaloUrl, '_blank');
+            }
+
+            // Gọi điện trực tiếp
+            function callDirectly() {
+                if (confirm("Gọi đến " + SHOP_CONFIG.phoneNumber + "?")) {
+                    window.open("tel:" + SHOP_CONFIG.phoneNumber, '_self');
+                }
+            }
+
+            // Log user interest (optional - để tracking)
+            function logUserInterest(serviceId, action) {
+                // Có thể gọi API để log, hoặc bỏ nếu không cần
+                fetch('MainController', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `action=logServiceInterest&serviceId=${serviceId}&interestType=${action}`
+                }).catch(e => console.log('Tracking failed:', e)); // Silent fail
+            }
+
+            // ===== UI EFFECTS =====
+            document.addEventListener('DOMContentLoaded', function () {
+                // Hover effects
+                const actionButtons = document.querySelectorAll('.btn-service');
+                actionButtons.forEach(btn => {
+                    btn.addEventListener('mouseenter', function () {
+                        this.style.transform = 'translateY(-2px)';
+                    });
+                    btn.addEventListener('mouseleave', function () {
+                        this.style.transform = 'translateY(0)';
+                    });
                 });
-                btn.addEventListener('mouseleave', function () {
-                    this.style.transform = 'translateY(0)';
-                });
+
+                // Success notification after page load (if redirected back)
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('contacted') === 'true') {
+                    showNotification('✅ Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.', 'success');
+                }
             });
-
-
-            // Success notification after page load (if redirected back)
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('contacted') === 'true') {
-                showNotification('✅ Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.', 'success');
-            }
-        });
-
-        // Simple notification system
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.style.cssText =
-                    "position: fixed; top: 20px; right: 20px; z-index: 9999;" +
-                    "padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600;" +
-                    "background: " + (type === 'success' ? '#10b981' : '#3b82f6') + ";" +
-                    "box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer;" +
-                    "transform: translateX(100%); transition: transform 0.3s ease;";
-            notification.textContent = message;
-            notification.onclick = () => notification.remove();
-
-            document.body.appendChild(notification);
-            setTimeout(() => notification.style.transform = 'translateX(0)', 100);
-            setTimeout(() => notification.remove(), 5000);
-        }
-    
 
             // Simple notification system
             function showNotification(message, type = 'info') {
@@ -1239,68 +1074,6 @@
                 setTimeout(() => notification.style.transform = 'translateX(0)', 100);
                 setTimeout(() => notification.remove(), 5000);
             }
-
-            // Related products scroll functionality
-            function scrollRelatedProducts(direction) {
-                const container = document.getElementById('relatedProductsScroll');
-                if (!container) return;
-                
-                const scrollAmount = 300; // pixels to scroll
-                const currentScroll = container.scrollLeft;
-                
-                if (direction === 'left') {
-                    container.scrollTo({
-                        left: currentScroll - scrollAmount,
-                        behavior: 'smooth'
-                    });
-                } else {
-                    container.scrollTo({
-                        left: currentScroll + scrollAmount,
-                        behavior: 'smooth'
-                    });
-                }
-            }
-
-            // Update navigation buttons visibility based on scroll position
-            function updateNavButtons() {
-                const container = document.getElementById('relatedProductsScroll');
-                const prevBtn = document.querySelector('.related-nav-prev');
-                const nextBtn = document.querySelector('.related-nav-next');
-                
-                if (!container || !prevBtn || !nextBtn) return;
-                
-                const isAtStart = container.scrollLeft <= 0;
-                const isAtEnd = container.scrollLeft >= (container.scrollWidth - container.clientWidth);
-                
-                prevBtn.style.opacity = isAtStart ? '0.5' : '1';
-                nextBtn.style.opacity = isAtEnd ? '0.5' : '1';
-                prevBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
-                nextBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
-            }
-
-            // Initialize related products scroll
-            document.addEventListener('DOMContentLoaded', function() {
-                const container = document.getElementById('relatedProductsScroll');
-                if (container) {
-                    // Update navigation buttons on scroll
-                    container.addEventListener('scroll', updateNavButtons);
-                    // Initial update
-                    updateNavButtons();
-                    
-                    // Auto-hide navigation buttons on mobile
-                    function handleResize() {
-                        const isMobile = window.innerWidth <= 480;
-                        const navButtons = document.querySelectorAll('.related-nav-btn');
-                        navButtons.forEach(btn => {
-                            btn.style.display = isMobile ? 'none' : 'flex';
-                        });
-                    }
-                    
-                    window.addEventListener('resize', handleResize);
-                    handleResize(); // Initial call
-                }
-            });
         </script>
     </body>
-
 </html>

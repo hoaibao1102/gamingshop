@@ -28,12 +28,14 @@ public class ServicesDAO implements IDAO<Services, Integer> {
     private static final String GET_ALL = "SELECT * FROM dbo.Services";
     private static final String GET_BY_ID = "SELECT * FROM dbo.Services WHERE id = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Services WHERE service_type LIKE ?";
-    private static final String CREATE = "INSERT INTO dbo.Services (service_type, description_html, price, status) VALUES (?, ?, ?, ?)";
+    private static final String CREATE = "INSERT INTO dbo.Services (service_type, description_html, price, status, slug) VALUES (?, ?, ?, ?, ?)";
     private static final String CHECK_SERVICE_TYPE_EXISTS = "SELECT COUNT(*) FROM dbo.Services WHERE service_type = ?";
     private static final String GET_ALL_ACTIVE = "SELECT * FROM dbo.Services WHERE status = 'active'";
     private static final String CHECK_SERVICES_TYPE_EXISTS_EXCEPT = "SELECT COUNT(*) FROM dbo.Services WHERE service_type = ? AND id != ?";
-    private static final String UPDATE = "UPDATE dbo.Services SET service_type = ?, description_html = ?, price = ?, status = ?, updated_at = GETDATE() WHERE id = ?";
+    private static final String UPDATE = "UPDATE dbo.Services SET service_type = ?, description_html = ?, price = ?, status = ?, updated_at = GETDATE(), slug = ? WHERE id = ?";
+    private static final String GET_BY_SLUG = "SELECT * FROM dbo.Services WHERE slug = ?";
 
+    
     @Override
     public boolean create(Services e) {
         Connection c = null;
@@ -45,6 +47,7 @@ public class ServicesDAO implements IDAO<Services, Integer> {
             st.setString(2, e.getDescription_html());
             st.setDouble(3, e.getPrice());
             st.setString(4, e.getStatus());
+            st.setString(5, e.getSlug());
             int affectedRows = st.executeUpdate();
             if (affectedRows > 0) {
                 try ( ResultSet rs = st.getGeneratedKeys()) {
@@ -148,7 +151,8 @@ public class ServicesDAO implements IDAO<Services, Integer> {
         }
 
         s.setStatus(rs.getString("status"));
-
+        s.setSlug(rs.getString("slug"));
+        
         return s;
     }
 
@@ -203,7 +207,8 @@ public class ServicesDAO implements IDAO<Services, Integer> {
             ps.setString(2, existingService.getDescription_html());
             ps.setDouble(3, existingService.getPrice());
             ps.setString(4, existingService.getStatus());
-            ps.setInt(5, existingService.getId());
+            ps.setString(5, existingService.getSlug());
+            ps.setInt(6, existingService.getId());
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -281,7 +286,8 @@ public class ServicesDAO implements IDAO<Services, Integer> {
         FIELD_TYPES.put("created_at", "datetime");
         FIELD_TYPES.put("updated_at", "datetime");
         FIELD_TYPES.put("status", "string");
-
+        FIELD_TYPES.put("slug", "string");
+        
         try {
             c = DBUtils.getConnection();
 
@@ -530,5 +536,57 @@ public class ServicesDAO implements IDAO<Services, Integer> {
         searchFilter.setName(keyword); // Sử dụng field name để search service_type
         
         return getAllActiveServices(searchFilter);
+    }
+    
+    public Services findBySlug(String slug) {
+        try ( Connection c = DBUtils.getConnection();  PreparedStatement st = c.prepareStatement(GET_BY_SLUG)) {
+            st.setString(1, slug);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return map(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void updateSlug(int id, String slug) throws SQLException, ClassNotFoundException {
+        String sql = "UPDATE dbo.Services SET slug = ? WHERE id = ?";
+        try ( Connection c = DBUtils.getConnection();  PreparedStatement st = c.prepareStatement(sql)) {
+            st.setString(1, slug);
+            st.setInt(2, id);
+            st.executeUpdate();
+        }
+    }
+    
+    public int createNewProduct(Services e) {
+        Connection c = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        int generatedId = -1;
+        try {
+            c = DBUtils.getConnection();
+            // Thêm Statement.RETURN_GENERATED_KEYS để lấy id sinh ra
+            st = c.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
+            st.setString(1, e.getService_type());
+            st.setString(2, e.getDescription_html());
+            st.setDouble(3, e.getPrice());
+            st.setString(4, e.getStatus());
+            st.setString(5, e.getSlug());
+            int rows = st.executeUpdate();
+            if (rows > 0) {
+                rs = st.getGeneratedKeys();
+                if (rs.next()) {
+                    generatedId = rs.getInt(1);
+                    e.setId(generatedId); // gán lại vào object
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(c, st, rs);
+        }
+        return generatedId; // nếu lỗi trả về -1
     }
 }

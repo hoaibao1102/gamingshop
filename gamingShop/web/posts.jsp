@@ -369,23 +369,23 @@
             }
 
             @media (max-width: 768px) {
-    .card-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 cột */
-        gap: 12px; /* điều chỉnh khoảng cách */
-    }
+                .card-grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 cột */
+                    gap: 12px; /* điều chỉnh khoảng cách */
+                }
 
-    .card .thumb {
-        aspect-ratio: 1/1; /* ảnh vuông trên mobile */
-    }
+                .card .thumb {
+                    aspect-ratio: 1/1; /* ảnh vuông trên mobile */
+                }
 
-    .card .actions {
-        flex-direction: column;
-    }
+                .card .actions {
+                    flex-direction: column;
+                }
 
-    .card .actions .btn {
-        width: 100%; /* nút chiếm full ngang */
-    }
-}
+                .card .actions .btn {
+                    width: 100%; /* nút chiếm full ngang */
+                }
+            }
 
             /* >= 1200px: thoáng hơn */
             @media (min-width:1200px){
@@ -460,23 +460,31 @@
                                     <c:forEach var="p" items="${list}">
                                         <c:if test="${isLoggedIn or p.status == 1}">
                                             <li class="card">
-                                                <a class="card-link" href="MainController?action=viewPost&id=${p.id}" aria-label="Xem chi tiết ${fn:escapeXml(p.title)}">
+                                                <!-- Link slug đến chi tiết bài viết -->
+                                                <a class="card-link"
+                                                   href="${pageContext.request.contextPath}/post/${p.slug}"
+                                                   aria-label="Xem chi tiết ${fn:escapeXml(p.title)}">
+
                                                     <c:choose>
                                                         <c:when test="${not empty p.image_url}">
                                                             <img class="thumb" src="${p.image_url}" alt="${fn:escapeXml(p.title)}" />
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <img class="thumb" src="" alt="No image" />
+                                                            <img class="thumb" src="${pageContext.request.contextPath}/assets/images/no-image.jpg" alt="No image" />
                                                         </c:otherwise>
                                                     </c:choose>
+
                                                     <div class="body">
                                                         <span class="title">${p.title}</span>
-                                                        <div class="meta" style="padding: 0px; margin: 0px 0px">
-                                                            <span style="padding: 0px; margin: 10px 5px"><fmt:formatDate value="${p.publish_date}" pattern="dd/MM/yyyy"/></span>
+                                                        <div class="meta" style="padding:0;margin:0">
+                                                            <span style="padding:0;margin:10px 5px">
+                                                                <fmt:formatDate value="${p.publish_date}" pattern="dd/MM/yyyy"/>
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </a>
 
+                                                <!-- Nút sửa / xóa -->
                                                 <div class="actions">
                                                     <c:if test="${isLoggedIn}">
                                                         <form action="MainController" method="post" style="display:inline-flex; gap:8px; width:100%">
@@ -494,6 +502,7 @@
                                     </c:forEach>
                                 </ul>
                             </c:when>
+
                             <c:otherwise>
                                 <div class="empty-state">
                                     <h3>Không tìm thấy bài viết</h3>
