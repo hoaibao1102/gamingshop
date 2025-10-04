@@ -506,10 +506,11 @@
                 <div class="container">
                     <!-- Breadcrumb -->
                     <div class="breadcrumbs">
-                        <a href="MainController?action=listPhuKien">Danh sách phụ kiện</a>
+                        <a href="${pageContext.request.contextPath}/MainController?action=listPhuKien">Danh sách phụ kiện</a>
                         <span>/</span>
                         <span class="current">Chi tiết phụ kiện</span>
                     </div><br>
+
                     <c:choose>
                         <c:when test="${not empty accessory}">
                             <div class="accessory-detail">
@@ -518,10 +519,12 @@
                                     <div class="ad-main">
                                         <c:choose>
                                             <c:when test="${not empty accessory.coverImg}">
-                                                <img src="${accessory.coverImg}" alt="${accessory.name}" loading="eager"/>
+                                                <img src="${pageContext.request.contextPath}/${accessory.coverImg}" 
+                                                     alt="${accessory.name}" loading="eager"/>
                                             </c:when>
                                             <c:otherwise>
-                                                <img src="assets/accessories/no-image.png" alt="Không có hình ảnh" loading="eager"/>
+                                                <img src="${pageContext.request.contextPath}/assets/accessories/no-image.png" 
+                                                     alt="Không có hình ảnh" loading="eager"/>
                                             </c:otherwise>
                                         </c:choose>
                                     </div>
@@ -535,7 +538,9 @@
                                     <div class="ad-basic">
                                         <div class="ad-row-price">
                                             <b>Giá bán</b>
-                                            <span><fmt:formatNumber value="${accessory.price}" type="number" groupingUsed="true"/> VND</span>
+                                            <span>
+                                                <fmt:formatNumber value="${accessory.price}" type="number" groupingUsed="true"/> VND
+                                            </span>
                                         </div>
 
                                         <div class="ad-row">
@@ -573,6 +578,7 @@
                                             </span>
                                         </div>
 
+                                        <!-- Action Buttons -->
                                         <div class="sd-actions">
                                             <button onclick="bookService('${serviceDetail.id}', '${serviceDetail.service_type}', '${serviceDetail.price}')" class="btn-service btn-primary">
                                                 🛒 Đặt hàng qua Zalo
@@ -583,7 +589,7 @@
                                             <a href="MainController?action=listPhuKien" class="btn-service btn-secondary">
                                                 📋 Xem sản phẩm khác
                                             </a>
-                                        </div>     
+                                        </div>   
 
                                         <!-- Description -->
                                         <div class="ad-desc">
@@ -598,9 +604,9 @@
                                             </c:choose>
                                         </div>
 
-                                        <!-- Action Buttons -->
+                                        <!-- Back Button -->
                                         <div class="ad-actions">
-                                            <a href="MainController?action=listPhuKien" class="btn btn-secondary">
+                                            <a href="${pageContext.request.contextPath}/MainController?action=listPhuKien" class="btn btn-secondary">
                                                 Quay lại danh sách
                                             </a>
                                         </div>
@@ -609,23 +615,41 @@
 
                                     </div>
                                 </div>
-                            </c:when>
+                            </div>
+                        </c:when>
 
-                            <c:otherwise>
-                                <div class="empty-state">
-                                    <h3>Không tìm thấy phụ kiện</h3>
-                                    <p>Phụ kiện bạn đang tìm không tồn tại hoặc đã bị xóa.</p>
-                                    <c:if test="${not empty checkError}">
-                                        <p style="color: var(--danger); font-weight: 600;">
-                                            <c:out value="${checkError}"/>
-                                        </p>
-                                    </c:if>
-                                    <a href="MainController?action=listPhuKien" class="btn btn-primary">
-                                        Xem tất cả phụ kiện
-                                    </a>
-                                </div>
+                        <c:otherwise>
+                            <div class="empty-state">
+                                <h3>Không tìm thấy phụ kiện</h3>
+                                <p>Phụ kiện bạn đang tìm không tồn tại hoặc đã bị xóa.</p>
+                                <c:if test="${not empty checkError}">
+                                    <p style="color: var(--danger); font-weight: 600;">
+                                        <c:out value="${checkError}"/>
+                                    </p>
+                                </c:if>
+                                <a href="${pageContext.request.contextPath}/MainController?action=listPhuKien" 
+                                   class="btn btn-primary"
+                                   style="
+                                   display: inline-block;
+                                   padding: 10px 20px;
+                                   font-size: 16px;
+                                   font-weight: 600;
+                                   color: #fff;
+                                   background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+                                   border: none;
+                                   border-radius: 8px;
+                                   text-decoration: none;
+                                   transition: all 0.3s ease;
+                                   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                                   "
+                                   onmouseover="this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 6px 20px rgba(0,0,0,0.3)';"
+                                   onmouseout="this.style.transform = 'translateY(0)'; this.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';"
+                                   >
+                                    Xem tất cả phụ kiện
+                                </a>                            </div>
                             </c:otherwise>
                         </c:choose>
+
                     </div>
                     <div class="pd-left-extra">
                         <h3 class="extra-title">NHỮNG PHỤ KIỆN LIÊN QUAN </h3>
@@ -664,6 +688,7 @@
                             </c:otherwise>
                         </c:choose>
                     </div>
+
                 </div>
             </div>
         </div>

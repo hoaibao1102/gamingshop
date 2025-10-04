@@ -24,6 +24,7 @@ import jakarta.servlet.http.Part;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import utils.SlugUtil;
 
 /**
  *
@@ -40,33 +41,42 @@ public class AccessoryController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = INDEX_PAGE;
+
         String action = request.getParameter("action");
+        String pathInfo = request.getPathInfo(); // lấy slug nếu có
+
         try {
-            if ("listPhuKien".equals(action)) {
+            // ===== Xử lý slug =====
+            if (pathInfo != null && pathInfo.length() > 1) {
+                String slug = pathInfo.substring(1);
+                request.setAttribute("slugFromPath", slug);
+                url = handleGetAccessory(request, response);
+            } // ===== Xử lý các action bình thường =====
+            else if ("listPhuKien".equals(action)) {
                 url = handleListPhuKien(request, response);
-            } else if (action.equals("viewAllAccessories")) {
+            } else if ("viewAllAccessories".equals(action)) {
                 url = handleViewAllAccessories(request, response);
-            } else if (action.equals("searchAccessory")) {
+            } else if ("searchAccessory".equals(action)) {
                 url = handleAccessorySearching(request, response);
-            } else if (action.equals("showAddAccessoryForm")) {
+            } else if ("showAddAccessoryForm".equals(action)) {
                 url = handleShowAddAccessoryForm(request, response);
-            } else if (action.equals("addAccessory")) {
+            } else if ("addAccessory".equals(action)) {
                 url = handleAccessoryAdding(request, response);
-            } else if (action.equals("showEditAccessoryForm")) {
+            } else if ("showEditAccessoryForm".equals(action)) {
                 url = handleShowEditAccessoryForm(request, response);
-            } else if (action.equals("editAccessory")) {
+            } else if ("editAccessory".equals(action)) {
                 url = handleAccessoryEditing(request, response);
-            } else if (action.equals("deleteAccessory")) {
+            } else if ("deleteAccessory".equals(action)) {
                 url = handleAccessoryDelete(request, response);
-            } else if (action.equals("getAccessory")) {
-                handleViewAllAccessories(request, response);
+            } else if ("getAccessory".equals(action)) {
                 url = handleGetAccessory(request, response);
             }
+
         } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -123,24 +133,31 @@ public class AccessoryController extends HttpServlet {
                         filter.setPage(page);
                     }
                 } catch (NumberFormatException e) {
-                    // Ignore, use default page
+                    // Ignore, dùng page mặc định
                 }
             }
 
-            // Lấy dữ liệu với phân trang
+            // Lấy dữ liệu với phân trang (Accessories đã có coverImg từ DB)
             Page<Accessories> pageResult = accessoriesDAO.getListAccessotiesBuy(filter);
-            List<Banners> listBanner = bannersDAO.getTop5Active();
-            request.setAttribute("topBanners", listBanner);
 
-            request.setAttribute("listProductsByCategory", pageResult);
-            request.setAttribute("isListProductsByCategory", "true");
+            // Lấy banner
+            List<Banners> listBanner = bannersDAO.getTop5Active();
+
+            // Gán dữ liệu cho request
+            request.setAttribute("topBanners", listBanner);
+            request.setAttribute("nameProductsByCategory", "Phụ kiện");
+            request.setAttribute("accessories", pageResult.getContent());
+            request.setAttribute("accessoriesPage", pageResult);
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("checkError", "Error loading products: " + e.getMessage());
+            request.setAttribute("checkError", "Error loading accessories: " + e.getMessage());
         }
+
+        // Lấy action để hiển thị breadcrumb hoặc xử lý điều hướng
         String action = request.getParameter("action");
         request.setAttribute("action", action);
+
         return INDEX_PAGE;
     }
 
@@ -443,6 +460,16 @@ public class AccessoryController extends HttpServlet {
                 boolean success = accessoriesDAO.create(newAccessory);
 
                 if (success && newAccessory.getId() > 0) {
+                    // ===== Tạo slug và update lại accessory =====
+                    try {
+                        String slug = SlugUtil.toSlug(newAccessory.getName(), newAccessory.getId());
+                        newAccessory.setSlug(slug);
+                        accessoriesDAO.updateSlug(newAccessory.getId(), slug);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        request.setAttribute("warningSlug", "Accessory created but failed to generate slug: " + ex.getMessage());
+                    }
+
                     // Đổi tên file theo ID thực
                     String finalName = "acc_" + newAccessory.getId() + "_1" + fileExtension;
                     File finalFile = new File(uploadDir, finalName);
@@ -554,7 +581,7 @@ public class AccessoryController extends HttpServlet {
             String status = request.getParameter("status");
             String gift = request.getParameter("gift");
 
-            // Validate
+            // ===== VALIDATION =====
             if (name == null || name.trim().isEmpty()) {
                 request.setAttribute("checkErrorEditAccessory", "Accessory name is required.");
                 request.setAttribute("accessory", existingAccessory);
@@ -572,24 +599,70 @@ public class AccessoryController extends HttpServlet {
                 e.printStackTrace();
             }
 
+            if (name.trim().length() > 255) {
+                request.setAttribute("checkErrorEditAccessory", "Accessory name must be 255 characters or less.");
+                request.setAttribute("accessory", existingAccessory);
+                return "accessoryUpdate.jsp";
+            }
+
             int quantity;
             double price;
             try {
                 quantity = Integer.parseInt(quantityStr);
                 price = Double.parseDouble(priceStr);
+
+                if (quantity < 0 || quantity > 999999) {
+                    request.setAttribute("checkErrorEditAccessory", "Quantity must be between 0 and 999,999.");
+                    request.setAttribute("accessory", existingAccessory);
+                    return "accessoryUpdate.jsp";
+                }
+
+                if (price < 0 || price > 999999999.99) {
+                    request.setAttribute("checkErrorEditAccessory", "Price must be between 0 and 999,999,999.99.");
+                    request.setAttribute("accessory", existingAccessory);
+                    return "accessoryUpdate.jsp";
+                }
+
             } catch (NumberFormatException e) {
                 request.setAttribute("checkErrorEditAccessory", "Invalid quantity or price format.");
                 request.setAttribute("accessory", existingAccessory);
                 return "accessoryUpdate.jsp";
             }
 
-            // Update basic info
+            // Validate status
+            if (status != null && !status.trim().isEmpty()) {
+                String normalizedStatus = status.trim().toLowerCase();
+                if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {
+                    request.setAttribute("checkErrorEditAccessory", "Status must be either 'active' or 'inactive'.");
+                    request.setAttribute("accessory", existingAccessory);
+                    return "accessoryUpdate.jsp";
+                }
+            }
+
+            // Validate gift
+            if (gift != null && !gift.trim().isEmpty()) {
+                String normalizedGift = gift.trim();
+                if (!normalizedGift.equals("Phụ kiện tặng kèm") && !normalizedGift.equals("Phụ kiện bán")) {
+                    request.setAttribute("checkErrorEditAccessory", "Gift option must be either 'Phụ kiện bán' or 'Phụ kiện tặng kèm'.");
+                    request.setAttribute("accessory", existingAccessory);
+                    return "accessoryUpdate.jsp";
+                }
+            }
+
+            // Validate description
+            if (description != null && description.trim().length() > 5000) {
+                request.setAttribute("checkErrorEditAccessory", "Description must be 5000 characters or less.");
+                request.setAttribute("accessory", existingAccessory);
+                return "accessoryUpdate.jsp";
+            }
+
+            // ===== Update basic info =====
             existingAccessory.setName(name.trim());
             existingAccessory.setQuantity(quantity);
             existingAccessory.setPrice(price);
             existingAccessory.setDescription(description != null ? description.trim() : "");
-            existingAccessory.setStatus(status);
-            existingAccessory.setGift(gift);
+            existingAccessory.setStatus(status != null ? status.trim() : "active");
+            existingAccessory.setGift(gift != null ? gift.trim() : "Phụ kiện tặng kèm");
             existingAccessory.setUpdated_at(new java.util.Date());
 
             // ===== Xử lý ảnh mới (nếu có) =====
@@ -624,6 +697,15 @@ public class AccessoryController extends HttpServlet {
                 imagePart.write(newFile.getAbsolutePath());
 
                 existingAccessory.setCoverImg("assets/accessories/" + newFileName);
+            }
+
+            // ===== Tạo slug tự động =====
+            try {
+                String slug = SlugUtil.toSlug(existingAccessory.getName(), existingAccessory.getId());
+                existingAccessory.setSlug(slug);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                request.setAttribute("warningSlug", "Accessory updated but failed to generate slug: " + ex.getMessage());
             }
 
             // ===== Update database =====
@@ -728,23 +810,46 @@ public class AccessoryController extends HttpServlet {
 
     private String handleGetAccessory(HttpServletRequest request, HttpServletResponse response) {
         try {
-            String idParam = request.getParameter("idAccessory");
-            // Kiểm tra parameter có tồn tại không
-            if (idParam == null || idParam.trim().isEmpty()) {
-                request.setAttribute("checkError", "Invalid accessory ID");
-                return "accessoryDetail.jsp";
+            request.setCharacterEncoding(java.nio.charset.StandardCharsets.UTF_8.name());
+
+            Accessories accessory = null;
+
+            // ===== 0) Lấy slug trước =====
+            String slug = (String) request.getAttribute("slugFromPath");
+            if (slug == null || slug.trim().isEmpty()) {
+                slug = request.getParameter("slugAccessory");
             }
 
-            Integer intParam = Integer.parseInt(idParam);
-            Accessories accessory = accessoriesDAO.getById(intParam);
+            // ===== 1) Nếu slug tồn tại, lấy theo slug =====
+            if (slug != null && !slug.trim().isEmpty()) {
+                accessory = accessoriesDAO.findBySlug(slug.trim());
+                if (accessory == null) {
+                    request.setAttribute("checkError", "No accessory found with slug: " + slug);
+                }
+            } else {
+                // ===== 2) Nếu không có slug, thử lấy theo id =====
+                String idParam = request.getParameter("idAccessory");
+                if (idParam == null || idParam.trim().isEmpty()) {
+                    request.setAttribute("checkError", "Invalid accessory ID or slug");
+                    return "accessoryDetail.jsp";
+                }
+                try {
+                    int id = Integer.parseInt(idParam);
+                    accessory = accessoriesDAO.getById(id);
+                    if (accessory == null) {
+                        request.setAttribute("checkError", "No accessory found with ID: " + id);
+                    }
+                } catch (NumberFormatException e) {
+                    request.setAttribute("checkError", "Invalid accessory ID format");
+                }
+            }
+
+            // ===== 3) Nếu có dữ liệu, set attribute =====
+
             if (accessory != null) {
                 request.setAttribute("accessory", accessory);
-            } else {
-                request.setAttribute("checkError", "No accessories found with ID: " + intParam);
             }
 
-        } catch (NumberFormatException e) {
-            request.setAttribute("checkError", "Invalid accessory ID format");
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("checkError", "Error loading accessory: " + e.getMessage());

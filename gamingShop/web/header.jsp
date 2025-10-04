@@ -576,373 +576,341 @@ import="dto.Accounts"%> <%@ page contentType="text/html" pageEncoding="UTF-8"%>
     avatarChar = ""; if (loginCheck && username.trim().length() > 0) {
     avatarChar = username.substring(0,1).toUpperCase(); } %>
 
-    <header class="site-header">
-      <input id="nav-toggle" type="checkbox" />
-      <div class="topbar">
-        <div class="left-group">
-          <label for="nav-toggle" class="hamburger" aria-label="Mở menu"
-            ><span></span
-          ></label>
-          <span class="brand-name">
-            <a href="MainController?action=prepareHome">
-              <img
-                class="logoHeader"
-                src="assets/img/logo/logo.png"
-                alt="Logo cửa hàng"
-              />
-            </a>
-          </span>
-        </div>
-        <form
-          class="search"
-          role="search"
-          aria-label="Tìm kiếm"
-          action="MainController"
-          method="post"
-        >
-          <button aria-label="Tìm" type="submit">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <circle cx="11" cy="11" r="7" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </button>
-          <input
-            type="search"
-            name="searchKeyword"
-            placeholder="Tìm sản phẩm..."
-          />
-          <input type="hidden" name="action" value="search" />
-        </form>
-      </div>
+<%
+  Accounts user = (Accounts) session.getAttribute("user");
+  boolean loginCheck = user != null;
+  String username = loginCheck ? (user.getUsername() != null ? user.getUsername() : "Admin") : "";
+  String avatarChar = "";
+  if (loginCheck && username.trim().length() > 0) {
+    avatarChar = username.substring(0,1).toUpperCase();
+  }
+  String ctx = request.getContextPath();
+%>
 
-      <nav class="drawer" aria-label="Menu di động">
-        <div style="font-weight: 800; margin-bottom: 10px">Danh mục</div>
-        <ul class="menu">
-          <li>
-            <form
-              class="mobile-link-form"
-              action="MainController"
-              method="post"
-            >
-              <input type="hidden" name="action" value="prepareHome" />
-              <button class="mobile-link-button" type="submit">
-                Trang chủ
-              </button>
-            </form>
-            <!-- BỎ toggle, để nút gửi form bình thường -->
-            <form
-              class="mobile-link-form"
-              action="MainController"
-              method="post"
-            >
-              <input type="hidden" name="action" value="listMayChoiGame" />
-              <button class="mobile-link-button" type="submit">
-                Máy chơi game
-              </button>
-            </form>
-            <!-- LUÔN MỞ: danh mục con -->
-            <div class="mobile-dropdown">
-              <form
-                class="mobile-link-form"
-                action="MainController"
-                method="post"
-              >
-                <input type="hidden" name="action" value="listMayChoiGame" />
-                <input type="hidden" name="condition" value="nintendo" />
-                <button class="mobile-link-button" type="submit">
-                  Nintendo
-                </button>
-              </form>
-              <form
-                class="mobile-link-form"
-                action="MainController"
-                method="post"
-              >
-                <input type="hidden" name="action" value="listMayChoiGame" />
-                <input type="hidden" name="condition" value="sony" />
-                <button class="mobile-link-button" type="submit">Sony</button>
-              </form>
-              <form
-                class="mobile-link-form"
-                action="MainController"
-                method="post"
-              >
-                <input type="hidden" name="action" value="listMayChoiGame" />
-                <input type="hidden" name="condition" value="others" />
-                <button class="mobile-link-button" type="submit">
-                  Hãng khác
-                </button>
-              </form>
+<header class="site-header">
+  <input id="nav-toggle" type="checkbox" />
+  <div class="topbar">
+    <div class="left-group">
+      <label for="nav-toggle" class="hamburger" aria-label="Mở menu"><span></span></label>
+      <span class="brand-name">
+        <a href="<%= ctx %>/MainController?action=prepareHome">
+          <img class="logoHeader" src="<%= ctx %>/assets/img/logo/logo.png" alt="Logo cửa hàng">
+        </a>
+      </span>
+    </div>
+    <form class="search" role="search" aria-label="Tìm kiếm" action="<%= ctx %>/MainController" method="post">
+      <button aria-label="Tìm" type="submit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+          <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+      <input type="search" name="searchKeyword" placeholder="Tìm sản phẩm..." />
+      <input type="hidden" name="action" value="search" />
+    </form>
+  </div>
+
+  <!-- Menu di động (từ master) -->
+  <nav class="drawer" aria-label="Menu di động">
+    <div style="font-weight: 800; margin-bottom: 10px">Danh mục</div>
+    <ul class="menu">
+      <li>
+        <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+          <input type="hidden" name="action" value="prepareHome" />
+          <button class="mobile-link-button" type="submit">Trang chủ</button>
+        </form>
+        <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+          <input type="hidden" name="action" value="listMayChoiGame" />
+          <button class="mobile-link-button" type="submit">Máy chơi game</button>
+        </form>
+        <div class="mobile-dropdown">
+          <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+            <input type="hidden" name="action" value="listMayChoiGame" />
+            <input type="hidden" name="condition" value="nintendo" />
+            <button class="mobile-link-button" type="submit">Nintendo</button>
+          </form>
+          <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+            <input type="hidden" name="action" value="listMayChoiGame" />
+            <input type="hidden" name="condition" value="sony" />
+            <button class="mobile-link-button" type="submit">Sony</button>
+          </form>
+          <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+            <input type="hidden" name="action" value="listMayChoiGame" />
+            <input type="hidden" name="condition" value="others" />
+            <button class="mobile-link-button" type="submit">Hãng khác</button>
+          </form>
+        </div>
+      </li>
+    </ul>
+  </nav>
+</header>
+
             </div>
           </li>
 
-          <li>
-            <form
-              class="mobile-link-form"
-              action="MainController"
-              method="post"
-            >
-              <input type="hidden" name="action" value="listSanPhamCongNghe" />
-              <button class="mobile-link-button" type="submit">
-                Sản phẩm khác
-              </button>
-            </form>
-          </li>
-          <li>
-            <form
-              class="mobile-link-form"
-              action="MainController"
-              method="post"
-            >
-              <input type="hidden" name="action" value="listPhuKien" />
-              <button class="mobile-link-button" type="submit">Phụ kiện</button>
-            </form>
-          </li>
-          <li>
-            <form
-              class="mobile-link-form"
-              action="MainController"
-              method="post"
-            >
-              <input type="hidden" name="action" value="listTheGame" />
-              <button class="mobile-link-button" type="submit">Thẻ game</button>
-            </form>
-          </li>
-          <li>
-            <form
-              class="mobile-link-form"
-              action="MainController"
-              method="post"
-            >
-              <input type="hidden" name="action" value="listDichVu" />
-              <button class="mobile-link-button" type="submit">Dịch vụ</button>
-            </form>
-          </li>
-          <li>
-            <form
-              class="mobile-link-form"
-              action="MainController"
-              method="post"
-            >
-              <input type="hidden" name="action" value="searchPosts" />
-              <button class="mobile-link-button" type="submit">Bài đăng</button>
-            </form>
-          </li>
-          <li>
-            <a
-              class="link-button"
-              href="https://zalo.me/0357394235"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Liên hệ
-            </a>
-          </li>
-        </ul>
-        <hr
-          style="
-            margin: 14px 0;
-            border: 0;
-            height: 1px;
-            background: var(--ring);
-          "
-        />
-        <div style="display: flex; gap: 10px; align-items: center">
-          <% if (loginCheck) { %>
-          <div class="avatar"><%= avatarChar %></div>
-          <div>
-            <div style="font-weight: 700"><%= username %></div>
-            <div style="font-size: 12px; color: var(--muted)">Đã đăng nhập</div>
-          </div>
-          <% } else { %>
-          <div style="font-size: 14px; color: var(--muted)">
-            Bạn chưa đăng nhập
-          </div>
-          <% } %>
-        </div>
-        <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap">
-          <% if (loginCheck) { %>
-          <form action="MainController" method="post" style="margin: 0">
-            <input type="hidden" name="action" value="logout" />
-            <button class="btn" type="submit">Đăng xuất</button>
-          </form>
-          <% } else { %>
-          <form action="MainController" method="post" style="margin: 0">
-            <input type="hidden" name="action" value="goLoginForm" />
-            <button class="btn primary" type="submit">Đăng nhập</button>
-          </form>
-          <% } %>
-        </div>
-      </nav>
-      <label class="backdrop" for="nav-toggle" aria-hidden="true"></label>
 
-      <div class="desktopbar">
-        <nav class="nav" aria-label="Chính">
-          <ul>
-            <li class="has-dd">
-              <form class="link-form" action="MainController" method="post">
-                <input type="hidden" name="action" value="listMayChoiGame" />
-                <button class="link-button" type="submit">
-                  <img
-                    class="nav_icon"
-                    src="assets/img/iconHeader/may_choi_game.png"
-                    alt="alt"
-                  />
-                  Máy chơi game
-                </button>
-              </form>
-              <ul class="dropdown" aria-label="Danh mục Máy chơi game">
-                <li>
-                  <form class="link-form" action="MainController" method="post">
-                    <input
-                      type="hidden"
-                      name="action"
-                      value="listMayChoiGame"
-                    />
-                    <input type="hidden" name="condition" value="nintendo" />
-                    <button class="link-button" type="submit">
-                      <img
-                        src="assets/img/iconHeader/nintendo-switch.png"
-                        alt="alt"
-                      />
-                      Nintendo
-                    </button>
-                  </form>
-                </li>
-                <li>
-                  <form class="link-form" action="MainController" method="post">
-                    <input
-                      type="hidden"
-                      name="action"
-                      value="listMayChoiGame"
-                    />
-                    <input type="hidden" name="condition" value="sony" />
-                    <button class="link-button" type="submit">
-                      <img src="assets/img/iconHeader/sony.png" alt="alt" />
-                      Sony
-                    </button>
-                  </form>
-                </li>
-                <li>
-                  <form class="link-form" action="MainController" method="post">
-                    <input
-                      type="hidden"
-                      name="action"
-                      value="listMayChoiGame"
-                    />
-                    <input type="hidden" name="condition" value="others" />
-                    <button class="link-button" type="submit">
-                      <img
-                        src="assets/img/iconHeader/hang_khac.png"
-                        alt="alt"
-                      />
-                      Hãng khác
-                    </button>
-                  </form>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <form class="link-form" action="MainController" method="post">
-                <input
-                  type="hidden"
-                  name="action"
-                  value="listSanPhamCongNghe"
-                />
-                <button class="link-button" type="submit">
-                  <img
-                    class="nav_icon"
-                    src="assets/img/iconHeader/san_pham_khac.png"
-                    alt="alt"
-                  />
-                  Sản phẩm khác
-                </button>
-              </form>
-            </li>
-            <li>
-              <form class="link-form" action="MainController" method="post">
-                <input type="hidden" name="action" value="listPhuKien" />
-                <button class="link-button" type="submit">
-                  <img
-                    class="nav_icon"
-                    src="assets/img/iconHeader/game-controller.png"
-                    alt="alt"
-                  />
-                  Phụ kiện
-                </button>
-              </form>
-            </li>
-            <li>
-              <form class="link-form" action="MainController" method="post">
-                <input type="hidden" name="action" value="listTheGame" />
-                <button class="link-button" type="submit">
-                  <img
-                    class="nav_icon"
-                    src="assets/img/iconHeader/the_game.png"
-                    alt="alt"
-                  />
-                  Thẻ game
-                </button>
-              </form>
-            </li>
-            <li>
-              <form class="link-form" action="MainController" method="post">
-                <input type="hidden" name="action" value="listDichVu" />
-                <button class="link-button" type="submit">
-                  <img
-                    class="nav_icon"
-                    src="assets/img/iconHeader/dich_vu.png"
-                    alt="alt"
-                  />
-                  Dịch vụ
-                </button>
-              </form>
-            </li>
-            <li>
-              <form class="link-form" action="MainController" method="post">
-                <input type="hidden" name="action" value="searchPosts" />
-                <button class="link-button" type="submit">
-                  <img
-                    class="nav_icon"
-                    src="assets/img/iconHeader/bai_dang.png"
-                    alt="alt"
-                  />
-                  Bài đăng
-                </button>
-              </form>
-            </li>
-            <li>
-              <a
-                class="link-button"
-                href="https://zalo.me/0357394235"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img
-                  class="nav_icon"
-                  src="assets/img/iconHeader/lien_hen.png"
-                  alt="alt"
-                />
-                Liên hệ
-              </a>
-            </li>
-          </ul>
-        </nav>
+            <nav class="drawer" aria-label="Menu di động">
+                <div style="font-weight:800; margin-bottom:10px;">Danh mục</div>
+                <ul class="menu">
+                    <li>
+                        <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+                            <input type="hidden" name="action" value="prepareHome"/>
+                            <button class="mobile-link-button" type="submit">Trang chủ</button>
+                        </form>
 
-        <div class="actions">
-          <% if (loginCheck) { %>
-          <div class="user-pill">
-            <div class="avatar"><%= avatarChar %></div>
-            <div
-              style="display: flex; flex-direction: column; line-height: 1.2"
-            >
-              <span><%= username %></span>
-              <span class="badge">Admin</span>
+                        <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+                            <input type="hidden" name="action" value="listMayChoiGame"/>
+                            <button class="mobile-link-button" type="submit">Máy chơi game</button>
+                        </form>
+
+                        <div class="mobile-dropdown">
+                            <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+                                <input type="hidden" name="action" value="listMayChoiGame"/>
+                                <input type="hidden" name="condition" value="nintendo"/>
+                                <button class="mobile-link-button" type="submit">Nintendo</button>
+                            </form>
+                            <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+                                <input type="hidden" name="action" value="listMayChoiGame"/>
+                                <input type="hidden" name="condition" value="sony"/>
+                                <button class="mobile-link-button" type="submit">Sony</button>
+                            </form>
+                            <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+                                <input type="hidden" name="action" value="listMayChoiGame"/>
+                                <input type="hidden" name="condition" value="others"/>
+                                <button class="mobile-link-button" type="submit">Hãng khác</button>
+                            </form>
+                        </div>
+                    </li>
+
+                    <li>
+                        <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+                            <input type="hidden" name="action" value="listSanPhamCongNghe"/>
+                            <button class="mobile-link-button" type="submit">Sản phẩm khác</button>
+                        </form>
+                    </li>
+
+                    <li>
+                        <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+                            <input type="hidden" name="action" value="listPhuKien"/>
+                            <button class="mobile-link-button" type="submit">Phụ kiện</button>
+                        </form>
+                    </li>
+
+                    <li>
+                        <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+                            <input type="hidden" name="action" value="listTheGame"/>
+                            <button class="mobile-link-button" type="submit">Thẻ game</button>
+                        </form>
+                    </li>
+
+                    <li>
+                        <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+                            <input type="hidden" name="action" value="listDichVu"/>
+                            <button class="mobile-link-button" type="submit">Dịch vụ</button>
+                        </form>
+                    </li>
+
+                    <li>
+                        <form class="mobile-link-form" action="<%= ctx %>/MainController" method="post">
+                            <input type="hidden" name="action" value="searchPosts"/>
+                            <button class="mobile-link-button" type="submit">Bài đăng</button>
+                        </form>
+                    </li>
+
+                    <li>
+                        <a class="link-button" href="https://zalo.me/0357394235" target="_blank" rel="noopener noreferrer">
+                            Liên hệ
+                        </a>
+                    </li>
+                </ul>
+
+                <hr style="margin:14px 0; border:0; height:1px; background:var(--ring)">
+
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <%
+                      if (loginCheck) {
+                    %>
+                    <div class="avatar"><%= avatarChar %></div>
+                    <div>
+                        <div style="font-weight:700;"><%= username %></div>
+                        <div style="font-size:12px; color:var(--muted);">Đã đăng nhập</div>
+                    </div>
+                    <%
+                      } else {
+                    %>
+                    <div style="font-size:14px; color:var(--muted);">Bạn chưa đăng nhập</div>
+                    <%
+                      }
+                    %>
+                </div>
+
+                <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                    <%
+                      if (loginCheck) {
+                    %>
+                    <form action="<%= ctx %>/MainController" method="post" style="margin:0">
+                        <input type="hidden" name="action" value="logout"/>
+                        <button class="btn" type="submit">Đăng xuất</button>
+                    </form>
+                    <%
+                      } else {
+                    %>
+                    <form action="<%= ctx %>/MainController" method="post" style="margin:0">
+                        <input type="hidden" name="action" value="goLoginForm"/>
+                        <button class="btn primary" type="submit">Đăng nhập</button>
+                    </form>
+                    <%
+                      }
+                    %>
+                </div>
+            </nav>
+
+            <label class="backdrop" for="nav-toggle" aria-hidden="true"></label>
+
+            <div class="desktopbar">
+                <nav class="nav" aria-label="Chính">
+                    <ul>
+                        <li class="has-dd">
+                            <form class="link-form" action="<%= ctx %>/MainController" method="post">
+                                <input type="hidden" name="action" value="listMayChoiGame"/>
+                                <button class="link-button" type="submit">
+                                    <img class="nav_icon" src="<%= ctx %>/assets/img/iconHeader/may_choi_game.png" alt="alt"/>
+                                    Máy chơi game
+                                </button>
+                            </form>
+
+                            <ul class="dropdown" aria-label="Danh mục Máy chơi game">
+                                <li>
+                                    <form class="link-form" action="<%= ctx %>/MainController" method="post">
+                                        <input type="hidden" name="action" value="listMayChoiGame"/>
+                                        <input type="hidden" name="condition" value="nintendo"/>
+                                        <button class="link-button" type="submit">
+                                            <img src="<%= ctx %>/assets/img/iconHeader/nintendo-switch.png" alt="alt"/>
+                                            Nintendo
+                                        </button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form class="link-form" action="<%= ctx %>/MainController" method="post">
+                                        <input type="hidden" name="action" value="listMayChoiGame"/>
+                                        <input type="hidden" name="condition" value="sony"/>
+                                        <button class="link-button" type="submit">
+                                            <img src="<%= ctx %>/assets/img/iconHeader/sony.png" alt="alt"/>
+                                            Sony
+                                        </button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form class="link-form" action="<%= ctx %>/MainController" method="post">
+                                        <input type="hidden" name="action" value="listMayChoiGame"/>
+                                        <input type="hidden" name="condition" value="others"/>
+                                        <button class="link-button" type="submit">
+                                            <img src="<%= ctx %>/assets/img/iconHeader/hang_khac.png" alt="alt"/>
+                                            Hãng khác
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <form class="link-form" action="<%= ctx %>/MainController" method="post">
+                                <input type="hidden" name="action" value="listSanPhamCongNghe"/>
+                                <button class="link-button" type="submit">
+                                    <img class="nav_icon" src="<%= ctx %>/assets/img/iconHeader/san_pham_khac.png" alt="alt"/>
+                                    Sản phẩm khác
+                                </button>
+                            </form>
+                        </li>
+
+                        <li>
+                            <form class="link-form" action="<%= ctx %>/MainController" method="get">
+                                <input type="hidden" name="action" value="listPhuKien"/>
+                                <button class="link-button" type="submit">
+                                    <img class="nav_icon" src="<%= ctx %>/assets/img/iconHeader/game-controller.png" alt="alt"/>
+                                    Phụ kiện
+                                </button>
+                            </form>
+                        </li>
+
+                        <li>
+                            <form class="link-form" action="<%= ctx %>/MainController" method="post">
+                                <input type="hidden" name="action" value="listTheGame"/>
+                                <button class="link-button" type="submit">
+                                    <img class="nav_icon" src="<%= ctx %>/assets/img/iconHeader/the_game.png" alt="alt"/>
+                                    Thẻ game
+                                </button>
+                            </form>
+                        </li>
+
+                        <li>
+                            <form class="link-form" action="<%= ctx %>/MainController" method="post">
+                                <input type="hidden" name="action" value="listDichVu"/>
+                                <button class="link-button" type="submit">
+                                    <img class="nav_icon" src="<%= ctx %>/assets/img/iconHeader/dich_vu.png" alt="alt"/>
+                                    Dịch vụ
+                                </button>
+                            </form>
+                        </li>
+
+                        <li>
+                            <form class="link-form" action="<%= ctx %>/MainController" method="post">
+                                <input type="hidden" name="action" value="searchPosts"/>
+                                <button class="link-button" type="submit">
+                                    <img class="nav_icon" src="<%= ctx %>/assets/img/iconHeader/bai_dang.png" alt="alt"/>
+                                    Bài đăng
+                                </button>
+                            </form>
+                        </li>
+
+                        <li>
+                            <a class="link-button" href="https://zalo.me/0357394235" target="_blank" rel="noopener noreferrer">
+                                <img class="nav_icon" src="<%= ctx %>/assets/img/iconHeader/lien_hen.png" alt="alt"/>
+                                Liên hệ
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="actions">
+                    <%
+                      if (loginCheck) {
+                    %>
+                    <div class="user-pill">
+                        <div class="avatar"><%= avatarChar %></div>
+                        <div style="display:flex; flex-direction:column; line-height:1.2;">
+                            <span><%= username %></span>
+                            <span class="badge">Admin</span>
+                        </div>
+                    </div>
+
+                    <form action="<%= ctx %>/MainController" method="post" style="margin:0">
+                        <input type="hidden" name="action" value="logout"/>
+                        <button class="btn" type="submit" title="Đăng xuất">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                            <path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>
+                            </svg>
+                            Đăng xuất
+                        </button>
+                    </form>
+                    <%
+                      } else {
+                    %>
+                    <form action="<%= ctx %>/MainController" method="post" style="margin:0">
+                        <input type="hidden" name="action" value="goLoginForm"/>
+                        <button class="btn primary" type="submit" title="Đăng nhập">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            Đăng nhập
+                        </button>
+                    </form>
+                    <%
+                      }
+                    %>
+                </div>
+
             </div>
           </div>
           <form action="MainController" method="post" style="margin: 0">

@@ -536,38 +536,41 @@
 
             <!-- Logo -->
             <div class="logo-card">
-                <img class="logo" src="assets/img/logo/logo.png" alt="Logo cửa hàng">
+                <c:choose>
+                    <c:when test="${not empty applicationScope.logoPath and (fn:startsWith(applicationScope.logoPath, 'http') or fn:startsWith(applicationScope.logoPath, '/'))}">
+                        <img class="logo" src="${applicationScope.logoPath}" alt="Logo cửa hàng" />
+                    </c:when>
+                    <c:otherwise>
+                        <img class="logo" src="${pageContext.request.contextPath}/${applicationScope.logoPath != null ? applicationScope.logoPath : 'assets/img/logo/logo.png'}" alt="Logo cửa hàng" />
+                    </c:otherwise>
+                </c:choose>
             </div>
 
-            <!-- Menu -->
             <nav class="sb-nav">
-                <a href="MainController?action=prepareHome">
+                <a href="${pageContext.request.contextPath}/MainController?action=prepareHome">
                     <span class="nav-icon">🏠</span>
                     <span>Trang chủ</span>
                 </a>
 
                 <c:if test="${not empty user}">
-                    <form action="MainController" method="post" class="nav-form">
+                    <form action="${pageContext.request.contextPath}/MainController" method="post" class="nav-form">
                         <input type="hidden" name="action" value="searchBanner">
                         <input class="nav-item" type="submit" value="🪧️ Quản lý banners">
                     </form>
-                    <form action="MainController" method="post" class="nav-form">
+                    <form action="${pageContext.request.contextPath}/MainController" method="post" class="nav-form">
                         <input type="hidden" name="action" value="searchPosts">
                         <input class="nav-item" type="submit" value="🗂️ Quản lý bài đăng">
                     </form>
-<!--                    <form action="MainController" method="post" class="search-form" autocomplete="off">
-                        <input type="hidden" name="action" value="searchProduct"/>
-                        <input class="nav-item" type="submit" value="📦 Quản lý sản phẩm">
-                    </form>-->
-                    <form action="MainController" method="post" class="nav-form">
+
+                    <form action="MainController" method="get" class="nav-form">
                         <input type="hidden" name="action" value="viewAllAccessories">
                         <input class="nav-item" type="submit" value="🔧 Quản lý phụ kiện">
                     </form>
-                    <form action="MainController" method="post" class="nav-form">
+                    <form action="${pageContext.request.contextPath}/MainController" method="post" class="nav-form">
                         <input type="hidden" name="action" value="viewServiceList">
                         <input class="nav-item" type="submit" value="⚙️ Quản lý dịch vụ">
                     </form>
-                    <form action="MainController" method="post" class="nav-form">
+                    <form action="${pageContext.request.contextPath}/MainController" method="post" class="nav-form">
                         <input type="hidden" name="action" value="viewModelList">
                         <input class="nav-item" type="submit" value="🎮 Quản lý sản phẩm"> 
                     </form>
@@ -580,88 +583,91 @@
 
             <hr class="divider">
 
-            <!-- Danh sách sản phẩm nổi bật: chỉ hiện khi có sản phẩm prominent -->
-            <c:if test="${isListProminent != true}">
-                <!-- Kiểm tra trước xem có sản phẩm prominent không -->
-                <c:set var="hasProminentProducts" value="false"/>
-                <c:forEach var="i" items="${listProductForSidebar}">
-                    <c:if test="${i.status eq 'prominent'}">
-                        <c:set var="hasProminentProducts" value="true"/>
-                    </c:if>
-                </c:forEach>
-                
-                <!-- Chỉ hiện mục khi có sản phẩm prominent -->
-                <c:if test="${hasProminentProducts}">
-                    <h3 class="sb-title">NỔI BẬT</h3>
-                    <c:set var="shown" value="0"/>
-                    <div class="featured-grid-sidebar">
-                        <c:forEach var="i" items="${listProductForSidebar}">
-                            <c:if test="${i.status eq 'prominent' and shown < 3}">
-                                <div class="grid-item-sb">
-                                    <form action="MainController" method="post" class="card">
-                                        <input type="hidden" name="action" value="getProduct"/>
-                                        <input type="hidden" name="idProduct" value="${i.id}"/>
-                                        <!-- Bấm vào cả card là submit -->
-                                        <button type="submit" class="thumb-btn-sb">
-                                            <!-- Container cho ảnh và giá -->
-                                            <div class="image-price-container-sb">
-                                                <img class="thumb-sb" src="${i.coverImg}" alt="${fn:escapeXml(i.name)}"/>
-                                                <div class="price-box-sb">
-                                                    <div class="price-text-sb">
-                                                        <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Tên sản phẩm ở dưới -->
-                                            <div class="product-name">${i.name}</div>
-                                        </button>
-                                    </form>
-                                </div>
-                                <c:set var="shown" value="${shown + 1}"/>
-                            </c:if>
-                        </c:forEach>
-                    </div>
-                    <!-- Chỉ hiện nút xem thêm khi có sản phẩm prominent -->
-                    <form action="MainController" method="post">
-                        <input type="hidden" name="action" value="getProminentList">
-                        <input class="view-more-btn" type="submit" value="Xem thêm">
-                    </form>
-                </c:if>
-            </c:if>
+<!-- Danh sách sản phẩm nổi bật: chỉ hiện khi có sản phẩm prominent -->
+<c:if test="${isListProminent != true}">
+    <!-- Kiểm tra trước xem có sản phẩm prominent không -->
+    <c:set var="hasProminentProducts" value="false"/>
+    <c:forEach var="i" items="${listProductForSidebar}">
+        <c:if test="${i.status eq 'prominent'}">
+            <c:set var="hasProminentProducts" value="true"/>
+        </c:if>
+    </c:forEach>
+    
+    <!-- Chỉ hiện mục khi có sản phẩm prominent -->
+    <c:if test="${hasProminentProducts}">
+        <h3 class="sb-title">NỔI BẬT</h3>
+        <c:set var="shown" value="0"/>
+        <div class="featured-grid-sidebar">
+            <c:forEach var="i" items="${listProductForSidebar}">
+                <c:if test="${i.status eq 'prominent' and shown < 3}">
+                    <div class="grid-item-sb">
+                        <form action="MainController" method="post" class="card">
+                            <input type="hidden" name="action" value="getProduct"/>
+                            <input type="hidden" name="idProduct" value="${i.id}"/>
+                            <!-- Bấm vào cả card là submit -->
+                            <button type="submit" class="thumb-btn-sb">
+                                <!-- Container cho ảnh và giá -->
+                                <div class="image-price-container-sb">
+                                    <c:choose>
+                                        <c:when test="${not empty i.coverImg and (fn:startsWith(i.coverImg, 'http') or fn:startsWith(i.coverImg, '/'))}">
+                                            <img class="thumb-sb" src="${i.coverImg}" alt="${fn:escapeXml(i.name)}"/>
+                                        </c:when>
+                                        <c:when test="${not empty i.coverImg}">
+                                            <img class="thumb-sb" src="${pageContext.request.contextPath}/${i.coverImg}" alt="${fn:escapeXml(i.name)}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img class="thumb-sb" src="${pageContext.request.contextPath}/assets/images/no-image.jpg" alt="${fn:escapeXml(i.name)}"/>
+                                        </c:otherwise>
+                                    </c:choose>
 
-            <!-- Bài đăng gần đây - chỉ hiện khi có bài đăng active -->
-            <!-- Kiểm tra trước xem có bài đăng active không -->
-            <c:set var="hasActivePosts" value="false"/>
-            <c:forEach var="p" items="${listPostForSidebar}">
-                <c:if test="${p.status == 1}">
-                    <c:set var="hasActivePosts" value="true"/>
+                                    <div class="price-box-sb">
+                                        <div class="price-text-sb">
+                                            <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Tên sản phẩm ở dưới -->
+                                <div class="product-name">${i.name}</div>
+                            </button>
+                        </form>
+                    </div>
+                    <c:set var="shown" value="${shown + 1}"/>
                 </c:if>
             </c:forEach>
-            
-            <!-- Chỉ hiện mục khi có bài đăng active -->
-            <c:if test="${hasActivePosts}">
+        </div>
+        <!-- Chỉ hiện nút xem thêm khi có sản phẩm prominent -->
+        <form action="MainController" method="post">
+            <input type="hidden" name="action" value="getProminentList">
+            <input class="view-more-btn" type="submit" value="Xem thêm">
+        </form>
+    </c:if>
+</c:if>
+
                 <c:set var="shown" value="0"/>
                 <h3 class="sb-title">BÀI ĐĂNG</h3>
                 <ul class="featured-list-sb">
                     <c:forEach var="p" items="${listPostForSidebar}">
-                        <c:if test="${p.status == 1 and shown <3}">
+                        <c:if test="${p.status == 1 and shown < 3}">
                             <c:set var="shown" value="${shown + 1}"/>
                             <li class="card">
-                                <a class="card-link" href="MainController?action=viewPost&id=${p.id}" aria-label="Xem chi tiết ${fn:escapeXml(p.title)}">
+                                <a class="card-link" href="${pageContext.request.contextPath}/MainController?action=viewPost&id=${p.id}" aria-label="Xem chi tiết ${fn:escapeXml(p.title)}">
                                     <c:choose>
-                                        <c:when test="${not empty p.image_url}">
+                                        <c:when test="${not empty p.image_url and (fn:startsWith(p.image_url, 'http') or fn:startsWith(p.image_url, '/'))}">
                                             <img class="post-thumb" src="${p.image_url}" alt="${fn:escapeXml(p.title)}" />
                                         </c:when>
+                                        <c:when test="${not empty p.image_url}">
+                                            <img class="post-thumb" src="${pageContext.request.contextPath}/${p.image_url}" alt="${fn:escapeXml(p.title)}" />
+                                        </c:when>
                                         <c:otherwise>
-                                            <img class="post-thumb" src="/assets/images/no-image.jpg" alt="No image" />
+                                            <img class="post-thumb" src="${pageContext.request.contextPath}/assets/images/no-image.jpg" alt="No image" />
                                         </c:otherwise>
                                     </c:choose>
 
                                     <div class="post-body">
+
                                         <!-- Tiêu đề (giống style product-name) -->
                                         <span class="product-name">${p.title}</span>
 
-                                        <!-- Ngày đăng kèm trạng thái -->
                                         <span class="post-date">
                                             <c:choose>
                                                 <c:when test="${p.status == 1}">
@@ -681,13 +687,15 @@
                         </c:if>
                     </c:forEach>
                 </ul>
-                <!-- Chỉ hiện nút xem thêm khi có bài đăng active -->
-                <form action="MainController" method="post">
+
+                <form action="${pageContext.request.contextPath}/MainController" method="post">
+
                     <input type="hidden" name="action" value="searchPosts">
                     <input class="view-more-btn" type="submit" value="Xem thêm">
                 </form>
             </c:if>
 
+        </aside>
 
     </body>
 </html>

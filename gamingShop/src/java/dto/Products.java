@@ -27,6 +27,7 @@ public class Products {
     private Date created_at;
     private Date updated_at;
     private List<Product_images> image;
+    private String slug;
     
     private transient String coverImg;
 
@@ -41,7 +42,7 @@ public class Products {
     public Products() {
     }
 
-    public Products(int id, String name, String sku, double price, String product_type, int model_id, int memory_id, int guarantee_id, int quantity, String description_html, String status, Date created_at, Date updated_at) {
+    public Products(int id, String name, String sku, double price, String product_type, int model_id, int memory_id, int guarantee_id, int quantity, String description_html, String status, Date created_at, Date updated_at, List<Product_images> image, String slug, String coverImg) {
         this.id = id;
         this.name = name;
         this.sku = sku;
@@ -55,6 +56,9 @@ public class Products {
         this.status = status;
         this.created_at = created_at;
         this.updated_at = updated_at;
+        this.image = image;
+        this.slug = slug;
+        this.coverImg = coverImg;
     }
 
     public int getId() {
@@ -63,14 +67,6 @@ public class Products {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getCoverImg() {
-        return coverImg;
-    }
-
-    public void setCoverImg(String coverImg) {
-        this.coverImg = coverImg;
     }
 
     public String getName() {
@@ -169,10 +165,23 @@ public class Products {
         this.updated_at = updated_at;
     }
 
-    @Override
-    public String toString() {
-        return "Products{" + "id=" + id + ", name=" + name + ", sku=" + sku + ", price=" + price + ", product_type=" + product_type + ", model_id=" + model_id + ", memory_id=" + memory_id + ", guarantee_id=" + guarantee_id + ", quantity=" + quantity + ", description_html=" + description_html + ", status=" + status + ", created_at=" + created_at + ", updated_at=" + updated_at + ", image=" + image + '}';
+    public String getSlug() {
+        return slug;
     }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public String getCoverImg() {
+        return coverImg;
+    }
+
+    public void setCoverImg(String coverImg) {
+        this.coverImg = coverImg;
+    }
+
+    
 
     
 }

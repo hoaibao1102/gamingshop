@@ -466,7 +466,7 @@
                                                             <img class="thumb" src="${p.image_url}" alt="${fn:escapeXml(p.title)}" />
                                                         </c:when>
                                                         <c:otherwise>
-                                                            <img class="thumb" src="/assets/images/no-image.jpg" alt="No image" />
+                                                            <img class="thumb" src="" alt="No image" />
                                                         </c:otherwise>
                                                     </c:choose>
                                                     <div class="body">
