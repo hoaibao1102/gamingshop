@@ -13,7 +13,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>${post.title} — Bài viết</title>
         <%@ include file="/WEB-INF/jspf/head.jspf" %>
-        <link rel="stylesheet" href="assets/css/maincss.css" />
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/maincss.css" />
 
         <style>
             /* Chặn mọi tràn ngang lặt vặt */
@@ -408,16 +408,18 @@
 
                         <div class="action-pills">
                             <button class="btn" type="button" id="copyLinkBtn">🔗 Sao chép liên kết</button>
+
                             <c:if test="${isLoggedIn}">
-                                <form action="MainController" method="post" style="display:flex; gap:8px">
+                                <form action="${pageContext.request.contextPath}/MainController" method="post" style="display:flex; gap:8px">
                                     <input type="hidden" name="id" value="${post.id}"/>
                                     <button class="btn btn-primary" name="action" value="goToUpdatePosts" type="submit">✏️ Sửa</button>
                                     <button class="btn btn-danger" name="action" value="deletePosts" type="submit"
                                             onclick="return confirm('Xoá bài viết #${post.id}?');">🗑️ Xoá</button>
                                 </form>
                             </c:if>
+
                             <!-- Nút quay lại danh sách (ai cũng thấy) -->
-                            <form action="MainController" method="post" autocomplete="off" style="display:flex">
+                            <form action="${pageContext.request.contextPath}/MainController" method="post" autocomplete="off" style="display:flex">
                                 <input type="hidden" name="action" value="searchPosts"/>
                                 <button class="btn ghost" type="submit">Quay lại danh sách</button>
                             </form>
@@ -445,13 +447,20 @@
                         <div class="recent-grid">
                             <c:forEach var="rp" items="${requestScope.recentPosts}">
                                 <c:if test="${isLoggedIn or rp.status == 1}">
-                                    <a class="recent-card" href="MainController?action=viewPost&id=${rp.id}">
+                                    <a class="recent-card" href="${pageContext.request.contextPath}/post/${rp.slug}">
                                         <c:choose>
                                             <c:when test="${not empty rp.image_url}">
-                                                <img class="recent-thumb" src="${rp.image_url}" alt="${fn:escapeXml(rp.title)}"/>
+                                                <c:choose>
+                                                    <c:when test="${fn:startsWith(rp.image_url,'http') or fn:startsWith(rp.image_url,'/')}">
+                                                        <img class="recent-thumb" src="${rp.image_url}" alt="${fn:escapeXml(rp.title)}"/>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <img class="recent-thumb" src="${pageContext.request.contextPath}/${rp.image_url}" alt="${fn:escapeXml(rp.title)}"/>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </c:when>
                                             <c:otherwise>
-                                                <img class="recent-thumb" src="/assets/images/no-image.jpg" alt="No image"/>
+                                                <img class="recent-thumb" src="${pageContext.request.contextPath}/assets/images/no-image.jpg" alt="No image"/>
                                             </c:otherwise>
                                         </c:choose>
 
@@ -461,7 +470,6 @@
                                                 <span><fmt:formatDate value="${rp.publish_date}" pattern="dd/MM"/></span>
                                                 <span>•</span>
                                                 <span>${rp.author}</span>
-                                                <!-- Nhãn Bản nháp: chỉ hiện cho người đã đăng nhập -->
                                                 <c:if test="${isLoggedIn && rp.status != 1}">
                                                     <span>•</span><span>Bản nháp</span>
                                                 </c:if>

@@ -22,11 +22,12 @@ public class Accessories {
     private Date updated_at;
     private String status;
     private String gift;
+    private String slug;
 
     public Accessories() {
     }
 
-    public Accessories(int id, String name, int quantity, double price, String description, String coverImg, Date created_at, Date updated_at, String status, String gift) {
+    public Accessories(int id, String name, int quantity, double price, String description, String coverImg, Date created_at, Date updated_at, String status, String gift, String slug) {
         this.id = id;
         this.name = name;
         this.quantity = quantity;
@@ -37,6 +38,7 @@ public class Accessories {
         this.updated_at = updated_at;
         this.status = status;
         this.gift = gift;
+        this.slug = slug;
     }
 
     public int getId() {
@@ -118,5 +120,15 @@ public class Accessories {
     public void setGift(String gift) {
         this.gift = gift;
     }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    
 
 }

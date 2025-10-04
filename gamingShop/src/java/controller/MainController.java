@@ -8,7 +8,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "MainController", urlPatterns = {"/MainController", "/mc", ""})
+@WebServlet(
+        name = "MainController",
+        urlPatterns = {"/product/*", "/accessory/*", "/service/*", "/post/*", "/MainController", "/mc", ""}
+)
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 2, // 2MB
         maxFileSize = 1024 * 1024 * 10, // 10MB
@@ -25,65 +28,61 @@ public class MainController extends HttpServlet {
 
         try {
             String action = request.getParameter("action");
-            if (action == null || !isUserAction(action) || !isProductAction(action)) {
+            String servletPath = request.getServletPath(); // "/product" hoặc "/accessory"
+            String pathInfo = request.getPathInfo();       // "/slug-abc-123"
+
+            if (pathInfo != null && pathInfo.length() > 1) {
+                String slug = pathInfo.substring(1); // bỏ dấu /
+                request.setAttribute("slugFromPath", slug);
+                if (servletPath.equals("/product")) {
+                    url = "/ProductController?action=getProduct";
+                } else if (servletPath.equals("/accessory")) {
+                    url = "/AccessoryController?action=getAccessory";
+                } else if (servletPath.equals("/service")) {
+                    url = "/ProductController?action=getService";
+                } else if (servletPath.equals("/post")) {
+                    url = "/ProductController?action=viewPost";
+                }
+            } else if (action == null || action.trim().isEmpty()) {
                 url = "ProductController?action=prepareHome";
-            }
-            if (isUserAction(action)) {
-                url = "/UserController";
-            } else if (isProductAction(action)) {
-                url = "/ProductController";
+            } else if (isUserAction(action)) {
+                url = "/UserController?action=" + action;
             } else if (isBannersAction(action)) {
-                url = "/BannerController";
+                url = "/BannerController?action=" + action;
             } else if (isAccessoryAction(action)) {
-                url = "/AccessoryController";
+                url = "/AccessoryController?action=" + action;
+            } else if (isProductAction(action)) {
+                url = "/ProductController?action=" + action;
+            } else {
+                // fallback an toàn
+                url = "ProductController?action=prepareHome";
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
-        //
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+        return "Main routing controller";
+    }
 
+    // ===== Helper Methods =====
     private boolean isUserAction(String action) {
         return "login".equals(action)
                 || "logout".equals(action)
@@ -126,7 +125,9 @@ public class MainController extends HttpServlet {
                 || "viewPost".equals(action)
                 || "getService".equals(action)
                 || "listDichVu".equals(action)
-                || "listSanPhamCongNghe".equals(action);
+                || "listSanPhamCongNghe".equals(action)
+                || "getAccessoryBySlug".equals(action)
+                || "getProductsBySlug".equals(action);
     }
 
     private boolean isBannersAction(String action) {
@@ -151,7 +152,6 @@ public class MainController extends HttpServlet {
                 || "editAccessory".equals(action)
                 || "showEditAccessoryForm".equals(action)
                 || "deleteAccessory".equals(action)
-                || "getAccessory".equals(action)    ;
+                || "getAccessory".equals(action);
     }
-
 }

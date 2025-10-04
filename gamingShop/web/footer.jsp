@@ -315,26 +315,25 @@
             <div class="sf-inner">
                 <h3 class="sf-title">Theo dõi thông tin tại</h3>
                 <nav class="sf-icons">
-                    <a class="sf-btn sf-fb" href="https://www.facebook.com/shopgameviet38" target="_blank">
+                    <a class="sf-btn sf-fb" href="https://www.facebook.com/shopgameviet38" target="_blank" rel="noopener">
                         <span class="ring"></span>
-                        <img style="height:44px  !important" src="assets/img/icon_social/facebook.png" alt="Facebook"/>
+                        <img style="height:44px !important" src="${pageContext.request.contextPath}/assets/img/icon_social/facebook.png" alt="Facebook"/>
                     </a>
-                    <a class="sf-btn sf-ig" href="https://shopee.vn/shopgameviet38" target="_blank" >
+                    <a class="sf-btn sf-ig" href="https://shopee.vn/shopgameviet38" target="_blank" rel="noopener">
                         <span class="ring"></span>
-                        <img style="height:51px  !important" src="assets/img/icon_social/shopee.png" alt="Shopee"/>
+                        <img style="height:51px !important" src="${pageContext.request.contextPath}/assets/img/icon_social/shopee.png" alt="Shopee"/>
                     </a>
-                    <a class="sf-btn sf-yt" href="https://www.youtube.com/@shopgameviet38" target="_blank">
+                    <a class="sf-btn sf-yt" href="https://www.youtube.com/@shopgameviet38" target="_blank" rel="noopener">
                         <span class="ring"></span>
-                        <img style="height:45px  !important" src="assets/img/icon_social/youtube.png" alt="YouTube"/>
+                        <img style="height:45px !important" src="${pageContext.request.contextPath}/assets/img/icon_social/youtube.png" alt="YouTube"/>
                     </a>
-                    <a class="sf-btn sf-tt" href="https://www.tiktok.com/@shopgameviet38" target="_blank">
+                    <a class="sf-btn sf-tt" href="https://www.tiktok.com/@shopgameviet38" target="_blank" rel="noopener">
                         <span class="ring"></span>
-                        <img style="height:51px  !important" src="assets/img/icon_social/tiktok.png" alt="TikTok"/>
+                        <img style="height:51px !important" src="${pageContext.request.contextPath}/assets/img/icon_social/tiktok.png" alt="TikTok"/>
                     </a>
                 </nav>
             </div>
         </section>
-
 
         <!-- FOOTER -->
         <footer class="site-footer">
@@ -360,15 +359,14 @@
                     <a href="tel:0357394235" class="contact-item phone">
                         <span class="ico"></span><span>0357394235</span>
                     </a>
-                    <a href="https://www.facebook.com/messages/t/106869742356166" class="contact-item mail">
+                    <a href="https://www.facebook.com/messages/t/106869742356166" class="contact-item mail" target="_blank" rel="noopener">
                         <span class="ico"></span><span>SHOP GAME VIỆT 38</span>
                     </a>
-                    <a href="https://zalo.me/0357394235" class="contact-item zalo">
+                    <a href="https://zalo.me/0357394235" class="contact-item zalo" target="_blank" rel="noopener">
                         <span class="ico"></span><span>zalo: 0357394235</span>
                     </a>
                 </aside>
             </div>
         </footer>
-
     </body>
 </html>

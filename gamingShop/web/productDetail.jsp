@@ -6,6 +6,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <fmt:setLocale value="vi_VN" />
 
 <!DOCTYPE html>
@@ -310,7 +311,7 @@
                 border-radius: 6px;
                 border: 1px solid #e5e7eb;
             }
-            
+
             /* Breadcrumbs animations và micro-interactions */
             .breadcrumbs a::before {
                 content: '';
@@ -430,11 +431,11 @@
                     grid-template-columns: 1fr;
                     gap: 20px;
                 }
-                
+
                 .pd-left{
                     order: 1; /* ảnh lên trên */
                 }
-                
+
                 .pd-right{
                     order: 2; /* nội dung xuống dưới */
                 }
@@ -468,7 +469,7 @@
                 .container{
                     padding: 16px;
                 }
-                
+
                 .breadcrumbs {
                     padding: 8px 12px;
                     font-size: 0.85rem;
@@ -550,6 +551,8 @@
                 .pd-thumb{
                     flex: 0 0 70px;
                 }
+
+
                 .breadcrumbs {
                     padding: 6px 10px;
                     font-size: 0.8rem;
@@ -575,7 +578,7 @@
             .pd-left-extra {
                 padding: 0 20px 20px;
             }
-            
+
             .extra-title {
                 font-size: 20px;
                 font-weight: 700;
@@ -587,21 +590,21 @@
                 border-radius: 12px;
                 border: 1px solid #e2e8f0;
             }
-            
+
             .related-products-container {
                 position: relative;
                 overflow: visible;
             }
-            
+
             .related-products-scroll {
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);
                 gap: 16px;
                 padding-bottom: 10px;
             }
-            
 
-            
+
+
             .related-product-item {
                 width: 100%;
                 background: #fff;
@@ -610,17 +613,17 @@
                 overflow: hidden;
                 transition: all 0.3s ease;
             }
-            
+
             .related-product-item:hover {
                 transform: translateY(-4px);
                 box-shadow: 0 8px 24px rgba(0,0,0,0.12);
             }
-            
+
             .related-product-form {
                 width: 100%;
                 height: 100%;
             }
-            
+
             .related-product-btn {
                 width: 100%;
                 height: 100%;
@@ -632,25 +635,25 @@
                 flex-direction: column;
                 text-align: left;
             }
-            
+
             .related-product-image {
                 width: 100%;
                 height: 200px;
                 position: relative;
                 overflow: hidden;
             }
-            
+
             .related-product-image img {
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
                 transition: transform 0.3s ease;
             }
-            
+
             .related-product-item:hover .related-product-image img {
                 transform: scale(1.05);
             }
-            
+
             .related-product-price {
                 position: absolute;
                 bottom: 8px;
@@ -662,7 +665,7 @@
                 font-size: 12px;
                 font-weight: 600;
             }
-            
+
             .related-product-info {
                 padding: 12px;
                 flex-grow: 1;
@@ -670,7 +673,7 @@
                 flex-direction: column;
                 justify-content: space-between;
             }
-            
+
             .related-product-name {
                 font-size: 14px;
                 font-weight: 600;
@@ -683,7 +686,7 @@
                 -webkit-box-orient: vertical;
                 overflow: hidden;
             }
-            
+
             /* Navigation buttons - Ẩn đi vì không còn cần thiết */
             .related-nav-btn {
                 display: none;
@@ -701,32 +704,32 @@
                 .pd-left-extra {
                     padding: 0 12px 16px;
                 }
-                
+
                 .extra-title {
                     font-size: 18px;
                     margin-bottom: 12px;
                     padding: 10px;
                 }
-                
+
                 .related-products-scroll {
                     grid-template-columns: repeat(2, 1fr);
                     gap: 12px;
                 }
-                
+
                 .related-product-image {
                     height: 160px;
                 }
-                
+
                 .related-nav-btn {
                     width: 36px;
                     height: 36px;
                     font-size: 16px;
                 }
-                
+
                 .related-nav-prev {
                     left: -18px;
                 }
-                
+
                 .related-nav-next {
                     right: -18px;
                 }
@@ -740,7 +743,7 @@
                     width: 100%;
                     font-size: 16px;
                 }
-                
+
                 .breadcrumbs {
                     padding: 8px 12px;
                     font-size: 0.85rem;
@@ -756,19 +759,19 @@
                     grid-template-columns: repeat(2, 1fr);
                     gap: 10px;
                 }
-                
+
                 .related-product-image {
                     height: 140px;
                 }
-                
+
                 .related-product-info {
                     padding: 8px;
                 }
-                
+
                 .related-product-name {
                     font-size: 13px;
                 }
-                
+
                 .related-nav-btn {
                     display: none;
                 }
@@ -777,9 +780,10 @@
         </style>
     </head>
 
+
     <body>
         <div class="wrapper">
-             <!-- Sidebar -->
+            <!-- Sidebar -->
             <div class="sidebar">
                 <jsp:include page="sidebar.jsp"/>
             </div>
@@ -788,22 +792,38 @@
             <div class="Main_content">
                 <!-- Header -->
                 <jsp:include page="header.jsp"/>
+
                 <!-- ====== Nội dung trang ====== -->
                 <div class="container">
                     <div class="breadcrumbs">
-                        <a href="MainController?action=${breadCrumbs}">Danh sách sản phẩm</a>
+                        <a href="${pageContext.request.contextPath}/MainController?action=${breadCrumbs}">Danh sách sản phẩm</a>
                         <span class="sep">›</span>
                         <span class="current">Chi tiết sản phẩm</span>
                     </div>
+
                     <c:choose>
                         <c:when test="${not empty productDetail}">
                             <div class="product-detail">
-                                <!-- LEFT: Gallery (4 phần) -->
+                                <!-- LEFT: Gallery -->
                                 <div class="pd-left">
-                                    <c:set var="firstImg"
-                                           value="${(not empty productDetail.image and not empty productDetail.image[0].image_url) 
-                                                    ? productDetail.image[0].image_url 
-                                                    : '/assets/images/no-image.jpg'}" />
+                                    <%-- firstImg: chuẩn hoá url + fallback no-image --%>
+                                    <c:choose>
+                                        <c:when test="${not empty productDetail.image and not empty productDetail.image[0].image_url}">
+                                            <c:set var="rawFirst" value="${productDetail.image[0].image_url}" />
+                                            <c:choose>
+                                                <c:when test="${fn:startsWith(rawFirst,'http') or fn:startsWith(rawFirst,'/')}">
+                                                    <c:set var="firstImg" value="${rawFirst}" />
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:set var="firstImg" value="${pageContext.request.contextPath}/${rawFirst}" />
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="firstImg" value="${pageContext.request.contextPath}/assets/images/no-image.jpg" />
+                                        </c:otherwise>
+                                    </c:choose>
+
                                     <div class="pd-main">
                                         <img id="pd-main-img" src="${firstImg}" alt="${productDetail.name}" loading="eager"/>
                                     </div>
@@ -811,24 +831,29 @@
                                     <div class="pd-thumbs" id="pd-thumbs">
                                         <c:forEach var="img" items="${productDetail.image}" varStatus="s">
                                             <c:if test="${not empty img.image_url}">
+                                                <%-- Chuẩn hoá từng ảnh thumb --%>
+                                                <c:set var="rawUrl" value="${img.image_url}" />
+                                                <c:choose>
+                                                    <c:when test="${fn:startsWith(rawUrl,'http') or fn:startsWith(rawUrl,'/')}">
+                                                        <c:set var="imgSrc" value="${rawUrl}" />
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <c:set var="imgSrc" value="${pageContext.request.contextPath}/${rawUrl}" />
+                                                    </c:otherwise>
+                                                </c:choose>
+
                                                 <button type="button"
                                                         class="pd-thumb${s.index == 0 ? ' is-active' : ''}"
-                                                        data-src="${img.image_url}"
+                                                        data-src="${imgSrc}"
                                                         aria-label="Ảnh ${s.count}">
-                                                    <img src="${img.image_url}" alt="${productDetail.name}" loading="lazy"/>
+                                                    <img src="${imgSrc}" alt="${productDetail.name}" loading="lazy"/>
                                                 </button>
                                             </c:if>
                                         </c:forEach>
                                     </div>
-
-
-                                    <!--                                    //===========================================================================-->
-
                                 </div>
 
-
-
-                                <!-- RIGHT: Info + Description (6 phần) -->
+                                <!-- RIGHT: Info + Description -->
                                 <div class="pd-right">
                                     <div class="pd-name">${productDetail.name}</div>
 
@@ -838,15 +863,9 @@
                                             <b>Loại</b>
                                             <span>
                                                 <c:choose>
-                                                    <c:when test="${productDetail.product_type == 'nintendo'}">
-                                                        Nintendo
-                                                    </c:when>
-                                                    <c:when test="${productDetail.product_type == 'sony'}">
-                                                        Sony
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        Hãng khác
-                                                    </c:otherwise>
+                                                    <c:when test="${productDetail.product_type == 'nintendo'}">Nintendo</c:when>
+                                                    <c:when test="${productDetail.product_type == 'sony'}">Sony</c:when>
+                                                    <c:otherwise>Hãng khác</c:otherwise>
                                                 </c:choose>
                                             </span>
                                         </div>
@@ -863,10 +882,8 @@
                                             <b>Phụ kiện tặng kèm:</b>
                                             <ul>
                                                 <c:forEach var="acc" items="${accessories}">
-                                                    <li>
-                                                        ${acc.name} (x${acc.quantity})
-                                                    </li>
-                                                </c:forEach>
+                                                    <li>${acc.name} (x${acc.quantity})</li>
+                                                    </c:forEach>
                                             </ul>
                                         </div>
                                     </c:if>
@@ -880,16 +897,13 @@
                                         <button onclick="callDirectly()" class="btn-service btn-secondary">
                                             📞 Gọi trực tiếp
                                         </button>
-                                        <a href="MainController?action=listMayChoiGame" class="btn-service btn-secondary">
+                                        <a href="${pageContext.request.contextPath}/MainController?action=listMayChoiGame" class="btn-service btn-secondary">
                                             📋 Xem sản phẩm khác
                                         </a>
                                     </div>
 
-                                    <!-- Description_html nằm chung cột phải -->
                                     <div class="pd-desc">
-                                        <div class="pd-desc-title">
-                                            📝 Mô tả sản phẩm
-                                        </div>
+                                        <div class="pd-desc-title">📝 Mô tả sản phẩm</div>
                                         ${productDetail.description_html}
                                     </div>
                                 </div>
@@ -903,32 +917,27 @@
                                 <c:if test="${not empty checkErrorDeleteProduct}">
                                     <p><c:out value="${checkErrorDeleteProduct}"/></p>
                                 </c:if>
-                                <form action="MainController" method="post" style="margin-top:12px;">
+                                <form action="${pageContext.request.contextPath}/MainController" method="post" style="margin-top:12px;">
                                     <input type="hidden" name="action" value="listProducts"/>
                                     <button class="btn-filter" type="submit">Xem tất cả sản phẩm</button>
                                 </form>
                             </div>
                         </c:otherwise>
                     </c:choose>
-                </div>
 
-
-
-                <!-- Sản phẩm liên quan với scroll horizontal -->
-                <div class="pd-left-extra">
-                    <h3 class="extra-title">🔥 NHỮNG SẢN PHẨM LIÊN QUAN</h3>
-                    <c:choose>
-                        <c:when test="${not empty list_pro}">
-                            <div class="related-products-container">
-                                <div class="related-products-scroll">
-                                    <c:set var="shown" value="0"/>
-                                    <c:forEach var="i" items="${list_pro}">
-                                        <c:if test="${shown < 8}">
-                                            <div class="related-product-item">
-                                                <form action="MainController" method="post" class="related-product-form">
-                                                    <input type="hidden" name="action" value="getProduct"/>
-                                                    <input type="hidden" name="idProduct" value="${i.id}"/>
-                                                    <button type="submit" class="related-product-btn">
+                    <!-- Sản phẩm liên quan với scroll horizontal -->
+                    <div class="pd-left-extra">
+                        <h3 class="extra-title">🔥 NHỮNG SẢN PHẨM LIÊN QUAN</h3>
+                        <c:choose>
+                            <c:when test="${not empty list_pro}">
+                                <div class="related-products-container">
+                                    <div id="relatedProductsScroll" class="related-products-scroll">
+                                        <c:set var="shown" value="0"/>
+                                        <c:forEach var="i" items="${list_pro}">
+                                            <c:if test="${shown < 8}">
+                                                <div class="related-product-item">
+                                                    <!-- Dùng slug để đi tới trang chi tiết sản phẩm -->
+                                                    <a href="${pageContext.request.contextPath}/product/${i.slug}" class="related-product-btn">
                                                         <div class="related-product-image">
                                                             <img src="${i.coverImg}" alt="${i.name}" loading="lazy"/>
                                                             <div class="related-product-price">
@@ -938,30 +947,22 @@
                                                         <div class="related-product-info">
                                                             <div class="related-product-name">${i.name}</div>
                                                         </div>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                            <c:set var="shown" value="${shown + 1}"/>
-                                        </c:if>
-                                    </c:forEach>
+                                                    </a>
+                                                </div>
+                                                <c:set var="shown" value="${shown + 1}"/>
+                                            </c:if>
+                                        </c:forEach>
+                                    </div>
                                 </div>
-                            </div>
-                        </c:when>
-                        <c:otherwise>
-                            <p style="text-align: center; color: #6b7280; padding: 20px;">Hiện danh sách đang trống!</p>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-
-
-
-
-            </div>
-        </div>
-
-        <!-- Footer đặt NGOÀI wrapper để luôn hiển thị khi body cuộn -->
-        <jsp:include page="footer.jsp"/>
-
+                            </c:when>
+                            <c:otherwise>
+                                <p style="text-align: center; color: #6b7280; padding: 20px;">Hiện danh sách đang trống!</p>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div> <!-- /.container -->
+            </div> <!-- /.Main_content -->
+        </div> <!-- /.wrapper -->
         <script>
             (function () {
                 const main = document.getElementById('pd-main-img');
@@ -1073,67 +1074,6 @@
                 setTimeout(() => notification.style.transform = 'translateX(0)', 100);
                 setTimeout(() => notification.remove(), 5000);
             }
-
-            // Related products scroll functionality
-            function scrollRelatedProducts(direction) {
-                const container = document.getElementById('relatedProductsScroll');
-                if (!container) return;
-                
-                const scrollAmount = 300; // pixels to scroll
-                const currentScroll = container.scrollLeft;
-                
-                if (direction === 'left') {
-                    container.scrollTo({
-                        left: currentScroll - scrollAmount,
-                        behavior: 'smooth'
-                    });
-                } else {
-                    container.scrollTo({
-                        left: currentScroll + scrollAmount,
-                        behavior: 'smooth'
-                    });
-                }
-            }
-
-            // Update navigation buttons visibility based on scroll position
-            function updateNavButtons() {
-                const container = document.getElementById('relatedProductsScroll');
-                const prevBtn = document.querySelector('.related-nav-prev');
-                const nextBtn = document.querySelector('.related-nav-next');
-                
-                if (!container || !prevBtn || !nextBtn) return;
-                
-                const isAtStart = container.scrollLeft <= 0;
-                const isAtEnd = container.scrollLeft >= (container.scrollWidth - container.clientWidth);
-                
-                prevBtn.style.opacity = isAtStart ? '0.5' : '1';
-                nextBtn.style.opacity = isAtEnd ? '0.5' : '1';
-                prevBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
-                nextBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
-            }
-
-            // Initialize related products scroll
-            document.addEventListener('DOMContentLoaded', function() {
-                const container = document.getElementById('relatedProductsScroll');
-                if (container) {
-                    // Update navigation buttons on scroll
-                    container.addEventListener('scroll', updateNavButtons);
-                    // Initial update
-                    updateNavButtons();
-                    
-                    // Auto-hide navigation buttons on mobile
-                    function handleResize() {
-                        const isMobile = window.innerWidth <= 480;
-                        const navButtons = document.querySelectorAll('.related-nav-btn');
-                        navButtons.forEach(btn => {
-                            btn.style.display = isMobile ? 'none' : 'flex';
-                        });
-                    }
-                    
-                    window.addEventListener('resize', handleResize);
-                    handleResize(); // Initial call
-                }
-            });
         </script>
     </body>
 </html>

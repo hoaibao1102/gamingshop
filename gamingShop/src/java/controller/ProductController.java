@@ -44,6 +44,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import utils.AuthUtils;
+import utils.SlugUtil;
 
 /**
  *
@@ -65,6 +66,7 @@ public class ProductController extends HttpServlet {
     private final ModelsDAO modelsDAO = new ModelsDAO();
     private final ServicesDAO servicesDAO = new ServicesDAO();
     private final BannersDAO bannersDAO = new BannersDAO();
+    private final AccessoriesDAO accessoriesDAO = new AccessoriesDAO();
 
     String INDEX_PAGE = "index.jsp";
 
@@ -459,13 +461,22 @@ public class ProductController extends HttpServlet {
             if (generatedId > 0) {
                 newProduct.setId(generatedId);
 
+                // ===== Tạo slug và update lại product =====
+                try {
+                    String slug = SlugUtil.toSlug(newProduct.getName(), generatedId);
+                    newProduct.setSlug(slug);
+                    productsdao.updateSlug(generatedId, slug);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    request.setAttribute("warningSlug", "Product created but failed to generate slug: " + ex.getMessage());
+                }
+
                 // ===== Upload ảnh =====
                 List<Part> imageParts = new ArrayList<>();
                 Part img1 = request.getPart("imageFile1");
                 Part img2 = request.getPart("imageFile2");
                 Part img3 = request.getPart("imageFile3");
                 Part img4 = request.getPart("imageFile4");
-
                 if (img1 != null && img1.getSize() > 0) {
                     imageParts.add(img1);
                 }
@@ -478,10 +489,8 @@ public class ProductController extends HttpServlet {
                 if (img4 != null && img4.getSize() > 0) {
                     imageParts.add(img4);
                 }
-
                 String uploadDir = getServletContext().getRealPath("/assets/img/products/");
                 new File(uploadDir).mkdirs();
-
                 List<Product_images> imageList = new ArrayList<>();
                 int index = 1;
                 try {
@@ -491,7 +500,6 @@ public class ProductController extends HttpServlet {
                         String storedFileName = generatedId + "_" + index + fileExtension;
                         String imagePath = uploadDir + File.separator + storedFileName;
                         imagePart.write(imagePath);
-
                         Product_images img = new Product_images();
                         img.setProduct_id(generatedId);
                         img.setImage_url("assets/img/products/" + storedFileName);
@@ -512,7 +520,7 @@ public class ProductController extends HttpServlet {
 
                 // ===== Xử lý accessories kèm theo =====
                 try {
-                    String[] accessoryIds = request.getParameterValues("accessoryIds"); // <-- FIX: khai báo ở đây
+                    String[] accessoryIds = request.getParameterValues("accessoryIds");
                     if (accessoryIds != null) {
                         ProductAccessoriesDAO paDAO = new ProductAccessoriesDAO();
                         for (String accIdStr : accessoryIds) {
@@ -522,7 +530,6 @@ public class ProductController extends HttpServlet {
                                 qty = Integer.parseInt(request.getParameter("accessoryQty_" + accId));
                             } catch (NumberFormatException ignore) {
                             }
-
                             Product_accessories pa = new Product_accessories(
                                     generatedId,
                                     accId,
@@ -540,15 +547,12 @@ public class ProductController extends HttpServlet {
                 // ===== Success =====
                 HttpSession session = request.getSession();
                 session.removeAttribute("cachedProductListEdit");
-
                 request.setAttribute("messageAddProduct", "New product, images and accessories added successfully.");
                 request.setAttribute("product", newProduct);
                 request.setAttribute("productImages", imageList);
                 request.setAttribute("justAdded", Boolean.TRUE);
-
                 loadDropdownData(request);
                 return "productsUpdate.jsp";
-
             } else {
                 request.setAttribute("checkErrorAddProduct", "Failed to add product.");
                 loadDropdownData(request);
@@ -664,12 +668,19 @@ public class ProductController extends HttpServlet {
 
             // Đặt thông báo tuỳ theo kết quả update
             if (success) {
-                // Xoá cache list sản phẩm trong session (nếu có) để đảm bảo dữ liệu mới
-                // Xử lý accessories
+                // ===== Tạo/Update slug tự động =====
+                try {
+                    String slug = SlugUtil.toSlug(newProduct.getName(), newProduct.getId());
+                    newProduct.setSlug(slug);
+                    productsdao.updateSlug(newProduct.getId(), slug);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    request.setAttribute("warningSlug", "Product updated but failed to generate slug: " + ex.getMessage());
+                }
+
+                // ===== Xử lý phụ kiện =====
                 String[] accessoryIds = request.getParameterValues("accessoryIds");
                 ProductAccessoriesDAO paDAO = new ProductAccessoriesDAO();
-
-                // Xoá hết phụ kiện cũ trước khi insert lại
                 paDAO.deleteByProductId(product_id);
 
                 if (accessoryIds != null) {
@@ -680,13 +691,7 @@ public class ProductController extends HttpServlet {
                             qty = Integer.parseInt(request.getParameter("accessoryQty_" + accId));
                         } catch (NumberFormatException ignore) {
                         }
-
-                        Product_accessories pa = new Product_accessories(
-                                product_id,
-                                accId,
-                                qty,
-                                "active"
-                        );
+                        Product_accessories pa = new Product_accessories(product_id, accId, qty, "active");
                         paDAO.insert(pa);
                     }
                 }
@@ -968,6 +973,16 @@ public class ProductController extends HttpServlet {
             // --- Lưu xuống DB ---
             PostsDAO dao = new PostsDAO();
             int newId = dao.createNewPost(post);
+
+            try {
+                String slug = SlugUtil.toSlug(post.getTitle(), newId);
+                post.setSlug(slug);
+                postsDAO.updateSlug(newId, slug);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                request.setAttribute("warningSlug", "Posts created but failed to generate slug: " + ex.getMessage());
+            }
+
             if (newId > 0) {
                 message = "Post created successfully";
                 request.setAttribute("messageAddPosts", message);
@@ -1089,6 +1104,15 @@ public class ProductController extends HttpServlet {
             // ===== Update vào DB =====
             boolean success = postsDAO.updatePost(updatePost, id);
             if (success) {
+                try {
+                    String slug = SlugUtil.toSlug(updatePost.getTitle(), updatePost.getId());
+                    updatePost.setSlug(slug);
+                    postsDAO.updateSlug(updatePost.getId(), slug);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    request.setAttribute("warningSlug", "Post created but failed to generate slug: " + ex.getMessage());
+                }
+
                 request.setAttribute("messageUpdatePosts", "Post updated successfully.");
                 request.setAttribute("post", postsDAO.getById(id)); // set lại để hiện ra trong form
                 return "postsUpdate.jsp"; // quay lại form edit
@@ -1161,37 +1185,70 @@ public class ProductController extends HttpServlet {
     private String handleGetProduct(HttpServletRequest request, HttpServletResponse response) {
         try {
             request.setCharacterEncoding(java.nio.charset.StandardCharsets.UTF_8.name());
+            Products product = null;
+            int productId = -1;
 
-            // 1) Lấy & validate id (Java 8: không dùng isBlank)
-            final String rawId = request.getParameter("idProduct");
-            if (rawId == null || rawId.trim().isEmpty()) {
-                request.setAttribute("checkErrorDeleteProduct", "Thiếu tham số idProduct");
-                return "productDetail.jsp";
+            // ===== 0) Try lấy slug từ request attribute (MainController có thể set) =====
+            String slug = null;
+            Object slugAttr = request.getAttribute("slugFromPath");
+            if (slugAttr != null) {
+                slug = String.valueOf(slugAttr).trim();
             }
 
-            final int productId;
-            try {
-                productId = Integer.parseInt(rawId.trim());
-            } catch (NumberFormatException nfe) {
-                request.setAttribute("checkErrorDeleteProduct", "idProduct không hợp lệ");
-                return "productDetail.jsp";
-            }
-            if (productId < 1) {
-                request.setAttribute("checkErrorDeleteProduct", "Không có sản phẩm phù hợp");
-                return "productDetail.jsp";
-            }
-
-            // 2) Lấy product + images
-            final Products product = productsdao.getById(productId);
-            final List<Products> list_pro = productsdao.getByType(productId);
-
-            for (Products p : list_pro) {
-                List<Product_images> images = productImagesDAO.getByProductId(p.getId());
-                if (images.size() > 0) {
-                    p.setCoverImg(images.get(0).getImage_url());
-                } else {
-                    p.setCoverImg("");
+            // ===== 0.5) Nếu chưa có, try lấy slug từ request parameter "slugFromPath" (MainController forward bằng query string) =====
+            if ((slug == null || slug.isEmpty())) {
+                String slugParamFromForward = request.getParameter("slugFromPath");
+                if (slugParamFromForward != null && !slugParamFromForward.trim().isEmpty()) {
+                    slug = slugParamFromForward.trim();
                 }
+            }
+
+            // ===== 1) Nếu chưa có slug, thử lấy từ pathInfo (nếu ProductController được map /product/* trực tiếp) =====
+            if ((slug == null || slug.isEmpty())) {
+                String pathInfo = request.getPathInfo(); // có thể null khi forward
+                if (pathInfo != null && pathInfo.length() > 1) {
+                    slug = pathInfo.substring(1).trim(); // bỏ '/'
+                }
+            }
+
+            // ===== 2) Nếu vẫn chưa có slug, thử param slugProduct (query param / form) =====
+            if (slug == null || slug.isEmpty()) {
+                String rawSlug = request.getParameter("slugProduct");
+                if (rawSlug != null && !rawSlug.trim().isEmpty()) {
+                    slug = rawSlug.trim();
+                }
+            }
+
+            // ===== 3) Nếu có slug -> tìm product theo slug =====
+            if (slug != null && !slug.isEmpty()) {
+                System.out.println("DEBUG handleGetProduct: looking up by slug = " + slug);
+                product = productsdao.findBySlug(slug);
+                if (product != null) {
+                    productId = product.getId();
+                } else {
+                    System.out.println("DEBUG handleGetProduct: product not found by slug");
+                }
+            }
+
+            // ===== 4) Nếu chưa có product, fallback sang idProduct param =====
+            if (product == null) {
+                final String rawId = request.getParameter("idProduct");
+                if (rawId == null || rawId.trim().isEmpty()) {
+                    // nếu không có id/slug -> báo lỗi ra view
+                    request.setAttribute("checkErrorDeleteProduct", "Thiếu tham số slugProduct/idProduct");
+                    return "productDetail.jsp";
+                }
+                try {
+                    productId = Integer.parseInt(rawId.trim());
+                } catch (NumberFormatException nfe) {
+                    request.setAttribute("checkErrorDeleteProduct", "idProduct không hợp lệ");
+                    return "productDetail.jsp";
+                }
+                if (productId < 1) {
+                    request.setAttribute("checkErrorDeleteProduct", "Không có sản phẩm phù hợp");
+                    return "productDetail.jsp";
+                }
+                product = productsdao.getById(productId);
             }
 
             if (product == null) {
@@ -1199,15 +1256,19 @@ public class ProductController extends HttpServlet {
                 return "productDetail.jsp";
             }
 
-            final java.util.List<Product_images> images
-                    = productImagesDAO.getByAllProductId(productId) != null
-                    ? productImagesDAO.getByAllProductId(productId)
-                    : java.util.Collections.<Product_images>emptyList();
-            product.setImage(images);
+            // ===== 5) Lấy list sản phẩm cùng loại (giữ nguyên logic) =====
+            final List<Products> list_pro = productsdao.getByType(product.getId());
+            for (Products p : list_pro) {
+                List<Product_images> imgs = productImagesDAO.getByProductId(p.getId());
+                p.setCoverImg(!imgs.isEmpty() ? imgs.get(0).getImage_url() : "");
+            }
 
-            // 3) Lấy text bảo hành / bộ nhớ (an toàn null)
+            // ===== 6) Lấy tất cả ảnh =====
+            final java.util.List<Product_images> images = productImagesDAO.getByAllProductId(product.getId());
+            product.setImage(images != null ? images : java.util.Collections.<Product_images>emptyList());
+
+            // ===== 7) Bảo hành / bộ nhớ =====
             String guaranteeProduct = "Không có";
-            // Nếu field là Integer, check != null; nếu là int primitive, đổi sang > 0
             Integer guaranteeId = product.getGuarantee_id();
             if (guaranteeId != null && guaranteeId > 0) {
                 Guarantees g = guaranteesDAO.getById(guaranteeId);
@@ -1215,7 +1276,6 @@ public class ProductController extends HttpServlet {
                     guaranteeProduct = g.getGuarantee_type();
                 }
             }
-
             String memoryProduct = "Không có";
             Integer memoryId = product.getMemory_id();
             if (memoryId != null && memoryId > 0) {
@@ -1225,12 +1285,11 @@ public class ProductController extends HttpServlet {
                 }
             }
 
+            // ===== 8) Accessories =====
             ProductAccessoriesDAO paDAO = new ProductAccessoriesDAO();
-            List<Accessories> accessories = paDAO.getAccessoriesByProductId(productId);
+            List<Accessories> accessories = paDAO.getAccessoriesByProductId(product.getId());
 
-            // 4) Gán attribute ra view
-            
-            
+            // ===== 9) Gán attribute ra view =====
             request.setAttribute("breadCrumbs", request.getParameter("breadCrumbs"));
             request.setAttribute("productDetail", product);
             request.setAttribute("list_pro", list_pro);
@@ -1239,9 +1298,8 @@ public class ProductController extends HttpServlet {
             request.setAttribute("checkErrorDeleteProduct", null);
             request.setAttribute("accessories", accessories);
             return "productDetail.jsp";
-
         } catch (Exception e) {
-            e.printStackTrace(); // nên thay bằng logger
+            e.printStackTrace(); // nên dùng logger
             request.setAttribute("checkErrorDeleteProduct", "Unexpected error: " + e.getMessage());
             return "productDetail.jsp";
         }
@@ -1738,35 +1796,31 @@ public class ProductController extends HttpServlet {
             String status = request.getParameter("status");
 
             // ===== VALIDATION SECTION =====
-            // 1. Validate service_type - required and not empty
             if (serviceType == null || serviceType.trim().isEmpty()) {
                 request.setAttribute("checkErrorAddService", "Service type is required.");
                 return "serviceUpdate.jsp";
             }
-
-            // 2. Validate service_type length
             if (serviceType.trim().length() > 100) {
                 request.setAttribute("checkErrorAddService", "Service type must be 100 characters or less.");
                 return "serviceUpdate.jsp";
             }
 
-            // 3. Check for duplicate service_type (UNIQUE constraint)
             try {
                 boolean typeExists = servicesDAO.isServiceTypeExists(serviceType.trim());
                 if (typeExists) {
-                    request.setAttribute("checkErrorAddService", "Service type '" + serviceType.trim() + "' already exists. Please choose a different service type.");
+                    request.setAttribute("checkErrorAddService",
+                            "Service type '" + serviceType.trim() + "' already exists. Please choose a different service type.");
                     return "serviceUpdate.jsp";
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            // 4. Validate price
+
             double price = 0.0;
             if (priceStr == null || priceStr.trim().isEmpty()) {
                 request.setAttribute("checkErrorAddService", "Price is required.");
                 return "serviceUpdate.jsp";
             }
-
             try {
                 price = Double.parseDouble(priceStr.trim());
                 if (price < 0) {
@@ -1782,7 +1836,6 @@ public class ProductController extends HttpServlet {
                 return "serviceUpdate.jsp";
             }
 
-            // 5. Validate status value
             if (status != null && !status.trim().isEmpty()) {
                 String normalizedStatus = status.trim();
                 if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {
@@ -1791,13 +1844,12 @@ public class ProductController extends HttpServlet {
                 }
             }
 
-            // 6. Validate description length (optional but if provided, should be reasonable)
             if (descriptionHtml != null && descriptionHtml.trim().length() > 10000) {
                 request.setAttribute("checkErrorAddService", "Description must be 10000 characters or less.");
                 return "serviceUpdate.jsp";
             }
 
-            // ===== Tạo đối tượng Services và set dữ liệu =====
+            // ===== Tạo đối tượng Services =====
             Services newService = new Services();
             newService.setService_type(serviceType.trim());
             newService.setDescription_html(descriptionHtml != null ? descriptionHtml.trim() : "");
@@ -1806,12 +1858,22 @@ public class ProductController extends HttpServlet {
             newService.setCreated_at(new java.util.Date());
             newService.setUpdated_at(new java.util.Date());
 
-            // ===== Insert vào database =====
-            boolean success = servicesDAO.create(newService);
-
-            if (!success) {
+            // ===== Insert vào database để nhận ID =====
+            int newId = servicesDAO.createNewProduct(newService); // <--- create() trả về ID
+            if (newId <= 0) {
                 request.setAttribute("checkErrorAddService", "Failed to add service.");
                 return "serviceUpdate.jsp";
+            }
+            newService.setId(newId);
+
+            // ===== Tạo + update slug SAU KHI CÓ ID =====
+            try {
+                String slug = SlugUtil.toSlug(newService.getService_type(), newId);
+                newService.setSlug(slug);
+                servicesDAO.updateSlug(newId, slug);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                request.setAttribute("warningSlug", "Service created but failed to generate slug: " + ex.getMessage());
             }
 
             // Success
@@ -1928,6 +1990,16 @@ public class ProductController extends HttpServlet {
             boolean success = servicesDAO.update(existingService);
 
             if (success) {
+                // ===== Tạo/Update slug tự động =====
+                try {
+                    String slug = SlugUtil.toSlug(existingService.getService_type(), existingService.getId());
+                    existingService.setSlug(slug);
+                    servicesDAO.updateSlug(existingService.getId(), slug);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    request.setAttribute("warningSlug", "Product updated but failed to generate slug: " + ex.getMessage());
+                }
+
                 HttpSession session = request.getSession();
                 session.removeAttribute("cachedServiceList");
 
@@ -2179,7 +2251,7 @@ public class ProductController extends HttpServlet {
             e.printStackTrace();
             request.setAttribute("checkError", "Error loading products: " + e.getMessage());
         }
-        
+
         String action = request.getParameter("action");
         request.setAttribute("action", action);
         return INDEX_PAGE;
@@ -2242,45 +2314,79 @@ public class ProductController extends HttpServlet {
 
     private String handleViewDetailsPost(HttpServletRequest request, HttpServletResponse response) {
         try {
-            int id = Integer.parseInt(request.getParameter("id"));
-            PostsDAO dao = new PostsDAO();
+            // ===== Ưu tiên lấy bài viết theo slug =====
+            String slug = (String) request.getAttribute("slugFromPath");
+            if (slug == null || slug.trim().isEmpty()) {
+                slug = request.getParameter("slugPost");
+            }
 
-            Posts post = dao.getById(id);
+            PostsDAO dao = new PostsDAO();
+            Posts post = null;
+
+            if (slug != null && !slug.trim().isEmpty()) {
+                post = dao.findBySlug(slug.trim());
+            } else if (request.getParameter("id") != null && !request.getParameter("id").isEmpty()) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                post = dao.getById(id);
+            }
+
+            // ===== Kiểm tra có bài viết không =====
             if (post == null) {
                 request.setAttribute("checkErrorViewPost", "Bài viết không tồn tại hoặc đã bị xoá.");
-                return "products.jsp";
+                return "postDetails.jsp";
             }
 
+            // ===== Kiểm tra quyền xem bài nháp =====
             boolean includeDrafts = AuthUtils.isLoggedIn(request);
-
-            // (Tuỳ chọn, khuyên dùng) chặn xem chi tiết bài nháp khi chưa đăng nhập:
             if (post.getStatus() != 1 && !includeDrafts) {
                 request.setAttribute("checkErrorViewPost", "Bài viết không khả dụng.");
-                return "products.jsp";
+                return "postDetails.jsp";
             }
 
-            List<Posts> recent = dao.getRecentPosts(6, /* includeDrafts */ includeDrafts, post.getId());
-
-            // Lọc cứng khi guest (phòng khi SQL chưa lọc)
+            // ===== Lấy danh sách bài viết gần đây =====
+            List<Posts> recent = dao.getRecentPosts(6, includeDrafts, post.getId());
             if (!includeDrafts) {
+                // Lọc an toàn lần nữa
                 recent = recent.stream()
                         .filter(p -> p.getStatus() == 1)
                         .collect(java.util.stream.Collectors.toList());
             }
 
+            // ===== Gửi dữ liệu sang JSP =====
             request.setAttribute("post", post);
             request.setAttribute("recentPosts", recent);
 
-            return "postDetails.jsp"; // đảm bảo là FORWARD trong front controller
+            return "postDetails.jsp";
+
+        } catch (NumberFormatException e) {
+            request.setAttribute("checkErrorViewPost", "ID bài viết không hợp lệ.");
+            return "postDetails.jsp";
+
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("checkErrorViewPost", "Có lỗi xảy ra khi tải bài viết.");
-            return "MainController?action=searchPosts";
+            request.setAttribute("checkErrorViewPost", "Có lỗi xảy ra khi tải bài viết: " + e.getMessage());
+            return "postDetails.jsp";
         }
     }
 
     private String handleGetService(HttpServletRequest request, HttpServletResponse response) {
         try {
+            // Ưu tiên lấy theo slug (từ URL rewrite hoặc query)
+            String slug = (String) request.getAttribute("slugFromPath");
+            if (slug == null || slug.trim().isEmpty()) {
+                slug = request.getParameter("slugService");
+            }
+            if (slug != null && !slug.trim().isEmpty()) {
+                Services serviceBySlug = servicesDAO.findBySlug(slug.trim()); // cần có hàm này trong DAO
+                if (serviceBySlug != null) {
+                    request.setAttribute("serviceDetail", serviceBySlug);
+                } else {
+                    request.setAttribute("checkErrorService", "No accessories found with slug: " + slug);
+                }
+                return "serviceDetail.jsp";
+            }
+
+            // ===== Phần cũ: lấy theo ID =====
             String idParam = request.getParameter("idService");
             // Kiểm tra parameter có tồn tại không
             if (idParam == null || idParam.trim().isEmpty()) {
@@ -2350,7 +2456,5 @@ public class ProductController extends HttpServlet {
         listBannerText = btDAO.getAll();
         request.setAttribute("listBannerText", listBannerText);
     }
-    
-    
 
 }
