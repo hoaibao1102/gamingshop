@@ -220,28 +220,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
      * @param modelId id của model cần loại trừ khỏi việc kiểm tra
      * @return true nếu model_type đã tồn tại ở model khác, false nếu không
      */
-    public boolean isAccessoryTypeExistsExcept(String trim, int accessorylId) {
-        Connection c = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            c = DBUtils.getConnection();
-            ps = c.prepareStatement(CHECK_ACCESSORY_TYPE_EXISTS_EXCEPT);
-            ps.setString(1, trim);
-            ps.setInt(2, accessorylId);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            close(c, ps, rs);
-        }
-        return false;
-    }
-
+  
     /**
      * Lấy danh sách tất cả các models có status = 'active'
      *

@@ -587,17 +587,6 @@ public class AccessoryController extends HttpServlet {
                 request.setAttribute("accessory", existingAccessory);
                 return "accessoryUpdate.jsp";
             }
-                       // Check duplicate model_type (exclude current record)
-            try {
-                boolean typeExists = accessoriesDAO.isAccessoryTypeExistsExcept(name.trim(), accessoryId);
-                if (typeExists) {
-                    request.setAttribute("checkErrorEditAccessory", "name '" + name.trim() + "' already exists. Please choose a different name");
-                    request.setAttribute("accessory", existingAccessory);
-                    return "accessoryUpdate.jsp";
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
             if (name.trim().length() > 255) {
                 request.setAttribute("checkErrorEditAccessory", "Accessory name must be 255 characters or less.");
@@ -632,8 +621,7 @@ public class AccessoryController extends HttpServlet {
             // Validate status
             if (status != null && !status.trim().isEmpty()) {
                 String normalizedStatus = status.trim().toLowerCase();
-                if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {
-                    request.setAttribute("checkErrorEditAccessory", "Status must be either 'active' or 'inactive'.");
+                if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {request.setAttribute("checkErrorEditAccessory", "Status must be either 'active' or 'inactive'.");
                     request.setAttribute("accessory", existingAccessory);
                     return "accessoryUpdate.jsp";
                 }
@@ -693,8 +681,7 @@ public class AccessoryController extends HttpServlet {
                 }
 
                 String newFileName = "acc_" + accessoryId + "_" + System.currentTimeMillis() + fileExtension;
-                File newFile = new File(uploadDir, newFileName);
-                imagePart.write(newFile.getAbsolutePath());
+                File newFile = new File(uploadDir, newFileName);imagePart.write(newFile.getAbsolutePath());
 
                 existingAccessory.setCoverImg("assets/accessories/" + newFileName);
             }

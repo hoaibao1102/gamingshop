@@ -693,7 +693,7 @@
                     <input type="hidden" name="action" value="searchPosts">
                     <input class="view-more-btn" type="submit" value="Xem thêm">
                 </form>
-            </c:if>
+         
 
         </aside>
 
