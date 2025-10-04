@@ -5,8 +5,10 @@
 package controller;
 
 import dao.AccessoriesDAO;
+import dao.BannerTextDAO;
 import dao.BannersDAO;
 import dto.Accessories;
+import dto.BannerText;
 import dto.Banners;
 import dto.Page;
 import dto.ProductFilter;
@@ -53,6 +55,7 @@ public class AccessoryController extends HttpServlet {
                 url = handleGetAccessory(request, response);
             } // ===== Xử lý các action bình thường =====
             else if ("listPhuKien".equals(action)) {
+                handleGetAllBannerText(request, response);
                 url = handleListPhuKien(request, response);
             } else if ("viewAllAccessories".equals(action)) {
                 url = handleViewAllAccessories(request, response);
@@ -844,6 +847,13 @@ public class AccessoryController extends HttpServlet {
         }
 
         return "accessoryDetail.jsp";
+    }
+
+    private void handleGetAllBannerText(HttpServletRequest request, HttpServletResponse response) {
+        List<BannerText> listBannerText = new ArrayList();
+        BannerTextDAO btDAO = new BannerTextDAO();
+        listBannerText = btDAO.getAll();
+        request.setAttribute("listBannerText", listBannerText);
     }
 
 }

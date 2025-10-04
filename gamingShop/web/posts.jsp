@@ -411,12 +411,14 @@
             <div class="Main_content">
                 <jsp:include page="header.jsp"/>
 
-                <!-- Marquee -->
+                <!-- ====== Marquee (thanh thông báo chạy ngang) ====== -->
                 <div class="marquee-bar">
                     <div class="marquee-inner">
-                        <span class="marquee-item"><span class="badge">HOT</span> Quản lý bài viết nhanh, gọn, trực quan</span>
-                        <span class="marquee-item"><span class="badge">TIP</span> Dùng ô tìm kiếm để lọc theo tiêu đề</span>
-                        <span class="marquee-item"><a href="#">Xem hướng dẫn biên tập →</a></span>
+                        <c:if test="${not empty listBannerText}">
+                            <c:forEach var="item" items="${listBannerText}">
+                                <span class="marquee-item"><span class="badge">HOT</span> ${item.bannerText}</span>
+                            </c:forEach>
+                        </c:if>
                     </div>
                 </div>
 

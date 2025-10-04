@@ -105,6 +105,7 @@ public class ProductController extends HttpServlet {
             } else if (action.equals("viewAllPost")) {
                 url = handleViewAllPost(request, response);
             } else if (action.equals("searchPosts")) {
+                handleGetAllBannerText(request, response);
                 url = handlePostSearching(request, response);
             } else if (action.equals("addPosts")) {
                 url = handleAddPosts(request, response);
@@ -152,14 +153,18 @@ public class ProductController extends HttpServlet {
             } else if (action.equals("deleteService")) {
                 url = handleServiceDelete(request, response);
             } else if (action.equals("listMayChoiGame")) {
+                handleGetAllBannerText(request, response);
                 url = handleListMayChoiGame(request, response);
             } else if (action.equals("listTheGame")) {
+                handleGetAllBannerText(request, response);
                 url = handleListTheGame(request, response);
             } else if (action.equals("getService")) {
                 url = handleGetService(request, response);
             } else if (action.equals("listDichVu")) {
+                handleGetAllBannerText(request, response);
                 url = handleListServices(request, response);
             } else if (action.equals("listSanPhamCongNghe")) {
+                handleGetAllBannerText(request, response);
                 url = handleListSanPhamCongNghe(request, response);
 
             }
