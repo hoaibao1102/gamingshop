@@ -1,4 +1,5 @@
 <%-- Document : serviceDetail Created on : Sep 19, 2025 Author : ddhuy --%> <%@
+
 page contentType="text/html" pageEncoding="UTF-8" %> 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -50,17 +51,6 @@ page contentType="text/html" pageEncoding="UTF-8" %>
                 min-height: 100vh;
                 width: 100%;
             }
-            .sidebar {
-                flex: 3;
-                background: linear-gradient(135deg, #2c3e50, #34495e);
-                color: #fff;
-                border-radius: 20px;
-                padding: 24px;
-                box-shadow: var(--shadow);
-                position: sticky;
-                top: 20px;
-                height: fit-content;
-            }
             .Main_content {
                 flex: 7;
                 background: #fff;
@@ -92,6 +82,7 @@ page contentType="text/html" pageEncoding="UTF-8" %>
                 padding: 20px;
                 position: sticky;
                 top: 16px;
+                        size: auto;
             }
 
             .sd-visual {
@@ -128,11 +119,12 @@ page contentType="text/html" pageEncoding="UTF-8" %>
             }
 
             .service-icon {
-                font-size: 80px;
+                        font-size: 100px;
                 margin-bottom: 16px;
                 color: var(--service-accent);
                 position: relative;
                 z-index: 1;
+                        margin-top: auto;
             }
 
             .service-type-badge {
@@ -143,13 +135,14 @@ page contentType="text/html" pageEncoding="UTF-8" %>
                     );
                 color: white;
                 padding: 8px 16px;
-                border-radius: 20px;
-                font-size: 14px;
-                font-weight: 600;
+                border-radius: 10px;
+                font-size: 115%;
+                font-weight: bold;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
                 position: relative;
                 z-index: 1;
+                text-align: center;
             }
 
             /* Service Info */
@@ -159,6 +152,7 @@ page contentType="text/html" pageEncoding="UTF-8" %>
                 box-shadow: var(--shadow);
                 padding: 24px;
                 height: fit-content;
+                size: auto;
             }
 
             .sd-header {
@@ -212,11 +206,15 @@ page contentType="text/html" pageEncoding="UTF-8" %>
             .sd-row-price {
                 background: linear-gradient(135deg, #fee2e2, #fef3c7);
                 border: 2px solid #fed7aa;
-                border-radius: 16px;
-                padding: 20px;
-                margin-top: 12px;
+                border-radius: 10px;
+                padding: 12px;
+                margin-top: 8px;
                 position: relative;
                 overflow: hidden;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
             }
 
             .sd-row-price::before {
@@ -245,13 +243,14 @@ page contentType="text/html" pageEncoding="UTF-8" %>
             }
 
             .sd-row-price b {
+                font-size: 15px;
                 color: #b91c1c;
             }
 
             .sd-row-price span {
                 color: #dc2626;
-                font-size: 24px;
-                font-weight: 900;
+                font-size: 20px;
+                font-weight: bold;
                 position: relative;
                 z-index: 1;
             }
@@ -645,25 +644,8 @@ page contentType="text/html" pageEncoding="UTF-8" %>
                                             ${serviceDetail.service_type}
                                         </div>
                                     </div>
-                                </div>
-
-                                <!-- RIGHT: Service Info + Description -->
-                                <div class="sd-right">
-                                    <div class="sd-header">
-                                        <div class="sd-name">${serviceDetail.service_type}</div>
-                                    </div>
-
-                                    <div class="sd-basic">
-                                        <div class="sd-row">
-                                            <b>Mã dịch vụ</b>
-                                            <span>#SV${serviceDetail.id}</span>
-                                        </div>
-                                        <div class="sd-row">
-                                            <b>Loại dịch vụ</b>
-                                            <span>${serviceDetail.service_type}</span>
-                                        </div>
                                         <div class="sd-row sd-row-price">
-                                            <b>Giá dịch vụ</b>
+                                                <b>Giá dịch vụ:</b>
                                             <span>
                                                 <fmt:formatNumber
                                                     value="${serviceDetail.price}"
@@ -676,40 +658,8 @@ page contentType="text/html" pageEncoding="UTF-8" %>
                                         </div>
                                     </div>
 
-                                    <!-- Service Meta Information -->
-                                    <div class="sd-meta">
-                                        <div class="sd-meta-item">
-                                            <div class="label">Trạng thái</div>
-                                            <div class="value status-active">
-                                                <c:choose>
-                                                    <c:when test="${serviceDetail.status eq 'active'}">
-                                                        ✅ Đang hoạt động
-                                                    </c:when>
-                                                    <c:otherwise> ❌ Tạm dừng </c:otherwise>
-                                                </c:choose>
-                                            </div>
-                                        </div>
-                                        <div class="sd-meta-item">
-                                            <div class="label">Ngày tạo</div>
-                                            <div class="value">
-                                                <fmt:formatDate
-                                                    value="${serviceDetail.created_at}"
-                                                    pattern="dd/MM/yyyy"
-                                                    />
-                                            </div>
-                                        </div>
-                                        <c:if test="${not empty serviceDetail.updated_at}">
-                                            <div class="sd-meta-item">
-                                                <div class="label">Cập nhật</div>
-                                                <div class="value">
-                                                    <fmt:formatDate
-                                                        value="${serviceDetail.updated_at}"
-                                                        pattern="dd/MM/yyyy"
-                                                        />
-                                                </div>
-                                            </div>
-                                        </c:if>
-                                    </div>
+                                        <!-- RIGHT: Service Info + Description -->
+                                <div class="sd-right">
 
                                     <!-- Action Buttons -->
                                     <div class="sd-actions">

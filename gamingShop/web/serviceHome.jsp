@@ -52,11 +52,13 @@
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
                 overflow: hidden;
                 margin-top: 20px;
+                padding: 8px;
             }
 
             .services-table {
                 width: 100%;
-                border-collapse: collapse;
+                border-collapse: separate;
+                border-spacing: 0 10px;
                 font-size: 16px;
             }
 
@@ -73,24 +75,46 @@
                 letter-spacing: 0.5px;
             }
 
+            .services-table thead th:first-child {
+                border-radius: 8px 0 0 8px;
+            }
+
+            .services-table thead th:last-child {
+                border-radius: 0 8px 8px 0;
+            }
+
             .services-table tbody tr {
-                border-bottom: 1px solid #eee;
                 transition: all 0.3s ease;
-            }
-
-            .services-table tbody tr:hover {
-                background-color: #f8f9ff;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            }
-
-            .services-table tbody tr:last-child {
-                border-bottom: none;
+                margin-bottom: 10px;
             }
 
             .services-table tbody td {
-                padding: 18px 15px;
+                padding: 0;
                 vertical-align: middle;
+            }
+
+            .service-link-row {
+                display: block;
+                text-decoration: none;
+                color: inherit;
+                background: #f8f9ff;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+                border: 2px solid transparent;
+            }
+
+            .service-link-row:hover {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+                border-color: #667eea;
+                transform: translateX(8px);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+            }
+
+            .service-row-content {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px 20px;
             }
 
             .service-name {
@@ -98,12 +122,23 @@
                 color: #333;
                 font-size: 16px;
                 position: relative;
+                transition: color 0.3s ease;
             }
 
             .service-name::before {
                 content: "🎮";
-                margin-right: 10px;
+                margin-right: 12px;
                 font-size: 18px;
+                display: inline-block;
+                transition: transform 0.3s ease;
+            }
+
+            .service-link-row:hover .service-name {
+                color: #667eea;
+            }
+
+            .service-link-row:hover .service-name::before {
+                transform: scale(1.2) rotate(10deg);
             }
 
             .service-price {
@@ -111,13 +146,12 @@
                 color: #e74c3c;
                 font-size: 18px;
                 text-align: right;
+                transition: all 0.3s ease;
             }
 
-            .service-price::after {
-                content: " VND";
-                font-size: 14px;
-                color: #666;
-                font-weight: normal;
+            .service-link-row:hover .service-price {
+                color: #c0392b;
+                transform: scale(1.05);
             }
 
             .empty-services {
@@ -210,6 +244,7 @@
 
                 .services-table {
                     font-size: 14px;
+                    border-spacing: 0 8px;
                 }
 
                 .services-table thead th {
@@ -217,8 +252,8 @@
                     font-size: 16px;
                 }
 
-                .services-table tbody td {
-                    padding: 15px 10px;
+                .service-row-content {
+                    padding: 16px 14px;
                 }
 
                 .service-price {
@@ -231,6 +266,10 @@
 
                 .services-container {
                     padding: 16px;
+                }
+
+                .service-link-row:hover {
+                    transform: translateX(4px);
                 }
             }
 
@@ -248,8 +287,21 @@
                     font-size: 14px;
                 }
 
-                .services-table tbody td {
-                    padding: 12px 8px;
+                .service-row-content {
+                    padding: 14px 12px;
+                }
+
+                .services-table {
+                    border-spacing: 0 6px;
+                }
+
+                .service-name {
+                    font-size: 14px;
+                }
+
+                .service-name::before {
+                    font-size: 16px;
+                    margin-right: 8px;
                 }
             }
         </style>
