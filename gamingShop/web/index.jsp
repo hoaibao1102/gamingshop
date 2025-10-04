@@ -20,6 +20,8 @@
 
         <!-- Custom CSS -->
         <link rel="stylesheet" href="assets/css/maincss.css">
+        <link rel="stylesheet" href="assets/css/no-border-radius.css">
+
     </head>
     <body>
         <div class="wrapper">
@@ -33,10 +35,11 @@
                 <!-- ====== Marquee (thanh thông báo chạy ngang) ====== -->
                 <div class="marquee-bar">
                     <div class="marquee-inner">
-                        <span class="marquee-item"><span class="badge">HOT</span> Mua 2 tặng 1 phụ kiện chính hãng</span>
-                        <span class="marquee-item"><span class="badge">NEW</span> Hàng mới về mỗi ngày — xem ngay</span>
-                        <span class="marquee-item"><span class="badge">SALE</span> Giảm đến 40% cho bộ sưu tập tuần này</span>
-                        <span class="marquee-item"><a href="#">Xem tất cả khuyến mãi →</a></span>
+                        <c:if test="${not empty listBannerText}">
+                            <c:forEach var="item" items="${listBannerText}">
+                                <span class="marquee-item"><span class="badge">HOT</span> ${item.bannerText}</span>
+                            </c:forEach>
+                        </c:if>
                     </div>
                 </div>
 
@@ -72,6 +75,7 @@
                     <h1 style="font-size:2rem; font-weight:700; color:#222; text-align:center; margin:20px 0; padding:10px; border-bottom:2px solid #f0f0f0; font-family:'Segoe UI', Arial, sans-serif;">
                         ${nameProductsByCategory}
                     </h1>
+
                     <c:choose>
                         <c:when test="${not empty listProductsByCategory}">
                             <c:set var="products" value="${listProductsByCategory.content}" />
@@ -81,70 +85,91 @@
                         </c:otherwise>
                     </c:choose>
 
-                    <c:choose>
-                        <c:when test="${not empty products}">
-                            <!-- Product Grid -->
-                            <ul class="featured-list">
-                                <c:forEach var="product" items="${products}">
-                                    <c:if test="${product.status ne 'inactive'}">
-                                        <li class="item">
-                                            <form action="MainController" method="post" class="product-form">
+                    <c:if test="${not empty products}">
+                        <h2 class="section-title">Sản phẩm</h2>
+                        <ul class="featured-list">
+                            <c:forEach var="product" items="${products}">
+                                <c:if test="${product.status ne 'inactive'}">
+                                    <li class="item">
+                                        <!-- Link đúng cho sản phẩm -->
+                                        <a href="${pageContext.request.contextPath}/product/${product.slug}" class="product-item">
+                                            <div class="product-content">
                                                 <c:choose>
-                                                    <c:when test="${not empty isListProductsByCategory}">
-                                                        <input type="hidden" name="idAccessory" value="${product.id}">
-                                                        <input type="hidden" name="breadCrumbs" value="${action}">
-                                                        <input type="hidden" name="action" value="getAccessory">
+                                                    <c:when test="${not empty product.coverImg}">
+                                                        <img class="thumb" src="${product.coverImg}" alt="${product.name}">
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <input type="hidden" name="breadCrumbs" value="${action}">
-                                                        <input type="hidden" name="idProduct" value="${product.id}">
-                                                        <input type="hidden" name="action" value="getProduct">
+                                                        <img class="thumb" src="/assets/images/no-image.jpg" alt="No image available">
                                                     </c:otherwise>
                                                 </c:choose>
+                                                <div class="meta">
+                                                    <span class="product-name">${product.name}</span>
+                                                    <span class="product-price">
+                                                        <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </c:if>
+                            </c:forEach>
+                        </ul>
+                        <jsp:include page="pagination.jsp"/>
+                    </c:if>
 
-                                                <button type="submit" class="product-button">
-                                                    <div class="product-content">
-                                                        <c:choose>
-                                                            <c:when test="${not empty product.coverImg}">
-                                                                <img class="thumb" src="${product.coverImg}" alt="${product.name}">
-                                                            </c:when>
-                                                            <c:otherwise>
-                                                                <img class="thumb" src="/assets/images/no-image.jpg" alt="No image available">
-                                                            </c:otherwise>
-                                                        </c:choose>
+                    <c:if test="${not empty accessories}">
+                        <h2 class="section-title">Phụ kiện</h2>
+                        <ul class="featured-list">
+                            <c:forEach var="acc" items="${accessories}">
+                                <c:if test="${acc.status ne 'inactive'}">
+                                    <li class="item">
+                                        <!-- Link đúng cho phụ kiện -->
+                                        <a href="${pageContext.request.contextPath}/accessory/${acc.slug}" class="product-item">
+                                            <div class="product-content">
+                                                <c:choose>
+                                                    <c:when test="${not empty acc.coverImg}">
+                                                        <img class="thumb" src="${acc.coverImg}" alt="${acc.name}">
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <img class="thumb" src="/assets/images/no-image.jpg" alt="No image available">
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <div class="meta">
+                                                    <span class="product-name">${acc.name}</span>
+                                                    <span class="product-price">
+                                                        <fmt:formatNumber value="${acc.price}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </c:if>
+                            </c:forEach>
+                        </ul>
+                        <jsp:include page="pagination.jsp"/>
+                    </c:if>
 
-                                                        <div class="meta">
-                                                            <span class="product-name">${product.name}</span>
-                                                            <span class="product-price">
-                                                                <fmt:formatNumber value="${product.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </c:if>
-                                </c:forEach>
-                            </ul>
-                            <!-- Pagination -->
-                            <jsp:include page="pagination.jsp"/>
-                            <!-- Pagination Section -->
-                        </c:when>
-                        <c:otherwise>
-                            <!-- Empty State -->
-                            <div class="empty-state">
-                                <h3>Không tìm thấy sản phẩm</h3>
-                                <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí tìm kiếm của bạn.</p>
-                                <form class="sb-title" action="MainController" method="post">
-                                    <input type="hidden" name="action" value="listMayChoiGame"/>
-                                    
-                                    <button class="btn-view-all">
-                                        Xem tất cả sản phẩm
-                                    </button>
-                                </form>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
+                    <c:if test="${empty products and empty accessories}">
+                        <!-- Empty State -->
+                        <div class="empty-state">
+                            <h3>Không tìm thấy sản phẩm</h3>
+                            <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí tìm kiếm của bạn.</p>
+                            <form class="sb-title" action="MainController" method="post">
+                                <input type="hidden" name="action" value="listMayChoiGame"/>
+                                <button style="padding: 10px 22px;
+                                        background-color: #667eea;
+                                        color: #fff;
+                                        font-size: 15px;
+                                        font-weight: 600;
+                                        border: none;
+                                        border-radius: 6px;
+                                        cursor: pointer;
+                                        transition: all 0.3s ease;">
+                                    Xem tất cả sản phẩm
+                                </button>
+                            </form>
+                        </div>
+                    </c:if>
                 </div>
             </div>
         </div>

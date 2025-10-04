@@ -451,7 +451,7 @@
                                                 <img class="recent-thumb" src="${rp.image_url}" alt="${fn:escapeXml(rp.title)}"/>
                                             </c:when>
                                             <c:otherwise>
-                                                <img class="recent-thumb" src="/assets/images/no-image.jpg" alt="No image"/>
+                                                <img class="recent-thumb" src="" alt="No image"/>
                                             </c:otherwise>
                                         </c:choose>
 

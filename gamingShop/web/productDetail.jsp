@@ -6,6 +6,7 @@
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <fmt:setLocale value="vi_VN" />
 
 <!DOCTYPE html>
@@ -312,7 +313,7 @@
                 border-radius: 6px;
                 border: 1px solid #e5e7eb;
             }
-            
+
             /* Breadcrumbs animations và micro-interactions */
             .breadcrumbs a::before {
                 content: '';
@@ -452,7 +453,7 @@
                 .container{
                     padding:12px 12px 20px !important;
                 }
-                
+
                 .breadcrumbs {
                     padding: 8px 12px !important;
                     font-size: 0.85rem !important;
@@ -543,7 +544,7 @@
                 .pd-thumb{
                     flex:0 0 88px !important;
                 }
-                
+
                 .breadcrumbs {
                     padding: 6px 10px !important;
                     font-size: 0.8rem !important;
@@ -611,7 +612,7 @@
                     width: 100%; /* nút chiếm full chiều ngang */
                     font-size: 16px;
                 }
-                
+
                 .breadcrumbs {
                     padding: 8px 12px;
                     font-size: 0.85rem;
@@ -631,303 +632,333 @@
         </style>
     </head>
 
-    <body>
-        <div class="wrapper">
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <jsp:include page="sidebar.jsp"/>
-            </div>
-
-            <!-- Main -->
-            <div class="Main_content">
-                <!-- Header -->
-                <jsp:include page="header.jsp"/>
-
-                <!-- ====== Nội dung trang ====== -->
-                <div class="container">
-                    <div class="breadcrumbs">
-                        <a href="MainController?action=${breadCrumbs}">Danh sách sản phẩm</a>
-                        <span class="sep">›</span>
-                        <span class="current">Chi tiết sản phẩm</span>
-                    </div>
-                    <c:choose>
-                        <c:when test="${not empty productDetail}">
-                            <div class="product-detail">
-                                <!-- LEFT: Gallery (4 phần) -->
-                                <div class="pd-left">
-                                    <c:set var="firstImg"
-                                           value="${(not empty productDetail.image and not empty productDetail.image[0].image_url) 
-                                                    ? productDetail.image[0].image_url 
-                                                    : '/assets/images/no-image.jpg'}" />
-                                    <div class="pd-main">
-                                        <img id="pd-main-img" src="${firstImg}" alt="${productDetail.name}" loading="eager"/>
-                                    </div>
-
-                                    <div class="pd-thumbs" id="pd-thumbs">
-                                        <c:forEach var="img" items="${productDetail.image}" varStatus="s">
-                                            <c:if test="${not empty img.image_url}">
-                                                <button type="button"
-                                                        class="pd-thumb${s.index == 0 ? ' is-active' : ''}"
-                                                        data-src="${img.image_url}"
-                                                        aria-label="Ảnh ${s.count}">
-                                                    <img src="${img.image_url}" alt="${productDetail.name}" loading="lazy"/>
-                                                </button>
-                                            </c:if>
-                                        </c:forEach>
-                                    </div>
-
-
-                                    <!--                                    //===========================================================================-->
-
-                                </div>
-
-
-
-                                <!-- RIGHT: Info + Description (6 phần) -->
-                                <div class="pd-right">
-                                    <div class="pd-name">${productDetail.name}</div>
-
-                                    <div class="pd-basic">
-                                        <div class="pd-row"><b>SKU</b><span>${productDetail.sku}</span></div>
-                                        <div class="pd-row">
-                                            <b>Loại</b>
-                                            <span>
-                                                <c:choose>
-                                                    <c:when test="${productDetail.product_type == 'nintendo'}">
-                                                        Nintendo
-                                                    </c:when>
-                                                    <c:when test="${productDetail.product_type == 'sony'}">
-                                                        Sony
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        Hãng khác
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </span>
-                                        </div>
-                                        <div class="pd-row pd-row-price">
-                                            <b>Giá</b>
-                                            <span><fmt:formatNumber value="${productDetail.price}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND</span>
-                                        </div>
-                                        <div class="pd-row"><b>Bảo hành</b><span>${guaranteeProduct}</span></div>
-                                        <div class="pd-row"><b>Bộ nhớ</b><span>${memoryProduct}</span></div>
-                                    </div>
-
-                                    <c:if test="${not empty accessories}">
-                                        <div class="pd-accessories">
-                                            <b>Phụ kiện tặng kèm:</b>
-                                            <ul>
-                                                <c:forEach var="acc" items="${accessories}">
-                                                    <li>
-                                                        ${acc.name} (x${acc.quantity})
-                                                    </li>
-                                                </c:forEach>
-                                            </ul>
-                                        </div>
-                                    </c:if>
-
-                                    <hr>
-
-                                    <div class="sd-actions">
-                                        <button onclick="bookService('${serviceDetail.id}', '${serviceDetail.service_type}', '${serviceDetail.price}')" class="btn-service btn-primary">
-                                            🛒 Đặt hàng qua Zalo
-                                        </button>
-                                        <button onclick="callDirectly()" class="btn-service btn-secondary">
-                                            📞 Gọi trực tiếp
-                                        </button>
-                                        <a href="MainController?action=listMayChoiGame" class="btn-service btn-secondary">
-                                            📋 Xem sản phẩm khác
-                                        </a>
-                                    </div>
-
-                                    <!-- Description_html nằm chung cột phải -->
-                                    <div class="pd-desc">
-                                        <div class="pd-desc-title">
-                                            📝 Mô tả sản phẩm
-                                        </div>
-                                        ${productDetail.description_html}
-                                    </div>
-                                </div>
-                            </div>
-                        </c:when>
-
-                        <c:otherwise>
-                            <div class="empty-state">
-                                <h3>Không tìm thấy sản phẩm</h3>
-                                <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí của bạn.</p>
-                                <c:if test="${not empty checkErrorDeleteProduct}">
-                                    <p><c:out value="${checkErrorDeleteProduct}"/></p>
-                                </c:if>
-                                <form action="MainController" method="post" style="margin-top:12px;">
-                                    <input type="hidden" name="action" value="listProducts"/>
-                                    <button class="btn-filter" type="submit">Xem tất cả sản phẩm</button>
-                                </form>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-
-
-
-                <!--                                     >>> DIV MỚI CHÈN Ở ĐÂY <<< ===============================================-->
-                <div class="pd-left-extra">
-                    <h3 class="extra-title">NHỮNG SẢN PHẨM LIÊN QUAN </h3>
-                    <c:choose>
-                        <c:when test="${not empty list_pro}">
-                            <c:set var="shown" value="0"/>
-                            <div class="featured-grid-4cols">
-                                <c:forEach var="i" items="${list_pro}">
-                                    <c:if test="${ shown < 4}">
-                                        <div class="grid-item-sb">
-                                            <form action="MainController" method="post" class="card">
-                                                <input type="hidden" name="action" value="getProduct"/>
-                                                <input type="hidden" name="idProduct" value="${i.id}"/>
-                                                <!-- Bấm vào cả card là submit -->
-                                                <button type="submit" class="thumb-btn-sb">
-                                                    <!-- Container cho ảnh và giá -->
-                                                    <div class="image-price-container-sb">
-                                                        <img class="thumb-sb" src="${i.coverImg}" alt="${i.name}" style="height:130px;"/>
-                                                        <div class="price-box-sb">
-                                                            <div class="price-text-sb"><fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" />
-                                                                VND</div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Tên sản phẩm ở dưới -->
-                                                    <div class="product-name">${i.name}</div>
-                                                </button>
-                                            </form>
-                                        </div>
-                                        <c:set var="shown" value="${shown + 1}"/>
-                                    </c:if>
-                                </c:forEach>
-                            </div>
-                        </c:when>
-                        <c:otherwise>
-                            <p>Hiện danh sách đang trống!</p>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-
-
-
-
-            </div>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <jsp:include page="sidebar.jsp"/>
         </div>
 
-        <!-- Footer đặt NGOÀI wrapper để luôn hiển thị khi body cuộn -->
-        <jsp:include page="footer.jsp"/>
+        <!-- Main -->
+        <div class="Main_content">
+            <!-- Header -->
+            <jsp:include page="header.jsp"/>
 
-        <script>
-            (function () {
-                const main = document.getElementById('pd-main-img');
-                const thumbsWrap = document.getElementById('pd-thumbs');
-                if (!main || !thumbsWrap)
+            <!-- ====== Nội dung trang ====== -->
+            <div class="container">
+                <div class="breadcrumbs">
+                    <a href="${pageContext.request.contextPath}/MainController?action=${breadCrumbs}">Danh sách sản phẩm</a>
+                    <span class="sep">›</span>
+                    <span class="current">Chi tiết sản phẩm</span>
+                </div>
+                <c:choose>
+                    <c:when test="${not empty productDetail}">
+                        <div class="product-detail">
+                            <!-- LEFT: Gallery (4 phần) -->
+                            <div class="pd-left">
+                                <%-- First image: xử lý tương tự để luôn có contextPath đúng --%>
+                                <c:choose>
+                                    <c:when test="${not empty productDetail.image and not empty productDetail.image[0].image_url}">
+                                        <c:set var="rawFirst" value="${productDetail.image[0].image_url}" />
+                                        <c:choose>
+                                            <c:when test="${fn:startsWith(rawFirst, 'http') or fn:startsWith(rawFirst, '/')}">
+                                                <c:set var="firstImg" value="${rawFirst}" />
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:set var="firstImg" value="${pageContext.request.contextPath}/${rawFirst}" />
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="firstImg" value="${pageContext.request.contextPath}" />
+                                    </c:otherwise>
+                                </c:choose>
+
+                                <div class="pd-main">
+                                    <img id="pd-main-img" src="${firstImg}" alt="${productDetail.name}" loading="eager"/>
+                                </div>
+
+                                <div class="pd-thumbs" id="pd-thumbs">
+                                    <c:forEach var="img" items="${productDetail.image}" varStatus="s">
+                                        <c:if test="${not empty img.image_url}">
+                                            <%-- chuẩn hóa src từng ảnh nhỏ --%>
+                                            <c:set var="rawUrl" value="${img.image_url}" />
+                                            <c:choose>
+                                                <c:when test="${fn:startsWith(rawUrl, 'http') or fn:startsWith(rawUrl, '/')}">
+                                                    <c:set var="imgSrc" value="${rawUrl}" />
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:set var="imgSrc" value="${pageContext.request.contextPath}/${rawUrl}" />
+                                                </c:otherwise>
+                                            </c:choose>
+
+                                            <button type="button"
+                                                    class="pd-thumb${s.index == 0 ? ' is-active' : ''}"
+                                                    data-src="${imgSrc}"
+                                                    aria-label="Ảnh ${s.count}">
+                                                <img src="${imgSrc}" alt="${productDetail.name}" loading="lazy"/>
+                                            </button>
+                                        </c:if>
+                                    </c:forEach>
+                                </div>
+                            </div>
+
+                            <!-- RIGHT: Info + Description (6 phần) -->
+                            <div class="pd-right">
+                                <div class="pd-name">${productDetail.name}</div>
+
+                                <div class="pd-basic">
+                                    <div class="pd-row"><b>SKU</b><span>${productDetail.sku}</span></div>
+                                    <div class="pd-row">
+                                        <b>Loại</b>
+                                        <span>
+                                            <c:choose>
+                                                <c:when test="${productDetail.product_type == 'nintendo'}">
+                                                    Nintendo
+                                                </c:when>
+                                                <c:when test="${productDetail.product_type == 'sony'}">
+                                                    Sony
+                                                </c:when>
+                                                <c:otherwise>
+                                                    Hãng khác
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </span>
+                                    </div>
+                                    <div class="pd-row pd-row-price">
+                                        <b>Giá</b>
+                                        <span><fmt:formatNumber value="${productDetail.price}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND</span>
+                                    </div>
+                                    <div class="pd-row"><b>Bảo hành</b><span>${guaranteeProduct}</span></div>
+                                    <div class="pd-row"><b>Bộ nhớ</b><span>${memoryProduct}</span></div>
+                                </div>
+
+                                <c:if test="${not empty accessories}">
+                                    <div class="pd-accessories">
+                                        <b>Phụ kiện tặng kèm:</b>
+                                        <ul>
+                                            <c:forEach var="acc" items="${accessories}">
+                                                <li>
+                                                    ${acc.name} (x${acc.quantity})
+                                                </li>
+                                            </c:forEach>
+                                        </ul>
+                                    </div>
+                                </c:if>
+
+                                <hr>
+
+                                <div class="sd-actions">
+                                    <button onclick="bookService('${serviceDetail.id}', '${serviceDetail.service_type}', '${serviceDetail.price}')" class="btn-service btn-primary">
+                                        🛒 Đặt hàng qua Zalo
+                                    </button>
+                                    <button onclick="callDirectly()" class="btn-service btn-secondary">
+                                        📞 Gọi trực tiếp
+                                    </button>
+                                    <a href="${pageContext.request.contextPath}/MainController?action=listMayChoiGame" class="btn-service btn-secondary">
+                                        📋 Xem sản phẩm khác
+                                    </a>
+                                </div>
+
+                                <!-- Description_html nằm chung cột phải -->
+                                <div class="pd-desc">
+                                    <div class="pd-desc-title">
+                                        📝 Mô tả sản phẩm
+                                    </div>
+                                    ${productDetail.description_html}
+                                </div>
+                            </div>
+                        </div>
+                    </c:when>
+
+                    <c:otherwise>
+                        <div class="empty-state">
+                            <h3>Không tìm thấy sản phẩm</h3>
+                            <p>Hiện tại không có sản phẩm nào phù hợp với tiêu chí của bạn.</p>
+                            <c:if test="${not empty checkErrorDeleteProduct}">
+                                <p><c:out value="${checkErrorDeleteProduct}"/></p>
+                            </c:if>
+                            <form action="${pageContext.request.contextPath}/MainController" method="post" style="margin-top:12px;">
+                                <input type="hidden" name="action" value="listProducts"/>
+                                <button class="btn-filter" type="submit">Xem tất cả sản phẩm</button>
+                            </form>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+
+            <!-- >>> DIV MỚI CHÈN Ở ĐÂY <<< -->
+            <div class="pd-left-extra">
+                <h3 class="extra-title">NHỮNG SẢN PHẨM LIÊN QUAN </h3>
+                <c:choose>
+                    <c:when test="${not empty list_pro}">
+                        <c:set var="shown" value="0"/>
+                        <div class="featured-grid-4cols">
+                            <c:forEach var="i" items="${list_pro}">
+                                <c:if test="${ shown < 4}">
+                                    <div class="grid-item-sb">
+                                        <c:set var="rawCover" value="${i.coverImg}" />
+                                        <c:choose>
+                                            <c:when test="${not empty rawCover}">
+                                                <c:choose>
+                                                    <c:when test="${fn:startsWith(rawCover, 'http') or fn:startsWith(rawCover, '/')}">
+                                                        <c:set var="coverSrc" value="${rawCover}" />
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <c:set var="coverSrc" value="${pageContext.request.contextPath}/${rawCover}" />
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:set var="coverSrc" value="${pageContext.request.contextPath}" />
+                                            </c:otherwise>
+                                        </c:choose>
+
+                                        <form action="${pageContext.request.contextPath}/MainController" method="post" class="card">
+                                            <input type="hidden" name="action" value="getProduct"/>
+                                            <input type="hidden" name="idProduct" value="${i.id}"/>
+                                            <!-- Bấm vào cả card là submit -->
+                                            <button type="submit" class="thumb-btn-sb">
+                                                <!-- Container cho ảnh và giá -->
+                                                <div class="image-price-container-sb">
+                                                    <img class="thumb-sb" src="${coverSrc}" alt="${fn:escapeXml(i.name)}" style="height:130px;"/>
+                                                    <div class="price-box-sb">
+                                                        <div class="price-text-sb">
+                                                            <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Tên sản phẩm ở dưới -->
+                                                <div class="product-name">${i.name}</div>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <c:set var="shown" value="${shown + 1}"/>
+                                </c:if>
+                            </c:forEach>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <p>Hiện danh sách đang trống!</p>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer đặt NGOÀI wrapper để luôn hiển thị khi body cuộn -->
+    <jsp:include page="footer.jsp"/>
+
+    <script>
+        (function () {
+            const main = document.getElementById('pd-main-img');
+            const thumbsWrap = document.getElementById('pd-thumbs');
+            if (!main || !thumbsWrap)
+                return;
+
+            thumbsWrap.addEventListener('click', function (e) {
+                const btn = e.target.closest('.pd-thumb');
+                if (!btn)
                     return;
+                const src = btn.getAttribute('data-src');
+                if (!src || main.src === src)
+                    return;
+                main.src = src;
 
-                thumbsWrap.addEventListener('click', function (e) {
-                    const btn = e.target.closest('.pd-thumb');
-                    if (!btn)
-                        return;
-                    const src = btn.getAttribute('data-src');
-                    if (!src || main.src === src)
-                        return;
-                    main.src = src;
+                document.querySelectorAll('.pd-thumb.is-active')
+                        .forEach(el => el.classList.remove('is-active'));
+                btn.classList.add('is-active');
+            }, false);
+        })();
 
-                    document.querySelectorAll('.pd-thumb.is-active')
-                            .forEach(el => el.classList.remove('is-active'));
-                    btn.classList.add('is-active');
-                }, false);
-            })();
+        // ===== CONFIG - Thay đổi thông tin liên hệ ở đây =====
+        const SHOP_CONFIG = {
+            zaloId: '0357394235', // Thay bằng Zalo ID thực tế
+            phoneNumber: '0357394235', // Thay bằng SĐT thực tế
+            shopName: 'SHOP GAME VIỆT'
+        };
 
-            // ===== CONFIG - Thay đổi thông tin liên hệ ở đây =====
-            const SHOP_CONFIG = {
-                zaloId: '0357394235', // Thay bằng Zalo ID thực tế
-                phoneNumber: '0357394235', // Thay bằng SĐT thực tế
-                shopName: 'SHOP GAME VIỆT'
-            };
+        // ===== MAIN FUNCTIONS =====
 
-            // ===== MAIN FUNCTIONS =====
+        // Đặt dịch vụ qua Zalo
+        function bookService(serviceId, serviceName, price) {
+            // Log user interest (optional - có thể bỏ nếu không cần track)
+            logUserInterest(serviceId, 'book_service');
 
-            // Đặt dịch vụ qua Zalo
-            function bookService(serviceId, serviceName, price) {
-                // Log user interest (optional - có thể bỏ nếu không cần track)
-                logUserInterest(serviceId, 'book_service');
+            // Tạo message template
+            const message = "🎮 ĐẶT DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
+                    "📋 Dịch vụ: " + serviceName + "\n" +
+                    "💰 Giá: " + new Intl.NumberFormat('vi-VN').format(price) + " VND\n" +
+                    "🆔 Mã: #SV" + serviceId + "\n\n" +
+                    "Xin chào! Tôi muốn đặt dịch vụ trên. Vui lòng tư vấn thêm cho tôi.";
 
-                // Tạo message template
-                const message = "🎮 ĐẶT DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
-                        "📋 Dịch vụ: " + serviceName + "\n" +
-                        "💰 Giá: " + new Intl.NumberFormat('vi-VN').format(price) + " VND\n" +
-                        "🆔 Mã: #SV" + serviceId + "\n\n" +
-                        "Xin chào! Tôi muốn đặt dịch vụ trên. Vui lòng tư vấn thêm cho tôi.";
+            // Mở Zalo
+            const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
+            window.open(zaloUrl, '_blank');
+        }
 
-                // Mở Zalo
-                const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
-                window.open(zaloUrl, '_blank');
+        // Tư vấn dịch vụ qua Zalo  
+        function consultService(serviceName) {
+            const message = "💬 TƯ VẤN DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
+                    "📋 Về dịch vụ: " + serviceName + "\n\n" +
+                    "Xin chào! Tôi cần được tư vấn thêm về dịch vụ này. Cảm ơn!";
+
+            const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
+            window.open(zaloUrl, '_blank');
+        }
+
+        // Gọi điện trực tiếp
+        function callDirectly() {
+            if (confirm("Gọi đến " + SHOP_CONFIG.phoneNumber + "?")) {
+                window.open("tel:" + SHOP_CONFIG.phoneNumber, '_self');
             }
+        }
 
-            // Tư vấn dịch vụ qua Zalo  
-            function consultService(serviceName) {
-                const message = "💬 TƯ VẤN DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
-                        "📋 Về dịch vụ: " + serviceName + "\n\n" +
-                        "Xin chào! Tôi cần được tư vấn thêm về dịch vụ này. Cảm ơn!";
+        // Log user interest (optional - để tracking)
+        function logUserInterest(serviceId, action) {
+            // Có thể gọi API để log, hoặc bỏ nếu không cần
+            fetch('MainController', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `action=logServiceInterest&serviceId=${serviceId}&interestType=${action}`
+            }).catch(e => console.log('Tracking failed:', e)); // Silent fail
+        }
 
-                const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
-                window.open(zaloUrl, '_blank');
-            }
-
-            // Gọi điện trực tiếp
-            function callDirectly() {
-                if (confirm("Gọi đến " + SHOP_CONFIG.phoneNumber + "?")) {
-                    window.open("tel:" + SHOP_CONFIG.phoneNumber, '_self');
-                }
-            }
-
-            // Log user interest (optional - để tracking)
-            function logUserInterest(serviceId, action) {
-                // Có thể gọi API để log, hoặc bỏ nếu không cần
-                fetch('MainController', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `action=logServiceInterest&serviceId=${serviceId}&interestType=${action}`
-                }).catch(e => console.log('Tracking failed:', e)); // Silent fail
-            }
-
-            // ===== UI EFFECTS =====
-            document.addEventListener('DOMContentLoaded', function () {
-                // Hover effects
-                const actionButtons = document.querySelectorAll('.btn-service');
-                actionButtons.forEach(btn => {
-                    btn.addEventListener('mouseenter', function () {
-                        this.style.transform = 'translateY(-2px)';
-                    });
-                    btn.addEventListener('mouseleave', function () {
-                        this.style.transform = 'translateY(0)';
-                    });
+        // ===== UI EFFECTS =====
+        document.addEventListener('DOMContentLoaded', function () {
+            // Hover effects
+            const actionButtons = document.querySelectorAll('.btn-service');
+            actionButtons.forEach(btn => {
+                btn.addEventListener('mouseenter', function () {
+                    this.style.transform = 'translateY(-2px)';
                 });
-
-                // Success notification after page load (if redirected back)
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('contacted') === 'true') {
-                    showNotification('✅ Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.', 'success');
-                }
+                btn.addEventListener('mouseleave', function () {
+                    this.style.transform = 'translateY(0)';
+                });
             });
 
-            // Simple notification system
-            function showNotification(message, type = 'info') {
-                const notification = document.createElement('div');
-                notification.style.cssText =
-                        "position: fixed; top: 20px; right: 20px; z-index: 9999;" +
-                        "padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600;" +
-                        "background: " + (type === 'success' ? '#10b981' : '#3b82f6') + ";" +
-                        "box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer;" +
-                        "transform: translateX(100%); transition: transform 0.3s ease;";
-                notification.textContent = message;
-                notification.onclick = () => notification.remove();
-
-                document.body.appendChild(notification);
-                setTimeout(() => notification.style.transform = 'translateX(0)', 100);
-                setTimeout(() => notification.remove(), 5000);
+            // Success notification after page load (if redirected back)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('contacted') === 'true') {
+                showNotification('✅ Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.', 'success');
             }
-        </script>
-    </body>
+        });
+
+        // Simple notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText =
+                    "position: fixed; top: 20px; right: 20px; z-index: 9999;" +
+                    "padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600;" +
+                    "background: " + (type === 'success' ? '#10b981' : '#3b82f6') + ";" +
+                    "box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer;" +
+                    "transform: translateX(100%); transition: transform 0.3s ease;";
+            notification.textContent = message;
+            notification.onclick = () => notification.remove();
+
+            document.body.appendChild(notification);
+            setTimeout(() => notification.style.transform = 'translateX(0)', 100);
+            setTimeout(() => notification.remove(), 5000);
+        }
+    </script>
+</body>
 </html>

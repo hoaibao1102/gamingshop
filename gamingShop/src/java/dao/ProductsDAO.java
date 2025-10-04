@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import utils.SlugUtil;
 
 /**
  *
@@ -25,15 +26,21 @@ import java.util.Set;
  */
 public class ProductsDAO implements IDAO<Products, Integer> {
 
+    // SELECT
     private static final String GET_ALL = "SELECT * FROM dbo.Products";
     private static final String GET_BY_ID = "SELECT * FROM dbo.Products WHERE id = ?";
     private static final String GET_BY_STATUS = "SELECT * FROM dbo.Products WHERE status = ?";
     private static final String GET_BY_TYPE = "SELECT * FROM dbo.Products WHERE product_type = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Products WHERE name LIKE ?";
+    private static final String GET_BY_SLUG = "SELECT * FROM dbo.Products WHERE slug = ?";
 
+// CREATE (thêm slug)
     private static final String CREATE
-            = "INSERT INTO dbo.Products (name, sku, price, product_type, model_id, memory_id, guarantee_id, quantity, description_html, status) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            = "INSERT INTO dbo.Products "
+            + "(name, sku, price, product_type, model_id, memory_id, guarantee_id, quantity, description_html, status, slug) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+// UPDATE (cập nhật slug luôn nếu đổi tên sp)
     private static final String UPDATE
             = "UPDATE dbo.Products SET "
             + "name = ?, "
@@ -46,6 +53,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
             + "quantity = ?, "
             + "description_html = ?, "
             + "status = ?, "
+            + "slug = ?, " // <-- thêm slug
             + "updated_at = GETDATE() "
             + "WHERE id = ?";
 
@@ -53,9 +61,11 @@ public class ProductsDAO implements IDAO<Products, Integer> {
     public boolean create(Products e) {
         Connection c = null;
         PreparedStatement st = null;
+        ResultSet rs = null;
         try {
             c = DBUtils.getConnection();
-            st = c.prepareStatement(CREATE);
+            // Thêm RETURN_GENERATED_KEYS để lấy id tự sinh
+            st = c.prepareStatement(CREATE, Statement.RETURN_GENERATED_KEYS);
             st.setString(1, e.getName());
             st.setString(2, e.getSku());
             st.setDouble(3, e.getPrice());
@@ -66,12 +76,33 @@ public class ProductsDAO implements IDAO<Products, Integer> {
             st.setInt(8, e.getQuantity());
             st.setString(9, e.getDescription_html());
             st.setString(10, e.getStatus());
-            return st.executeUpdate() > 0; // Cách B: không lấy id tự sinh
+
+            int rows = st.executeUpdate();
+            if (rows > 0) {
+                // Lấy ID vừa insert
+                rs = st.getGeneratedKeys();
+                if (rs.next()) {
+                    int generatedId = rs.getInt(1);
+
+                    // Sinh slug từ name + id
+                    String slug = SlugUtil.toSlug(e.getName(), generatedId);
+
+                    // Update slug
+                    String sqlUpdateSlug = "UPDATE products SET slug = ? WHERE id = ?";
+                    try ( PreparedStatement st2 = c.prepareStatement(sqlUpdateSlug)) {
+                        st2.setString(1, slug);
+                        st2.setInt(2, generatedId);
+                        st2.executeUpdate();
+                    }
+                }
+                return true;
+            }
+            return false;
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
         } finally {
-            close(c, st, null);
+            close(c, st, rs);
         }
     }
 
@@ -245,7 +276,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         // ===== Whitelist & kiểu dữ liệu =====
         final Set<String> ALLOWED_FILTER_FIELDS = new HashSet<>(Arrays.asList(
                 "status", "product_type", "model_id", "memory_id",
-                "guarantee_id", "name", "sku", "price", "quantity"
+                "guarantee_id", "name", "sku", "price", "quantity", "slug"
         ));
         final Map<String, String> FIELD_TYPES = new HashMap<>();
         {
@@ -258,6 +289,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
             FIELD_TYPES.put("sku", "string");
             FIELD_TYPES.put("price", "decimal");
             FIELD_TYPES.put("quantity", "int");
+            FIELD_TYPES.put("slug", "String");
         }
 
         try {
@@ -445,6 +477,9 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         if (updatedTs != null) {
             p.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
+
+        p.setSlug(rs.getString("slug"));
+
         return p;
     }
 
@@ -488,7 +523,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
             st.setInt(8, e.getQuantity());
             st.setString(9, e.getDescription_html());
             st.setString(10, e.getStatus());
-
+            st.setString(11, e.getSlug());
             int rows = st.executeUpdate();
             if (rows > 0) {
                 rs = st.getGeneratedKeys();
@@ -521,7 +556,8 @@ public class ProductsDAO implements IDAO<Products, Integer> {
             st.setInt(8, newProduct.getQuantity());
             st.setString(9, newProduct.getDescription_html());
             st.setString(10, newProduct.getStatus());
-            st.setInt(11, newProduct.getId());
+            st.setString(11, newProduct.getSlug());
+            st.setInt(12, newProduct.getId());
 
             return st.executeUpdate() > 0; // true nếu cập nhật thành công
         } catch (Exception ex) {
@@ -566,7 +602,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
             where.put("model_id", String.valueOf(model_id));
             where.put("product_type", "sony");
             return getProductsByConditions(filter, where);
-        }else if (condition.equals("others")) {
+        } else if (condition.equals("others")) {
             Map<String, String> where = new LinkedHashMap<>(); // giữ thứ tự tham số
             where.put("model_id", String.valueOf(model_id));
             where.put("product_type", "others");
@@ -582,7 +618,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         where.put("model_id", String.valueOf(model_id));
         return getProductsByConditions(filter, where);
     }
-    
+
     public Page<Products> getListSanPhamKhac(ProductFilter filter) {
         ModelsDAO mdao = new ModelsDAO();
         int model_id = mdao.getIdByType("Sản phẩm khác");
@@ -595,8 +631,7 @@ public class ProductsDAO implements IDAO<Products, Integer> {
         Products pro = getById(productId);
 //        lay type cua product de lay ra ca san pham có cung type lien quan
         String pro_type = pro.getProduct_type();
-        
-        
+
         List<Products> list = new ArrayList<>();
         Connection c = null;
         PreparedStatement st = null;
@@ -615,6 +650,28 @@ public class ProductsDAO implements IDAO<Products, Integer> {
             close(c, st, rs);
         }
         return list;
+    }
+
+    public Products findBySlug(String slug) {
+        try ( Connection c = DBUtils.getConnection();  PreparedStatement st = c.prepareStatement(GET_BY_SLUG)) {
+            st.setString(1, slug);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return map(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void updateSlug(int id, String slug) throws SQLException, ClassNotFoundException {
+        String sql = "UPDATE dbo.Products SET slug = ? WHERE id = ?";
+        try ( Connection c = DBUtils.getConnection();  PreparedStatement st = c.prepareStatement(sql)) {
+            st.setString(1, slug);
+            st.setInt(2, id);
+            st.executeUpdate();
+        }
     }
 
 }

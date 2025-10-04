@@ -29,11 +29,12 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
     private static final String GET_ALL = "SELECT * FROM dbo.Accessories";
     private static final String GET_BY_ID = "SELECT * FROM dbo.Accessories WHERE id = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Accessories WHERE name LIKE ? ";
-    private static final String CREATE = "INSERT INTO dbo.Accessories (name, quantity, price, description_html, image_url, status, gift) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE = "UPDATE dbo.Accessories SET name = ?, quantity = ?, price = ?, description_html = ?, image_url = ?, status = ?, gift = ?, updated_at = GETDATE() WHERE id = ?";
+    private static final String CREATE = "INSERT INTO dbo.Accessories (name, quantity, price, description_html, image_url, status, gift, slug) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String UPDATE = "UPDATE dbo.Accessories SET name = ?, quantity = ?, price = ?, description_html = ?, image_url = ?, status = ?, gift = ?, updated_at = GETDATE(), slug = ? WHERE id = ?";
     private static final String CHECK_EXIST_NAME = "SELECT COUNT(1) FROM dbo.Accessories WHERE name = ? AND status = 'active'";
     private static final String GET_ALL_ACTIVE = "SELECT * FROM dbo.Accessories WHERE status = 'active'";
-
+    private static final String GET_BY_SLUG = "SELECT * FROM dbo.Accessories WHERE slug = ?";
+    
     @Override
     public boolean create(Accessories e) {
         Connection c = null;
@@ -48,6 +49,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
             st.setString(5, e.getCoverImg());
             st.setString(6, e.getStatus());
             st.setString(7, e.getGift());
+            st.setString(8, e.getSlug());
             int affectedRows = st.executeUpdate();
 
             if (affectedRows > 0) {
@@ -154,6 +156,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
 
         a.setStatus(rs.getString("status"));
         a.setGift(rs.getString("gift"));
+        a.setSlug(rs.getString("slug"));
         return a;
     }
 
@@ -171,7 +174,8 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
             st.setString(5, e.getCoverImg());
             st.setString(6, e.getStatus());
             st.setString(7, e.getGift());
-            st.setInt(8, e.getId()); // WHERE condition
+            st.setString(8, e.getSlug());
+            st.setInt(9, e.getId()); // WHERE condition
 
             return st.executeUpdate() > 0;
         } catch (Exception ex) {
@@ -279,6 +283,7 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
         FIELD_TYPES.put("updated_at", "datetime");  // datetime2(3)
         FIELD_TYPES.put("status", "string");    // nvarchar(50)
         FIELD_TYPES.put("gift", "string");    // nvarchar(50)
+        FIELD_TYPES.put("slug", "string");    // nvarchar(50)
 
         try {
             c = DBUtils.getConnection();
@@ -457,6 +462,28 @@ public class AccessoriesDAO implements IDAO<Accessories, Integer> {
             close(c, ps, rs);
         }
         return list;
+    }
+
+    public Accessories findBySlug(String slug) {
+        try ( Connection c = DBUtils.getConnection();  PreparedStatement st = c.prepareStatement(GET_BY_SLUG)) {
+            st.setString(1, slug);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return map(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void updateSlug(int id, String slug) throws SQLException, ClassNotFoundException {
+        String sql = "UPDATE dbo.Accessories SET slug = ? WHERE id = ?";
+        try ( Connection c = DBUtils.getConnection();  PreparedStatement st = c.prepareStatement(sql)) {
+            st.setString(1, slug);
+            st.setInt(2, id);
+            st.executeUpdate();
+        }
     }
 
 }
