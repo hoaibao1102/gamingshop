@@ -12,7 +12,7 @@ import dao.ProductImagesDAO;
 import dao.ProductsDAO;
 import dto.Accounts;
 
-@WebServlet(name = "UserController", urlPatterns = {"/UserController"})
+@WebServlet(name = "UserController", urlPatterns = {"/UserController", "/admin"})
 public class UserController extends HttpServlet {
 
     private static final String LOGIN_PAGE = "login.jsp";
@@ -30,11 +30,8 @@ public class UserController extends HttpServlet {
                 url = handleLogin(request, response);
             } else if ("logout".equals(action)) {
                 url = handleLogout(request, response);
-            }
-            else if ("goLoginForm".equals(action)) {
+            } else if ("goLoginForm".equals(action)) {
                 url = handleGoLoginForm(request, response);
-            }else {
-                request.setAttribute("message", "Invalid action: " + action);
             }
         } catch (Exception e) {
             request.setAttribute("message", "Unexpected error: " + e.getMessage());

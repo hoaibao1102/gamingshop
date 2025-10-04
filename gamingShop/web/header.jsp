@@ -376,7 +376,8 @@
                     display: none;
                 }
                 .desktopbar {
-                    display: grid;
+                    display: flex;
+                    justify-content: space-around;
                     grid-template-columns: 7.5fr 2.5fr;
                     grid-auto-rows: minmax(64px, auto);
                     gap: 0 16px;
@@ -677,46 +678,6 @@
                         </a>
                     </li>
                 </ul>
-
-                <hr style="margin:14px 0; border:0; height:1px; background:var(--ring)">
-
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <%
-                      if (loginCheck) {
-                    %>
-                    <div class="avatar"><%= avatarChar %></div>
-                    <div>
-                        <div style="font-weight:700;"><%= username %></div>
-                        <div style="font-size:12px; color:var(--muted);">Đã đăng nhập</div>
-                    </div>
-                    <%
-                      } else {
-                    %>
-                    <div style="font-size:14px; color:var(--muted);">Bạn chưa đăng nhập</div>
-                    <%
-                      }
-                    %>
-                </div>
-
-                <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-                    <%
-                      if (loginCheck) {
-                    %>
-                    <form action="<%= ctx %>/MainController" method="post" style="margin:0">
-                        <input type="hidden" name="action" value="logout"/>
-                        <button class="btn" type="submit">Đăng xuất</button>
-                    </form>
-                    <%
-                      } else {
-                    %>
-                    <form action="<%= ctx %>/MainController" method="post" style="margin:0">
-                        <input type="hidden" name="action" value="goLoginForm"/>
-                        <button class="btn primary" type="submit">Đăng nhập</button>
-                    </form>
-                    <%
-                      }
-                    %>
-                </div>
             </nav>
 
             <label class="backdrop" for="nav-toggle" aria-hidden="true"></label>
@@ -825,46 +786,6 @@
                         </li>
                     </ul>
                 </nav>
-
-                <div class="actions">
-                    <%
-                      if (loginCheck) {
-                    %>
-                    <div class="user-pill">
-                        <div class="avatar"><%= avatarChar %></div>
-                        <div style="display:flex; flex-direction:column; line-height:1.2;">
-                            <span><%= username %></span>
-                            <span class="badge">Admin</span>
-                        </div>
-                    </div>
-
-                    <form action="<%= ctx %>/MainController" method="post" style="margin:0">
-                        <input type="hidden" name="action" value="logout"/>
-                        <button class="btn" type="submit" title="Đăng xuất">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
-                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                            <path d="M10 17l5-5-5-5"/><path d="M15 12H3"/>
-                            </svg>
-                            Đăng xuất
-                        </button>
-                    </form>
-                    <%
-                      } else {
-                    %>
-                    <form action="<%= ctx %>/MainController" method="post" style="margin:0">
-                        <input type="hidden" name="action" value="goLoginForm"/>
-                        <button class="btn primary" type="submit" title="Đăng nhập">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                            Đăng nhập
-                        </button>
-                    </form>
-                    <%
-                      }
-                    %>
-                </div> <!-- /.actions -->
             </div> <!-- /.desktopbar -->
         </header>
     </body>
