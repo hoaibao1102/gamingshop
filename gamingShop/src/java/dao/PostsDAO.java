@@ -22,10 +22,11 @@ public class PostsDAO implements IDAO<Posts, Integer> {
     private static final String GET_BY_ID = "SELECT * FROM dbo.Posts WHERE id = ?";
     private static final String GET_BY_NAME = "SELECT * FROM dbo.Posts WHERE title LIKE ?";
     private static final String CREATE
-            = "INSERT INTO dbo.Posts (author, title, content_html, image_url, publish_date, status) VALUES (?, ?, ?, ?, ?, ?)";
+            = "INSERT INTO dbo.Posts (author, title, content_html, image_url, publish_date, status, slug) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE
-            = "UPDATE dbo.Posts set author = ?,  title = ?, content_html = ?, image_url = ?, publish_date = ?, status = ? WHERE id = ?";
-
+            = "UPDATE dbo.Posts set author = ?,  title = ?, content_html = ?, image_url = ?, publish_date = ?, status = ?, slug = ? WHERE id = ?";
+    private static final String GET_BY_SLUG = "SELECT * FROM dbo.Posts WHERE slug = ?";
+    
     @Override
     public boolean create(Posts e) {
         Connection c = null;
@@ -43,6 +44,7 @@ public class PostsDAO implements IDAO<Posts, Integer> {
                 st.setNull(5, Types.TIMESTAMP);
             }
             st.setInt(6, e.getStatus());
+            st.setString(7, e.getSlug());
             return st.executeUpdate() > 0;
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -143,6 +145,8 @@ public class PostsDAO implements IDAO<Posts, Integer> {
         if (updatedTs != null) {
             p.setUpdated_at(new java.util.Date(updatedTs.getTime()));
         }
+        
+        p.setSlug(rs.getString("slug"));
 
         return p;
     }
@@ -187,7 +191,8 @@ public class PostsDAO implements IDAO<Posts, Integer> {
                 st.setNull(5, Types.TIMESTAMP);
             }
             st.setInt(6, e.getStatus());
-
+            st.setString(7, e.getSlug());
+            
             int rows = st.executeUpdate();
             if (rows > 0) {
                 rs = st.getGeneratedKeys();
@@ -229,7 +234,7 @@ public class PostsDAO implements IDAO<Posts, Integer> {
             c = DBUtils.getConnection();
 
             final String sql
-                    = "UPDATE posts SET author=?, title=?, content_html=?, image_url=?, publish_date=?, status=? WHERE id=?";
+                    = "UPDATE posts SET author=?, title=?, content_html=?, image_url=?, publish_date=?, status=?, slug = ? WHERE id=?";
             st = c.prepareStatement(sql);
 
             st.setString(1, post.getAuthor());
@@ -242,7 +247,8 @@ public class PostsDAO implements IDAO<Posts, Integer> {
                 st.setNull(5, Types.TIMESTAMP);
             }
             st.setInt(6, post.getStatus());
-            st.setInt(7, id);
+            st.setString(7, post.getSlug());
+            st.setInt(8, id);
 
             int rows = st.executeUpdate();
             if (rows > 0) {
@@ -286,7 +292,7 @@ public class PostsDAO implements IDAO<Posts, Integer> {
 
     public boolean updatePost(Posts e) {
         try ( Connection c = DBUtils.getConnection();  PreparedStatement st = c.prepareStatement(
-                "UPDATE posts SET author=?, title=?, content_html=?, image_url=?, publish_date=?, status=?, updated_at=NOW() WHERE id=?")) {
+                "UPDATE posts SET author=?, title=?, content_html=?, image_url=?, publish_date=?, status=?, updated_at=NOW(), slug = ? WHERE id=?")) {
             st.setString(1, e.getAuthor());
             st.setString(2, e.getTitle());
             st.setString(3, e.getContent_html());
@@ -297,7 +303,8 @@ public class PostsDAO implements IDAO<Posts, Integer> {
                 st.setNull(5, Types.TIMESTAMP);
             }
             st.setInt(6, e.getStatus());
-            st.setInt(7, e.getId());
+            st.setString(7, e.getSlug());
+            st.setInt(8, e.getId());
             return st.executeUpdate() > 0;
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -320,7 +327,7 @@ public class PostsDAO implements IDAO<Posts, Integer> {
         // SQL Server: dùng OFFSET / FETCH thay cho LIMIT
         // Ưu tiên sắp xếp theo publish_date; nếu null thì dùng created_at
         final String sql
-                = "SELECT id, title, author, image_url, publish_date, status "
+                = "SELECT id, title, author, image_url, publish_date, status, slug "
                 + "FROM dbo.Posts "
                 + "WHERE id <> ? "
                 + (includeDrafts ? "" : "AND status = 1 ")
@@ -347,6 +354,7 @@ public class PostsDAO implements IDAO<Posts, Integer> {
                     }
 
                     p.setStatus(rs.getInt("status"));
+                    p.setSlug(rs.getString("slug"));
                     list.add(p);
                 }
                 return list;
@@ -354,6 +362,28 @@ public class PostsDAO implements IDAO<Posts, Integer> {
         } catch (Exception e) {
             e.printStackTrace();
             return Collections.emptyList();
+        }
+    }
+    
+    public Posts findBySlug(String slug) {
+        try ( Connection c = DBUtils.getConnection();  PreparedStatement st = c.prepareStatement(GET_BY_SLUG)) {
+            st.setString(1, slug);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return map(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void updateSlug(int id, String slug) throws SQLException, ClassNotFoundException {
+        String sql = "UPDATE dbo.Posts SET slug = ? WHERE id = ?";
+        try ( Connection c = DBUtils.getConnection();  PreparedStatement st = c.prepareStatement(sql)) {
+            st.setString(1, slug);
+            st.setInt(2, id);
+            st.executeUpdate();
         }
     }
 }

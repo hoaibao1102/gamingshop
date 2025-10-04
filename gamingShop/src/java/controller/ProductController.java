@@ -973,6 +973,16 @@ public class ProductController extends HttpServlet {
             // --- Lưu xuống DB ---
             PostsDAO dao = new PostsDAO();
             int newId = dao.createNewPost(post);
+
+            try {
+                String slug = SlugUtil.toSlug(post.getTitle(), newId);
+                post.setSlug(slug);
+                postsDAO.updateSlug(newId, slug);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                request.setAttribute("warningSlug", "Posts created but failed to generate slug: " + ex.getMessage());
+            }
+
             if (newId > 0) {
                 message = "Post created successfully";
                 request.setAttribute("messageAddPosts", message);
@@ -1094,6 +1104,15 @@ public class ProductController extends HttpServlet {
             // ===== Update vào DB =====
             boolean success = postsDAO.updatePost(updatePost, id);
             if (success) {
+                try {
+                    String slug = SlugUtil.toSlug(updatePost.getTitle(), updatePost.getId());
+                    updatePost.setSlug(slug);
+                    postsDAO.updateSlug(updatePost.getId(), slug);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    request.setAttribute("warningSlug", "Post created but failed to generate slug: " + ex.getMessage());
+                }
+
                 request.setAttribute("messageUpdatePosts", "Post updated successfully.");
                 request.setAttribute("post", postsDAO.getById(id)); // set lại để hiện ra trong form
                 return "postsUpdate.jsp"; // quay lại form edit
@@ -1777,35 +1796,31 @@ public class ProductController extends HttpServlet {
             String status = request.getParameter("status");
 
             // ===== VALIDATION SECTION =====
-            // 1. Validate service_type - required and not empty
             if (serviceType == null || serviceType.trim().isEmpty()) {
                 request.setAttribute("checkErrorAddService", "Service type is required.");
                 return "serviceUpdate.jsp";
             }
-
-            // 2. Validate service_type length
             if (serviceType.trim().length() > 100) {
                 request.setAttribute("checkErrorAddService", "Service type must be 100 characters or less.");
                 return "serviceUpdate.jsp";
             }
 
-            // 3. Check for duplicate service_type (UNIQUE constraint)
             try {
                 boolean typeExists = servicesDAO.isServiceTypeExists(serviceType.trim());
                 if (typeExists) {
-                    request.setAttribute("checkErrorAddService", "Service type '" + serviceType.trim() + "' already exists. Please choose a different service type.");
+                    request.setAttribute("checkErrorAddService",
+                            "Service type '" + serviceType.trim() + "' already exists. Please choose a different service type.");
                     return "serviceUpdate.jsp";
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            // 4. Validate price
+
             double price = 0.0;
             if (priceStr == null || priceStr.trim().isEmpty()) {
                 request.setAttribute("checkErrorAddService", "Price is required.");
                 return "serviceUpdate.jsp";
             }
-
             try {
                 price = Double.parseDouble(priceStr.trim());
                 if (price < 0) {
@@ -1821,7 +1836,6 @@ public class ProductController extends HttpServlet {
                 return "serviceUpdate.jsp";
             }
 
-            // 5. Validate status value
             if (status != null && !status.trim().isEmpty()) {
                 String normalizedStatus = status.trim();
                 if (!normalizedStatus.equals("active") && !normalizedStatus.equals("inactive")) {
@@ -1830,13 +1844,12 @@ public class ProductController extends HttpServlet {
                 }
             }
 
-            // 6. Validate description length (optional but if provided, should be reasonable)
             if (descriptionHtml != null && descriptionHtml.trim().length() > 10000) {
                 request.setAttribute("checkErrorAddService", "Description must be 10000 characters or less.");
                 return "serviceUpdate.jsp";
             }
 
-            // ===== Tạo đối tượng Services và set dữ liệu =====
+            // ===== Tạo đối tượng Services =====
             Services newService = new Services();
             newService.setService_type(serviceType.trim());
             newService.setDescription_html(descriptionHtml != null ? descriptionHtml.trim() : "");
@@ -1845,12 +1858,22 @@ public class ProductController extends HttpServlet {
             newService.setCreated_at(new java.util.Date());
             newService.setUpdated_at(new java.util.Date());
 
-            // ===== Insert vào database =====
-            boolean success = servicesDAO.create(newService);
-
-            if (!success) {
+            // ===== Insert vào database để nhận ID =====
+            int newId = servicesDAO.createNewProduct(newService); // <--- create() trả về ID
+            if (newId <= 0) {
                 request.setAttribute("checkErrorAddService", "Failed to add service.");
                 return "serviceUpdate.jsp";
+            }
+            newService.setId(newId);
+
+            // ===== Tạo + update slug SAU KHI CÓ ID =====
+            try {
+                String slug = SlugUtil.toSlug(newService.getService_type(), newId);
+                newService.setSlug(slug);
+                servicesDAO.updateSlug(newId, slug);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                request.setAttribute("warningSlug", "Service created but failed to generate slug: " + ex.getMessage());
             }
 
             // Success
@@ -1967,6 +1990,16 @@ public class ProductController extends HttpServlet {
             boolean success = servicesDAO.update(existingService);
 
             if (success) {
+                // ===== Tạo/Update slug tự động =====
+                try {
+                    String slug = SlugUtil.toSlug(existingService.getService_type(), existingService.getId());
+                    existingService.setSlug(slug);
+                    servicesDAO.updateSlug(existingService.getId(), slug);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    request.setAttribute("warningSlug", "Product updated but failed to generate slug: " + ex.getMessage());
+                }
+
                 HttpSession session = request.getSession();
                 session.removeAttribute("cachedServiceList");
 
@@ -2281,45 +2314,79 @@ public class ProductController extends HttpServlet {
 
     private String handleViewDetailsPost(HttpServletRequest request, HttpServletResponse response) {
         try {
-            int id = Integer.parseInt(request.getParameter("id"));
-            PostsDAO dao = new PostsDAO();
+            // ===== Ưu tiên lấy bài viết theo slug =====
+            String slug = (String) request.getAttribute("slugFromPath");
+            if (slug == null || slug.trim().isEmpty()) {
+                slug = request.getParameter("slugPost");
+            }
 
-            Posts post = dao.getById(id);
+            PostsDAO dao = new PostsDAO();
+            Posts post = null;
+
+            if (slug != null && !slug.trim().isEmpty()) {
+                post = dao.findBySlug(slug.trim());
+            } else if (request.getParameter("id") != null && !request.getParameter("id").isEmpty()) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                post = dao.getById(id);
+            }
+
+            // ===== Kiểm tra có bài viết không =====
             if (post == null) {
                 request.setAttribute("checkErrorViewPost", "Bài viết không tồn tại hoặc đã bị xoá.");
-                return "products.jsp";
+                return "postDetails.jsp";
             }
 
+            // ===== Kiểm tra quyền xem bài nháp =====
             boolean includeDrafts = AuthUtils.isLoggedIn(request);
-
-            // (Tuỳ chọn, khuyên dùng) chặn xem chi tiết bài nháp khi chưa đăng nhập:
             if (post.getStatus() != 1 && !includeDrafts) {
                 request.setAttribute("checkErrorViewPost", "Bài viết không khả dụng.");
-                return "products.jsp";
+                return "postDetails.jsp";
             }
 
-            List<Posts> recent = dao.getRecentPosts(6, /* includeDrafts */ includeDrafts, post.getId());
-
-            // Lọc cứng khi guest (phòng khi SQL chưa lọc)
+            // ===== Lấy danh sách bài viết gần đây =====
+            List<Posts> recent = dao.getRecentPosts(6, includeDrafts, post.getId());
             if (!includeDrafts) {
+                // Lọc an toàn lần nữa
                 recent = recent.stream()
                         .filter(p -> p.getStatus() == 1)
                         .collect(java.util.stream.Collectors.toList());
             }
 
+            // ===== Gửi dữ liệu sang JSP =====
             request.setAttribute("post", post);
             request.setAttribute("recentPosts", recent);
 
-            return "postDetails.jsp"; // đảm bảo là FORWARD trong front controller
+            return "postDetails.jsp";
+
+        } catch (NumberFormatException e) {
+            request.setAttribute("checkErrorViewPost", "ID bài viết không hợp lệ.");
+            return "postDetails.jsp";
+
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("checkErrorViewPost", "Có lỗi xảy ra khi tải bài viết.");
-            return "MainController?action=searchPosts";
+            request.setAttribute("checkErrorViewPost", "Có lỗi xảy ra khi tải bài viết: " + e.getMessage());
+            return "postDetails.jsp";
         }
     }
 
     private String handleGetService(HttpServletRequest request, HttpServletResponse response) {
         try {
+            // Ưu tiên lấy theo slug (từ URL rewrite hoặc query)
+            String slug = (String) request.getAttribute("slugFromPath");
+            if (slug == null || slug.trim().isEmpty()) {
+                slug = request.getParameter("slugService");
+            }
+            if (slug != null && !slug.trim().isEmpty()) {
+                Services serviceBySlug = servicesDAO.findBySlug(slug.trim()); // cần có hàm này trong DAO
+                if (serviceBySlug != null) {
+                    request.setAttribute("serviceDetail", serviceBySlug);
+                } else {
+                    request.setAttribute("checkErrorService", "No accessories found with slug: " + slug);
+                }
+                return "serviceDetail.jsp";
+            }
+
+            // ===== Phần cũ: lấy theo ID =====
             String idParam = request.getParameter("idService");
             // Kiểm tra parameter có tồn tại không
             if (idParam == null || idParam.trim().isEmpty()) {
@@ -2389,7 +2456,5 @@ public class ProductController extends HttpServlet {
         listBannerText = btDAO.getAll();
         request.setAttribute("listBannerText", listBannerText);
     }
-    
-    
 
 }

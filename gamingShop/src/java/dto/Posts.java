@@ -21,11 +21,12 @@ public class Posts {
     private int status;
     private Date created_at;
     private Date updated_at;
+    private String slug;
 
     public Posts() {
     }
 
-    public Posts(int id, String author, String title, String content_html, String image_url, Date publish_date, int status, Date created_at, Date updated_at) {
+    public Posts(int id, String author, String title, String content_html, String image_url, Date publish_date, int status, Date created_at, Date updated_at, String slug) {
         this.id = id;
         this.author = author;
         this.title = title;
@@ -35,6 +36,7 @@ public class Posts {
         this.status = status;
         this.created_at = created_at;
         this.updated_at = updated_at;
+        this.slug = slug;
     }
 
     public int getId() {
@@ -108,5 +110,15 @@ public class Posts {
     public void setUpdated_at(Date updated_at) {
         this.updated_at = updated_at;
     }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    
 
 }

@@ -19,11 +19,12 @@ public class Services {
     private Date created_at;
     private Date updated_at;
     private String status;
+    private String slug;
 
     public Services() {
     }
 
-    public Services(int id, String service_type, String description_html, double price, Date created_at, Date updated_at, String status) {
+    public Services(int id, String service_type, String description_html, double price, Date created_at, Date updated_at, String status, String slug) {
         this.id = id;
         this.service_type = service_type;
         this.description_html = description_html;
@@ -31,6 +32,7 @@ public class Services {
         this.created_at = created_at;
         this.updated_at = updated_at;
         this.status = status;
+        this.slug = slug;
     }
 
     public int getId() {
@@ -87,6 +89,14 @@ public class Services {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
     

@@ -650,140 +650,145 @@
                             </c:otherwise>
                         </c:choose>
 
-                    </div>
-                    <div class="pd-left-extra">
-                        <h3 class="extra-title">NHỮNG PHỤ KIỆN LIÊN QUAN </h3>
-                        <c:choose>
-                            <c:when test="${not empty accessories}">
-                                <c:set var="shown" value="0"/>
-                                <div class="featured-grid-4cols">
-                                    <c:forEach var="i" items="${accessories}">
-                                        <c:if test="${ shown < 8 }">
-                                            <div class="grid-item-sb">
-                                                <form action="MainController" method="post" class="card">
-                                                    <input type="hidden" name="action" value="getAccessory"/>
-                                                    <input type="hidden" name="idAccessory" value="${i.id}"/>
-                                                    <!-- Bấm vào cả card là submit -->
-                                                    <button type="submit" class="thumb-btn-sb">
-                                                        <!-- Container cho ảnh và giá -->
-                                                        <div class="image-price-container-sb">
-                                                            <img class="thumb-sb" src="${i.coverImg}" alt="${i.name}" style="height:130px;"/>
-                                                            <div class="price-box-sb">
-                                                                <div class="price-text-sb"><fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" />
-                                                                    VND</div>
-                                                            </div>
-                                                        </div>
-                                                        <!-- Tên sản phẩm ở dưới -->
-                                                        <div class="product-name">${i.name}</div>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                            <c:set var="shown" value="${shown + 1}"/>
-                                        </c:if>
-                                    </c:forEach>
-                                </div>
-                            </c:when>
-                            <c:otherwise>
-                                <p>Hiện danh sách đang trống!</p>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-
                 </div>
+                <div class="pd-left-extra">
+                    <h3 class="extra-title">NHỮNG PHỤ KIỆN LIÊN QUAN </h3>
+                    <c:choose>
+                        <c:when test="${not empty accessories}">
+                            <c:set var="shown" value="0"/>
+                            <div class="featured-grid-4cols">
+                                <c:forEach var="i" items="${accessories}">
+                                    <c:if test="${shown < 8}">
+                                        <div class="grid-item-sb">
+                                            <!-- Chuyển form sang link -->
+                                            <a href="${pageContext.request.contextPath}/accessory/${i.slug}" class="card thumb-btn-sb">
+                                                <!-- Container cho ảnh và giá -->
+                                                <div class="image-price-container-sb">
+                                                    <c:choose>
+                                                        <c:when test="${not empty i.coverImg}">
+                                                            <img class="thumb-sb" src="${i.coverImg}" alt="${i.name}" style="height:130px;"/>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <img class="thumb-sb" src="${pageContext.request.contextPath}/assets/images/no-image.jpg" alt="No image available" style="height:130px;"/>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                    <div class="price-box-sb">
+                                                        <div class="price-text-sb">
+                                                            <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Tên sản phẩm ở dưới -->
+                                                <div class="product-name">${i.name}</div>
+                                            </a>
+                                        </div>
+                                        <c:set var="shown" value="${shown + 1}"/>
+                                    </c:if>
+                                </c:forEach>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <p>Hiện danh sách đang trống!</p>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+
             </div>
         </div>
-        <!-- Footer đặt NGOÀI wrapper để luôn hiển thị khi body cuộn -->
-        <jsp:include page="footer.jsp"/>
-        <script>
-            // ===== CONFIG - Thay đổi thông tin liên hệ ở đây =====
-            const SHOP_CONFIG = {
-                zaloId: '0357394235', // Thay bằng Zalo ID thực tế
-                phoneNumber: '0357394235', // Thay bằng SĐT thực tế
-                shopName: 'SHOP GAME VIỆT'
-            };
+    </div>
+    <!-- Footer đặt NGOÀI wrapper để luôn hiển thị khi body cuộn -->
+    <jsp:include page="footer.jsp"/>
+    <script>
+        // ===== CONFIG - Thay đổi thông tin liên hệ ở đây =====
+        const SHOP_CONFIG = {
+            zaloId: '0357394235', // Thay bằng Zalo ID thực tế
+            phoneNumber: '0357394235', // Thay bằng SĐT thực tế
+            shopName: 'SHOP GAME VIỆT'
+        };
 
-            // ===== MAIN FUNCTIONS =====
+        // ===== MAIN FUNCTIONS =====
 
-            // Đặt dịch vụ qua Zalo
-            function bookService(serviceId, serviceName, price) {
-                // Log user interest (optional - có thể bỏ nếu không cần track)
-                logUserInterest(serviceId, 'book_service');
+        // Đặt dịch vụ qua Zalo
+        function bookService(serviceId, serviceName, price) {
+            // Log user interest (optional - có thể bỏ nếu không cần track)
+            logUserInterest(serviceId, 'book_service');
 
-                // Tạo message template
-                const message = "🎮 ĐẶT DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
-                        "📋 Dịch vụ: " + serviceName + "\n" +
-                        "💰 Giá: " + new Intl.NumberFormat('vi-VN').format(price) + " VND\n" +
-                        "🆔 Mã: #SV" + serviceId + "\n\n" +
-                        "Xin chào! Tôi muốn đặt dịch vụ trên. Vui lòng tư vấn thêm cho tôi.";
+            // Tạo message template
+            const message = "🎮 ĐẶT DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
+                    "📋 Dịch vụ: " + serviceName + "\n" +
+                    "💰 Giá: " + new Intl.NumberFormat('vi-VN').format(price) + " VND\n" +
+                    "🆔 Mã: #SV" + serviceId + "\n\n" +
+                    "Xin chào! Tôi muốn đặt dịch vụ trên. Vui lòng tư vấn thêm cho tôi.";
 
-                // Mở Zalo
-                const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
-                window.open(zaloUrl, '_blank');
+            // Mở Zalo
+            const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
+            window.open(zaloUrl, '_blank');
+        }
+
+        // Tư vấn dịch vụ qua Zalo  
+        function consultService(serviceName) {
+            const message = "💬 TƯ VẤN DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
+                    "📋 Về dịch vụ: " + serviceName + "\n\n" +
+                    "Xin chào! Tôi cần được tư vấn thêm về dịch vụ này. Cảm ơn!";
+
+            const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
+            window.open(zaloUrl, '_blank');
+        }
+
+        // Gọi điện trực tiếp
+        function callDirectly() {
+            if (confirm("Gọi đến " + SHOP_CONFIG.phoneNumber + "?")) {
+                window.open("tel:" + SHOP_CONFIG.phoneNumber, '_self');
             }
+        }
 
-            // Tư vấn dịch vụ qua Zalo  
-            function consultService(serviceName) {
-                const message = "💬 TƯ VẤN DỊCH VỤ - " + SHOP_CONFIG.shopName + "\n\n" +
-                        "📋 Về dịch vụ: " + serviceName + "\n\n" +
-                        "Xin chào! Tôi cần được tư vấn thêm về dịch vụ này. Cảm ơn!";
+        // Log user interest (optional - để tracking)
+        function logUserInterest(serviceId, action) {
+            // Có thể gọi API để log, hoặc bỏ nếu không cần
+            fetch('MainController', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `action=logServiceInterest&serviceId=${serviceId}&interestType=${action}`
+            }).catch(e => console.log('Tracking failed:', e)); // Silent fail
+        }
 
-                const zaloUrl = "https://zalo.me/" + SHOP_CONFIG.zaloId + "?message=" + encodeURIComponent(message);
-                window.open(zaloUrl, '_blank');
-            }
-
-            // Gọi điện trực tiếp
-            function callDirectly() {
-                if (confirm("Gọi đến " + SHOP_CONFIG.phoneNumber + "?")) {
-                    window.open("tel:" + SHOP_CONFIG.phoneNumber, '_self');
-                }
-            }
-
-            // Log user interest (optional - để tracking)
-            function logUserInterest(serviceId, action) {
-                // Có thể gọi API để log, hoặc bỏ nếu không cần
-                fetch('MainController', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `action=logServiceInterest&serviceId=${serviceId}&interestType=${action}`
-                }).catch(e => console.log('Tracking failed:', e)); // Silent fail
-            }
-
-            // ===== UI EFFECTS =====
-            document.addEventListener('DOMContentLoaded', function () {
-                // Hover effects
-                const actionButtons = document.querySelectorAll('.btn-service');
-                actionButtons.forEach(btn => {
-                    btn.addEventListener('mouseenter', function () {
-                        this.style.transform = 'translateY(-2px)';
-                    });
-                    btn.addEventListener('mouseleave', function () {
-                        this.style.transform = 'translateY(0)';
-                    });
+        // ===== UI EFFECTS =====
+        document.addEventListener('DOMContentLoaded', function () {
+            // Hover effects
+            const actionButtons = document.querySelectorAll('.btn-service');
+            actionButtons.forEach(btn => {
+                btn.addEventListener('mouseenter', function () {
+                    this.style.transform = 'translateY(-2px)';
                 });
-
-                // Success notification after page load (if redirected back)
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('contacted') === 'true') {
-                    showNotification('✅ Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.', 'success');
-                }
+                btn.addEventListener('mouseleave', function () {
+                    this.style.transform = 'translateY(0)';
+                });
             });
 
-            // Simple notification system
-            function showNotification(message, type = 'info') {
-                const notification = document.createElement('div');
-                notification.style.cssText =
-                        "position: fixed; top: 20px; right: 20px; z-index: 9999;" +
-                        "padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600;" +
-                        "background: " + (type === 'success' ? '#10b981' : '#3b82f6') + ";" +
-                        "box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer;" +
-                        "transform: translateX(100%); transition: transform 0.3s ease;";
-                notification.textContent = message;
-                notification.onclick = () => notification.remove();
-
-                document.body.appendChild(notification);
-                setTimeout(() => notification.style.transform = 'translateX(0)', 100);
-                setTimeout(() => notification.remove(), 5000);
+            // Success notification after page load (if redirected back)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('contacted') === 'true') {
+                showNotification('✅ Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.', 'success');
             }
-        </script>
-    </body>
+        });
+
+        // Simple notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText =
+                    "position: fixed; top: 20px; right: 20px; z-index: 9999;" +
+                    "padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600;" +
+                    "background: " + (type === 'success' ? '#10b981' : '#3b82f6') + ";" +
+                    "box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer;" +
+                    "transform: translateX(100%); transition: transform 0.3s ease;";
+            notification.textContent = message;
+            notification.onclick = () => notification.remove();
+
+            document.body.appendChild(notification);
+            setTimeout(() => notification.style.transform = 'translateX(0)', 100);
+            setTimeout(() => notification.remove(), 5000);
+        }
+    </script>
+</body>
 </html>
