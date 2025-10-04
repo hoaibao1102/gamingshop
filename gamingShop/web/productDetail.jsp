@@ -421,141 +421,146 @@
                 gap: 6px;
             }
             /* =========================
-               Responsive (đã rút gọn)
+               Responsive (match với index.jsp)
             ========================= */
 
-            /* ≤1280px: coi như mobile-tablet (match Home) */
-            @media (max-width:1280px){
-                html,body{
-                    overflow-x:hidden;
-                }
-
-                .wrapper{
-                    display:block;
-                    padding:0 !important;
-                    gap:0 !important;
-                    min-height:100dvh;
+            /* ≤1230px: layout 1 cột - ảnh trên, nội dung dưới */
+            @media (max-width: 1230px) {
+                .product-detail{
+                    grid-template-columns: 1fr;
+                    gap: 20px;
                 }
                 
+                .pd-left{
+                    order: 1; /* ảnh lên trên */
+                }
+                
+                .pd-right{
+                    order: 2; /* nội dung xuống dưới */
+                }
+            }
+
+            /* ≤968px: tablet - match với index.jsp */
+            @media (max-width: 968px) {
+                .featured-grid-4cols {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 18px;
+                }
+            }
+
+            /* ≤768px: mobile - match với index.jsp */
+            @media (max-width:768px){
+                .wrapper{
+                    padding: 2px;
+                    flex-direction: column;
+                    gap: 15px;
+                    min-height: 100vh;
+                }
+                .sidebar{
+                    display: none;
+                }
 
                 .Main_content{
-                    width:100% !important;
-                    max-width:100% !important;
-                    border-radius:0 !important;
-                    box-shadow:none !important;
-                    overflow:visible;
+                    flex: 1;
+                    border-radius: 16px;
+                    overflow: visible;
                 }
                 .container{
-                    padding:12px 12px 20px !important;
+                    padding: 16px;
                 }
                 
                 .breadcrumbs {
-                    padding: 8px 12px !important;
-                    font-size: 0.85rem !important;
-                    flex-wrap: wrap !important;
-                    margin-bottom: 12px !important;
+                    padding: 8px 12px;
+                    font-size: 0.85rem;
+                    flex-wrap: wrap;
+                    margin-bottom: 12px;
                 }
                 .breadcrumbs a {
-                    padding: 3px 6px !important;
+                    padding: 3px 6px;
                 }
 
                 .product-detail{
-                    grid-template-columns:1fr !important;
-                    gap:6px !important;
+                    grid-template-columns: 1fr;
+                    gap: 16px;
                 }
 
                 .pd-left{
-                    margin-right: -10px;
-                    padding:0 !important;
-                    border-radius:0 !important;
-                    box-shadow:none !important;
+                    padding: 12px;
+                    border-radius: 16px;
                 }
                 .pd-main{
-                    border:none !important;
-                    border-radius:0 !important;
-                    height:clamp(240px,42vh,420px) !important;
+                    height: clamp(180px,50vw,320px);
+                    border-radius: 16px;
                 }
 
                 /* Thumbs chuyển sang cuộn ngang, tránh lệch hàng */
                 .pd-thumbs{
-                    display:flex !important;
-                    gap:4px !important;
-                    padding:10px 12px 4px !important;
-                    overflow-x:auto !important;
-                    -webkit-overflow-scrolling:touch;
-                    scroll-snap-type:x mandatory;
-                    scrollbar-width:none;
+                    display: flex;
+                    gap: 8px;
+                    padding: 12px 0;
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                    scroll-snap-type: x mandatory;
+                    scrollbar-width: none;
                 }
                 .pd-thumbs::-webkit-scrollbar{
                     display:none;
                 }
                 .pd-thumb{
-                    flex:0 0 96px !important;
-                    scroll-snap-align:start;
+                    flex: 0 0 80px;
+                    scroll-snap-align: start;
                 }
                 /* Thông tin: bỏ sticky để không lệch khi cuộn, đồng bộ padding */
                 .pd-right{
-                    position:static !important;
-                    top:auto !important;
-                    padding:14px 12px !important;
-                    margin:0 !important;
-                    border-radius:12px !important;
-                    box-shadow:0 10px 40px rgba(0,0,0,.06);
+                    padding: 16px;
+                    border-radius: 16px;
                 }
                 .pd-name{
-                    font-size:18px !important;
-                    margin:0 0 10px !important;
+                    font-size: 18px;
+                    margin: 0 0 10px;
                 }
                 .pd-row{
-                    grid-template-columns:96px 1fr !important;
-                    gap:10px !important;
-                    font-size:13.5px !important;
+                    grid-template-columns: 100px 1fr;
+                    gap: 12px;
+                    font-size: 14px;
                 }
                 .pd-row-price{
-                    padding:12px !important;
+                    padding: 12px;
                 }
                 .pd-row-price span{
-                    font-size:18px !important;
+                    font-size: 18px;
                 }
 
                 /* Description: khoá lề trái/phải khớp container để không bị “lệch hàng” */
                 .pd-desc{
-                    margin-top:14px !important;
-                    padding-top:14px !important;
-                    padding-left:2px;
-                    padding-right:2px; /* tinh chỉnh nhỏ cho khớp ảnh/thumbs */
+                    margin-top: 16px;
+                    padding-top: 16px;
                 }
             }
 
 
-            /* ≤640px: tinh chỉnh tap-target & chiều cao ảnh */
-            @media (max-width:640px){
+            /* ≤480px: mobile nhỏ - match với index.jsp */
+            @media (max-width: 480px) {
                 .container{
-                    padding:10px 10px 16px !important;
+                    padding: 12px;
                 }
                 .pd-main{
-                    height:clamp(220px,38vh,380px) !important;
+                    height: clamp(160px,45vw,280px);
                 }
                 .pd-thumb{
-                    flex:0 0 88px !important;
+                    flex: 0 0 70px;
                 }
-                
-                .sidebar{
-                    display:none !important;
-                }
-                
-
                 .breadcrumbs {
-                    padding: 6px 10px !important;
-                    font-size: 0.8rem !important;
-                    margin-bottom: 10px !important;
+                    padding: 6px 10px;
+                    font-size: 0.8rem;
+                    margin-bottom: 10px;
                 }
                 .breadcrumbs a {
-                    padding: 2px 4px !important;
-                    font-size: 0.8rem !important;
+                    padding: 2px 4px;
+                    font-size: 0.8rem;
                 }
                 .breadcrumbs .sep {
-                    font-size: 0.9rem !important;
+                    font-size: 0.9rem;
                 }
             }
 
@@ -566,50 +571,173 @@
                 }
             }
 
-            /* CSS cho layout 4 cột */
-            .featured-grid-4cols {
+            /* CSS cho phần sản phẩm liên quan */
+            .pd-left-extra {
+                padding: 0 20px 20px;
+            }
+            
+            .extra-title {
+                font-size: 20px;
+                font-weight: 700;
+                color: #111827;
+                margin-bottom: 16px;
+                text-align: center;
+                padding: 12px;
+                background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+                border-radius: 12px;
+                border: 1px solid #e2e8f0;
+            }
+            
+            .related-products-container {
+                position: relative;
+                overflow: visible;
+            }
+            
+            .related-products-scroll {
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);
-                gap: 15px;
-                margin-bottom: 20px;
+                gap: 16px;
+                padding-bottom: 10px;
             }
+            
 
-            .grid-item-sb {
+            
+            .related-product-item {
                 width: 100%;
+                background: #fff;
+                border-radius: 16px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+                overflow: hidden;
+                transition: all 0.3s ease;
             }
-
-            .grid-item-sb .card {
+            
+            .related-product-item:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            }
+            
+            .related-product-form {
                 width: 100%;
                 height: 100%;
             }
-
-            .grid-item-sb .thumb-btn-sb {
+            
+            .related-product-btn {
                 width: 100%;
                 height: 100%;
+                background: none;
+                border: none;
+                padding: 0;
+                cursor: pointer;
                 display: flex;
                 flex-direction: column;
+                text-align: left;
+            }
+            
+            .related-product-image {
+                width: 100%;
+                height: 200px;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .related-product-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.3s ease;
+            }
+            
+            .related-product-item:hover .related-product-image img {
+                transform: scale(1.05);
+            }
+            
+            .related-product-price {
+                position: absolute;
+                bottom: 8px;
+                right: 8px;
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 4px 8px;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 600;
+            }
+            
+            .related-product-info {
+                padding: 12px;
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+            
+            .related-product-name {
+                font-size: 14px;
+                font-weight: 600;
+                color: #111827;
+                line-height: 1.4;
+                margin: 0;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            
+            /* Navigation buttons - Ẩn đi vì không còn cần thiết */
+            .related-nav-btn {
+                display: none;
             }
 
             /* Responsive cho màn hình nhỏ hơn */
             @media (max-width: 1200px) {
-                .featured-grid-4cols {
+                .related-products-scroll {
                     grid-template-columns: repeat(3, 1fr);
+                    gap: 14px;
                 }
             }
 
             @media (max-width: 768px) {
-                .featured-grid-4cols {
+                .pd-left-extra {
+                    padding: 0 12px 16px;
+                }
+                
+                .extra-title {
+                    font-size: 18px;
+                    margin-bottom: 12px;
+                    padding: 10px;
+                }
+                
+                .related-products-scroll {
                     grid-template-columns: repeat(2, 1fr);
-                    gap: 10px;
+                    gap: 12px;
+                }
+                
+                .related-product-image {
+                    height: 160px;
+                }
+                
+                .related-nav-btn {
+                    width: 36px;
+                    height: 36px;
+                    font-size: 16px;
+                }
+                
+                .related-nav-prev {
+                    left: -18px;
+                }
+                
+                .related-nav-next {
+                    right: -18px;
                 }
 
                 .sd-actions {
                     flex-direction: column;
-                    align-items: stretch; /* full width theo container */
+                    align-items: stretch;
                 }
 
                 .btn-service {
-                    width: 100%; /* nút chiếm full chiều ngang */
+                    width: 100%;
                     font-size: 16px;
                 }
                 
@@ -624,8 +752,25 @@
             }
 
             @media (max-width: 480px) {
-                .featured-grid-4cols {
-                    grid-template-columns: 1fr;
+                .related-products-scroll {
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 10px;
+                }
+                
+                .related-product-image {
+                    height: 140px;
+                }
+                
+                .related-product-info {
+                    padding: 8px;
+                }
+                
+                .related-product-name {
+                    font-size: 13px;
+                }
+                
+                .related-nav-btn {
+                    display: none;
                 }
             }
 
@@ -769,41 +914,41 @@
 
 
 
-                <!--                                     >>> DIV MỚI CHÈN Ở ĐÂY <<< ===============================================-->
+                <!-- Sản phẩm liên quan với scroll horizontal -->
                 <div class="pd-left-extra">
-                    <h3 class="extra-title">NHỮNG SẢN PHẨM LIÊN QUAN </h3>
+                    <h3 class="extra-title">🔥 NHỮNG SẢN PHẨM LIÊN QUAN</h3>
                     <c:choose>
                         <c:when test="${not empty list_pro}">
-                            <c:set var="shown" value="0"/>
-                            <div class="featured-grid-4cols">
-                                <c:forEach var="i" items="${list_pro}">
-                                    <c:if test="${ shown < 8}">
-                                        <div class="grid-item-sb">
-                                            <form action="MainController" method="post" class="card">
-                                                <input type="hidden" name="action" value="getProduct"/>
-                                                <input type="hidden" name="idProduct" value="${i.id}"/>
-                                                <!-- Bấm vào cả card là submit -->
-                                                <button type="submit" class="thumb-btn-sb">
-                                                    <!-- Container cho ảnh và giá -->
-                                                    <div class="image-price-container-sb">
-                                                        <img class="thumb-sb" src="${i.coverImg}" alt="${i.name}" style="height:130px;"/>
-                                                        <div class="price-box-sb">
-                                                            <div class="price-text-sb"><fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" />
-                                                                VND</div>
+                            <div class="related-products-container">
+                                <div class="related-products-scroll">
+                                    <c:set var="shown" value="0"/>
+                                    <c:forEach var="i" items="${list_pro}">
+                                        <c:if test="${shown < 8}">
+                                            <div class="related-product-item">
+                                                <form action="MainController" method="post" class="related-product-form">
+                                                    <input type="hidden" name="action" value="getProduct"/>
+                                                    <input type="hidden" name="idProduct" value="${i.id}"/>
+                                                    <button type="submit" class="related-product-btn">
+                                                        <div class="related-product-image">
+                                                            <img src="${i.coverImg}" alt="${i.name}" loading="lazy"/>
+                                                            <div class="related-product-price">
+                                                                <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <!-- Tên sản phẩm ở dưới -->
-                                                    <div class="product-name">${i.name}</div>
-                                                </button>
-                                            </form>
-                                        </div>
-                                        <c:set var="shown" value="${shown + 1}"/>
-                                    </c:if>
-                                </c:forEach>
+                                                        <div class="related-product-info">
+                                                            <div class="related-product-name">${i.name}</div>
+                                                        </div>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            <c:set var="shown" value="${shown + 1}"/>
+                                        </c:if>
+                                    </c:forEach>
+                                </div>
                             </div>
                         </c:when>
                         <c:otherwise>
-                            <p>Hiện danh sách đang trống!</p>
+                            <p style="text-align: center; color: #6b7280; padding: 20px;">Hiện danh sách đang trống!</p>
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -928,6 +1073,67 @@
                 setTimeout(() => notification.style.transform = 'translateX(0)', 100);
                 setTimeout(() => notification.remove(), 5000);
             }
+
+            // Related products scroll functionality
+            function scrollRelatedProducts(direction) {
+                const container = document.getElementById('relatedProductsScroll');
+                if (!container) return;
+                
+                const scrollAmount = 300; // pixels to scroll
+                const currentScroll = container.scrollLeft;
+                
+                if (direction === 'left') {
+                    container.scrollTo({
+                        left: currentScroll - scrollAmount,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    container.scrollTo({
+                        left: currentScroll + scrollAmount,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+
+            // Update navigation buttons visibility based on scroll position
+            function updateNavButtons() {
+                const container = document.getElementById('relatedProductsScroll');
+                const prevBtn = document.querySelector('.related-nav-prev');
+                const nextBtn = document.querySelector('.related-nav-next');
+                
+                if (!container || !prevBtn || !nextBtn) return;
+                
+                const isAtStart = container.scrollLeft <= 0;
+                const isAtEnd = container.scrollLeft >= (container.scrollWidth - container.clientWidth);
+                
+                prevBtn.style.opacity = isAtStart ? '0.5' : '1';
+                nextBtn.style.opacity = isAtEnd ? '0.5' : '1';
+                prevBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
+                nextBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
+            }
+
+            // Initialize related products scroll
+            document.addEventListener('DOMContentLoaded', function() {
+                const container = document.getElementById('relatedProductsScroll');
+                if (container) {
+                    // Update navigation buttons on scroll
+                    container.addEventListener('scroll', updateNavButtons);
+                    // Initial update
+                    updateNavButtons();
+                    
+                    // Auto-hide navigation buttons on mobile
+                    function handleResize() {
+                        const isMobile = window.innerWidth <= 480;
+                        const navButtons = document.querySelectorAll('.related-nav-btn');
+                        navButtons.forEach(btn => {
+                            btn.style.display = isMobile ? 'none' : 'flex';
+                        });
+                    }
+                    
+                    window.addEventListener('resize', handleResize);
+                    handleResize(); // Initial call
+                }
+            });
         </script>
     </body>
 </html>

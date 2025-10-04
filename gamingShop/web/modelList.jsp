@@ -372,7 +372,6 @@
                     <div class="admin-toolbar">
                         <div class="title">Danh sách các loại sản phẩm</div>
 
-                        <a href="MainController?action=showAddModel" class="btn btn-primary">+ Thêm loại sản phẩm</a>
                     </div>
 
                     <!-- Thông báo hệ thống -->
@@ -433,10 +432,7 @@
                                                                 <input class="nav-item" type="submit" value="Xem Thêm">
                                                             </form>
                                                             <a href="MainController?action=showEditModel&id=${model.id}" class="btn btn-secondary">Sửa</a>
-                                                            <c:if test="${model.status == 'active'}">
-                                                                <a href="MainController?action=deleteModel&id=${model.id}" class="btn btn-danger" 
-                                                                   onclick="return confirmDelete('${model.model_type}')">Xóa</a>
-                                                            </c:if>
+                                                            
                                                         </div>
                                                     </td>
                                                 </tr>

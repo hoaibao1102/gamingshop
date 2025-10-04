@@ -182,10 +182,10 @@
 
             /* Grid layout for sidebar - thống nhất với productDetail */
             .featured-grid-sidebar {
-                display: grid;
-                grid-template-columns: 1fr;
-                gap: 15px;
-                margin-bottom: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                margin-bottom: 16px;
             }
 
             .grid-item-sb {
@@ -197,7 +197,7 @@
                 height: 100%;
                 background: #ffffff;
                 border: 1px solid #f1f5f9;
-                border-radius: 16px;
+                border-radius: 12px;
                 overflow: hidden;
                 box-shadow: 0 6px 20px rgba(0,0,0,.08);
                 transition: all .3s ease;
@@ -228,7 +228,7 @@
                 display:grid;
                 gap:16px;
             }
-            p{
+            .sidebar p, .featured-list-sb p{
                 color:#1296ba;
                 text-align:center;
                 font-style:italic;
@@ -287,24 +287,32 @@
                 cursor:pointer;
                 display:flex;
                 flex-direction:column;
-                gap:12px;
+                gap:8px;
+                align-items:center;
+                text-align:center;
             }
             
             .image-price-container-sb{
                 position: relative;
                 width: 100%;
+                height: 160px;
+                flex-shrink: 0;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                overflow: hidden;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             }
 
             .thumb-sb{
                 width: 100%;
-                height: 120px;
+                height: 100%;
                 object-fit: cover;
                 display: block;
-                border-radius: 8px;
+                border-radius: 6px;
                 transition: transform .3s ease;
+                
             }
             
             .grid-item-sb .thumb-btn-sb:hover .thumb-sb{
@@ -315,26 +323,23 @@
                 position: absolute;
                 bottom: 8px;
                 right: 8px;
-                background: rgba(255, 255, 255, 0.95);
-                color: #e11d48;
+                background: linear-gradient(135deg, rgba(37,99,235,0.95), rgba(59,130,246,0.95));
+                color: white;
                 padding: 4px 8px;
-                border-radius: 6px;
+                border-radius: 8px !important;
                 font-size: 11px;
-                font-weight: 600;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                backdrop-filter: blur(4px);
-                box-shadow:0 2px 8px rgba(0,0,0,.05);
-                border:1px solid #e9ecef;
-                transition:background .3s ease;
+                font-weight: 700;
+                box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+                border: 1px solid rgba(255,255,255,0.2);
+                z-index: 10;
             }
             .price-text-sb{
-                color:#dc3545;
-                font-weight:800;
+                color: white;
+                font-weight:700;
                 font-size:12px;
                 text-align:center;
                 line-height:1.2;
-                word-break:break-word;
-                hyphens:auto;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.3);
             }
             .product-name{
                 color: #111827;
@@ -342,12 +347,19 @@
                 font-size: 13px;
                 text-align: center;
                 line-height: 1.4;
-                padding: 8px 4px 0;
+                width: 100%;
                 word-break: break-word;
-                hyphens: auto;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                margin-top: 4px;
             }
             .thumb-btn-sb:hover .price-box-sb{
-                background:#dee2e6;
+                background: linear-gradient(135deg, rgba(59,130,246,0.95), rgba(37,99,235,0.95));
+                transform: scale(1.05);
+                box-shadow: 0 6px 16px rgba(37,99,235,0.4);
             }
 
             .view-more-btn{
@@ -487,17 +499,30 @@
                     width:100px;
                     height:100px;
                 }
-                .thumb-sb{
-                    height:70px;
+                .image-price-container-sb{
+                    width: 100%;
+                    height: 140px;
+                    border-radius: 10px;
+                    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
                 }
-                .price-box-sb{
-                    height:70px;
+                .thumb-btn-sb{
+                    padding: 12px;
+                    gap: 14px;
                 }
                 .price-text-sb{
-                    font-size:10px;
+                    font-size:11px;
+                }
+                .price-box-sb{
+                    bottom: 6px;
+                    right: 6px;
+                    padding: 3px 6px;
+                    border-radius: 6px;
+                    font-size: 10px;
+                    box-shadow: 0 3px 8px rgba(37,99,235,0.25);
                 }
                 .product-name{
-                    font-size:11px;
+                    font-size:12px;
+                    margin-top: 2px;
                 }
                 .nav-item, .sb-nav a{
                     padding:12px 14px;
@@ -572,7 +597,7 @@
                                             <button type="submit" class="thumb-btn-sb">
                                                 <!-- Container cho ảnh và giá -->
                                                 <div class="image-price-container-sb">
-                                                    <img class="thumb-sb" src="${i.coverImg}" alt="${fn:escapeXml(i.name)}" style="height:120px;"/>
+                                                    <img class="thumb-sb" src="${i.coverImg}" alt="${fn:escapeXml(i.name)}"/>
                                                     <div class="price-box-sb">
                                                         <div class="price-text-sb">
                                                             <fmt:formatNumber value="${i.price}" type="number" groupingUsed="true" maxFractionDigits="0" /> VND

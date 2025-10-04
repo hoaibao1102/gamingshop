@@ -32,7 +32,6 @@
 
 /* Override cho các price boxes nếu có */
 .price-box,
-.price-box-sb,
 .product-price-box {
   border-radius: 0 !important;
 }
